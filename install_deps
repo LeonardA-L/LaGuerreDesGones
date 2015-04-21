@@ -1,0 +1,11 @@
+# nodejs
+pacman -S  --color never community/nodejs
+# mongodb
+pacman -S  --color never community/mongodb
+# bower
+sudo npm install -g bower
+# Grunt
+sudo npm install -g grunt-cli
+# Yo and the qui-va-bien generator
+sudo npm install -g yo
+sudo npm install -g generator-meanjs

@@ -1,0 +1,4 @@
+# Launch mongod
+sudo nohup mongod --quiet --config /etc/mongodb.conf --port 27017 &
+# Launch grunt
+grunt

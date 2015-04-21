@@ -25,7 +25,8 @@ module.exports = {
 			]
 		},
 		css: [
-			'public/modules/**/css/*.css'
+			//'public/modules/**/css/*.css'
+			'public/css/style.css'
 		],
 		js: [
 			'public/config.js',

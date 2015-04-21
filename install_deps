@@ -10,3 +10,7 @@ sudo npm install -g grunt-cli
 # Yo and the qui-va-bien generator
 sudo npm install -g yo
 sudo npm install -g generator-meanjs
+# SASS
+yaourt -S  --nocolor aur/ruby-sass
+npm install grunt-contrib-sass --save
+npm install grunt-contrib-concat

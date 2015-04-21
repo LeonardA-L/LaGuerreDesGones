@@ -30,6 +30,8 @@ temp/
 test/temp
 .idea/
 
+app/public/css/
+
 # Node and related ecosystem
 # ==========================
 .nodemonignore

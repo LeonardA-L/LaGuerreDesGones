@@ -8,7 +8,9 @@ module.exports = function(grunt) {
 		clientViews: ['public/modules/**/views/**/*.html'],
 		clientJS: ['public/js/*.js', 'public/modules/**/*.js'],
 		clientCSS: ['public/modules/**/*.css'],
-		mochaTests: ['app/tests/**/*.js']
+		//clientCSS: ['public/css/style.css'],
+		mochaTests: ['app/tests/**/*.js'],
+		sass: 'public/modules/**/css/*.{scss,sass}'
 	};
 
 	// Project Configuration
@@ -47,7 +49,15 @@ module.exports = function(grunt) {
 				options: {
 					livereload: true
 				}
+			},
+			sass: {
+			    files: watchFiles.sass,
+			    tasks: ['sass:dev'],
+			    options: {
+					livereload: true
+				}
 			}
+
 		},
 		jshint: {
 			all: {
@@ -139,11 +149,40 @@ module.exports = function(grunt) {
 			unit: {
 				configFile: 'karma.conf.js'
 			}
+		},
+		concat: {
+		  css: {
+		    src: 'public/modules/**/css/*.{scss,sass}',
+		    dest: 'public/css/style.scss'
+		  }
+		},
+		/**
+		 * Sass
+		 */
+		sass: {
+		  dev: {		    
+		    files: {
+		      'public/css/style.css': 'public/css/style.scss',
+		      //next line is not necessary if you include your bootstrap into the *.scss files
+		      //'public/css/bootstrap.css': 'public/lib/bootstrap-sass-official/vendor/assets/stylesheets/bootstrap.scss'		      		     
+		    }
+		  },
+		  dist: {
+		  	//you could use this as part of the build job (instead of using cssmin)
+		    options: {
+		      style: 'compressed',
+		      compass: false
+		    },
+		    files: {
+		       'public/css/style.css': '**/*.{scss,sass}',
+		    }
+		  }
 		}
 	});
 
 	// Load NPM tasks
 	require('load-grunt-tasks')(grunt);
+	grunt.loadNpmTasks('grunt-contrib-concat');
 
 	// Making grunt default to force in order not to break the project.
 	grunt.option('force', true);
@@ -157,8 +196,10 @@ module.exports = function(grunt) {
 		grunt.config.set('applicationCSSFiles', config.assets.css);
 	});
 
+
+
 	// Default task(s).
-	grunt.registerTask('default', ['lint', 'concurrent:default']);
+	grunt.registerTask('default', ['lint', 'concat','sass:dev', 'concurrent:default']);
 
 	// Debug task.
 	grunt.registerTask('debug', ['lint', 'concurrent:debug']);

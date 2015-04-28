@@ -40,3 +40,13 @@ exports.getWaiting = function(req, res) {
 	};
 	res.json(ret);
 };
+
+// User joins a game
+exports.joinGame = function(req, res) {
+	// TODO rules
+	var result = {
+		success : true
+	};
+	console.log('User '+req.user.displayName+' wants to join game n°'+req.params.gameId);
+	res.json(result);
+};

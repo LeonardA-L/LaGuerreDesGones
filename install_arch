@@ -1,3 +1,4 @@
+#!/bin/bash
 # nodejs
 pacman -S  --color never community/nodejs
 # mongodb

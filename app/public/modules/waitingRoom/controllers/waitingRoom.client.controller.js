@@ -1,7 +1,7 @@
 'use strict';
 
 
-angular.module('createGame').controller('CreateGameController', ['$scope',
+angular.module('waitingRoom').controller('WaitingRoomController', ['$scope',
 																'Authentication',
 																'$http',
 	function($scope, Authentication, $http) {
@@ -9,6 +9,7 @@ angular.module('createGame').controller('CreateGameController', ['$scope',
 		// This provides Authentication context.
 		$scope.authentication = Authentication;
 
+		/*
 		$scope.newGame = {
 			'startTime' : Math.floor(new Date().getTime()/1000) + 3600,
 			'title':''
@@ -25,5 +26,6 @@ angular.module('createGame').controller('CreateGameController', ['$scope',
 			    console.log('error');
 			  });
 		};
+		*/
 	}
 ]);

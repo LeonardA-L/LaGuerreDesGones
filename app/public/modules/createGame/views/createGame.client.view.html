@@ -2,7 +2,8 @@
 	<div  class="createGameSection">
 <h1>Create a new game</h1>
 <p>
-Start time in s (default : now + 1h) : <input type="text" name="timestamp" value="{{newGame.startTime}}"/>
+Name thy party : <input type="text" ng-model="newGame.title"><br />
+Start time in s (default : now + 1h) : <input type="text" name="timestamp" ng-model="newGame.startTime"/><br />
 <button ng-click="createGame()">Host</button>
 </p>
 </div>

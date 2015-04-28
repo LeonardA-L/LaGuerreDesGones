@@ -2,7 +2,8 @@
 	<div  class="createGameSection">
 <h1>Create a new game</h1>
 <p>
-Start time in s (default : now + 1h) : <input type="text" name="timestamp" value="{{startTime}}"/>
+Start time in s (default : now + 1h) : <input type="text" name="timestamp" value="{{newGame.startTime}}"/>
+<button ng-click="createGame()">Host</button>
 </p>
 </div>
 </section>

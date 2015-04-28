@@ -1,6 +1,7 @@
 #!/bin/bash
 
 sudo apt-get -y install git
+sudo apt-get -y install curl
 curl -sL https://deb.nodesource.com/setup | sudo bash -
 sudo apt-get -y install nodejs
 sudo apt-get -y install mongodb

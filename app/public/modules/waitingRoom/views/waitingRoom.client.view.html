@@ -5,7 +5,7 @@
 Here's a list of games you can join :
 </p>
 <p ng-if="!listAvailable">The list is loading. Please wait...</p>
-<p ng-if="listAvailable.length == 0">There are no games available. You can <a href="#!/host">host one</a> and wait for other players to come!</p>
-<p ng-repeat="i in listAvailable">Game : {{i.title}} by {{i.creator}}. Starts at {{i.startTime}}</p>
+<game-box ng-if="listAvailable.length == 0">There are no games available. You can <a href="#!/host">host one</a> and wait for other players to come!</game-box>
+<game-box ng-repeat="data in listAvailable" data="data" join="true"></game-box>
 </div>
 </section>

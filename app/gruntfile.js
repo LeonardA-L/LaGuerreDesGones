@@ -152,7 +152,7 @@ module.exports = function(grunt) {
 		},
 		concat: {
 		  css: {
-		    src: ['public/css/common.scss', 'public/modules/**/css/*.{scss,sass}'],
+		    src: ['public/css/common.scss', 'public/modules/**/css/*.{scss,sass}', 'public/modules/plddirectives/**/*.{scss,sass}'],
 		    dest: 'public/css/style.scss'
 		  }
 		},

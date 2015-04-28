@@ -12,6 +12,7 @@ sudo npm install -g grunt-cli
 sudo npm install -g yo
 sudo npm install -g generator-meanjs
 sudo apt-get -y install ruby-sass
-sudo npm install grunt-contrib-sass --save
-sudo npm install grunt-contrib-concat
+sudo npm install grunt-contrib-sass --save-dev
+sudo npm install grunt-contrib-concat --save-dev
 
+cd app && sudo npm install

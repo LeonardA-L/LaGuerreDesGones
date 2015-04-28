@@ -18,7 +18,19 @@ exports.createGame = function(req, res) {
 	var result = {
 		success : true
 	};
-	console.log('A new game creation request called "'+req.body.title+'" by user '+req.user.displayName);
+	//console.log('A new game creation request called "'+req.body.title+'" by user '+req.user.displayName);
+	var Game = mongoose.model('Game');
+	var g = new Game({
+		'title':req.body.title,
+		'nMaxPlayerUnit':40,
+		'nMaxPlayer':6,
+		'isInit':false,
+		'startTime':new Date(req.body.startTime)
+	});
+	g.save(function(err,data){
+		if (err)
+            res.send(err);
+	});
 	res.json(result);
 };
 
@@ -26,7 +38,15 @@ exports.createGame = function(req, res) {
 exports.getWaiting = function(req, res) {
 	// TODO db request, rules
 	
-	console.log(db);
+	var Game = mongoose.model('Game');
+
+    Game.find({}, function (err, docs) {
+	  if (err)
+            res.send(err);
+
+        console.log(docs);
+        res.json({'success':docs}); // return all nerds in JSON format
+    });
 	// Dummy list
 	/*
 	var ret = {
@@ -44,7 +64,6 @@ exports.getWaiting = function(req, res) {
 		}]
 	};
 	*/
-	res.json({});
 };
 
 // User joins a game

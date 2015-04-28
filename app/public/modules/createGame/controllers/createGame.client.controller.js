@@ -10,7 +10,7 @@ angular.module('createGame').controller('CreateGameController', ['$scope',
 		$scope.authentication = Authentication;
 
 		$scope.newGame = {
-			'startTime' : Math.floor(new Date().getTime()/1000) + 3600,
+			'startTime' : Math.floor(new Date().getTime()) + 3600000,
 			'title':''
 		};
 

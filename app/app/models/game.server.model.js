@@ -8,6 +8,13 @@ var mongoose = require('mongoose'),
 	crypto = require('crypto');
 
 /**
+ * A Validation function for local strategy properties
+ */
+var validateMaxPlayer = function(maxPlayer) {
+	return (maxPlayer >= 3 && maxPlayer <= 8);
+};
+
+/**
  * Game Schema
  */
 var GameSchema = new Schema({
@@ -18,11 +25,10 @@ var GameSchema = new Schema({
 	},
 	nMaxPlayerUnit: {
 		type: Number,
-		
 	},
 	nMaxPlayer: {
 		type: Number,
-		
+		validate: [validateMaxPlayer, 'Please set a value between 3 & 8']
 	},
 	isInit: {
 		type: Boolean,

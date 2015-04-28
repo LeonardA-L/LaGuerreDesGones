@@ -3,6 +3,8 @@
 /**
  * Module dependencies.
  */
+ var mongoose = require('mongoose');
+
 exports.testapi = function(req, res) {
 	var ret = {
 		result:'ok'
@@ -23,7 +25,10 @@ exports.createGame = function(req, res) {
 // Waiting room : get the games one can join
 exports.getWaiting = function(req, res) {
 	// TODO db request, rules
+	
+	console.log(db);
 	// Dummy list
+	/*
 	var ret = {
 		success:[{
 			'id':42,
@@ -38,7 +43,8 @@ exports.getWaiting = function(req, res) {
 			'creator' : 'LeonardA-L'
 		}]
 	};
-	res.json(ret);
+	*/
+	res.json({});
 };
 
 // User joins a game

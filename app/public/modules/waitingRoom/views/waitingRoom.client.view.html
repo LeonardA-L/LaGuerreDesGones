@@ -2,7 +2,10 @@
 	<div  class="waitingRoomSection">
 <h1>Join a game</h1>
 <p>
-Here's a list of games you can join
+Here's a list of games you can join :
 </p>
+<p ng-if="!listJoinable">The list is loading. Please wait...</p>
+<p ng-if="listJoinable.length == 0">There are no games available. You can <a href="#!/host">host one</a> and wait for other players to come!</p>
+<p ng-repeat="i in listJoinable">Game : {{i.title}} by {{i.creator}}. Starts at {{i.startTime}}</p>
 </div>
 </section>

@@ -7,5 +7,7 @@ module.exports = function(app) {
 
 	// Game Creation
 	app.route('/services/game/create').post(webservices.createGame);
+	// Waiting room : get the games one can join
+	app.route('/services/game/getWaiting').get(webservices.getWaiting);
 
 };

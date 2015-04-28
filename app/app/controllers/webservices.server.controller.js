@@ -22,7 +22,7 @@ exports.createGame = function(req, res) {
 
 // Waiting room : get the games one can join
 exports.getWaiting = function(req, res) {
-	// TODO db request
+	// TODO db request, rules
 	// Dummy list
 	var ret = {
 		success:[{

@@ -12,7 +12,7 @@ angular.module('waitingRoom').controller('WaitingRoomController', ['$scope',
 		var refreshRate = 10*1000;
 		
 		/*
-		$scope.listJoinable = [{
+		$scope.listAvailable = [{
 			'startTime' : 1430234252,
 			'title':'Les joyeux lyonnais',
 			'creator' : 'LeonardA-L'
@@ -24,22 +24,23 @@ angular.module('waitingRoom').controller('WaitingRoomController', ['$scope',
 		}];
 		*/
 
-		//$scope.listJoinable = [];
+		//$scope.listAvailable = [];
 
-		var retrieveJoinable = function(){
-			console.log('retrieving joinable games');
+		var retrieveAvailable = function(){
+			console.log('retrieving available games');
 
 			$http.get('/services/game/getWaiting').
 			  //success(function(data, status, headers, config) {
 			  success(function(data) {
-				$scope.listJoinable = data.success;
+				$scope.listAvailable = data.success;
+				$timeout(retrieveAvailable,refreshRate);
 			  }).
 			  error(function(data) {
 			    console.log('error');
 			  });
 		};
 
-		retrieveJoinable();
+		retrieveAvailable();
 
 		/*
 		$scope.newGame = {

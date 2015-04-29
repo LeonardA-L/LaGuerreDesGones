@@ -1,6 +1,13 @@
  'use strict';
 
 /**
+ * Const
+ */
+var MIN_PLAYER = 3;
+var MAX_PLAYER = 8;
+var DELAY_TIMESTAMP = 2*60*1000;
+
+/**
  * Module dependencies.
  */
 var mongoose = require('mongoose'),
@@ -8,10 +15,17 @@ var mongoose = require('mongoose'),
 	crypto = require('crypto');
 
 /**
- * A Validation function for local strategy properties
+ * A Validation function for Player Number properties
  */
 var validateMaxPlayer = function(maxPlayer) {
 	return (maxPlayer >= 3 && maxPlayer <= 8);
+};
+
+/**
+ * A Validation function for Date properties
+ */
+var validateDate = function(date) {
+	return (new Date(date).getTime() >= DELAY_TIMESTAMP + Date.now());
 };
 
 /**
@@ -25,9 +39,11 @@ var GameSchema = new Schema({
 	},
 	nMaxPlayerUnit: {
 		type: Number,
+		required: true
 	},
 	nMaxPlayer: {
 		type: Number,
+		required: true,
 		validate: [validateMaxPlayer, 'Please set a value between 3 & 8']
 	},
 	isInit: {
@@ -36,6 +52,7 @@ var GameSchema = new Schema({
 	},
 	startTime: {
 		type: Date,
+		validate: [validateDate, 'The Start Day must be delayed']
 	}
 });
 

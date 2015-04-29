@@ -4,23 +4,28 @@
 <h1>Create a new game</h1>
 <p>
 Party name : <input type="text" ng-model="newGame.title"><br />
-Starting time in s (default : now + 1h) : <input type="text" name="timestamp" ng-model="newGame.startTime"/><br />
-Maximum number of players : <select ng-model="newGame.maxPlayers">
-<option value="2"> 2 </option>
-<option value="3"> 3 </option>
-<option value="4"> 4 </option>
-<option value="5"> 5 </option>
-<option value="6"> 6 </option>
-</select><br />
-<span ng-show="form.maxPlayers.$invalid">Ca ne va pas !</span><br />
+
+Starting time : <select ng-model="newGame.startTime" >
+		<option ng-repeat="hour in hours">{{hour.num}}</option>
+		</select><br />
+
 
 Minimum number of players : <select ng-model="newGame.minPlayers">
-<option value="2"> 2 </option>
-<option value="3"> 3 </option>
-<option value="4"> 4 </option>
-<option value="5"> 5 </option>
-<option value="6"> 6 </option>
-</select><br />
+			<option value="2"> 2 </option>
+			<option value="3"> 3 </option>
+			<option value="4"> 4 </option>
+			<option value="5"> 5 </option>
+			<option value="6"> 6 </option>
+			</select><br />
+
+Maximum number of players : <select ng-model="newGame.maxPlayers">
+			<option value="2"> 2 </option>
+			<option value="3"> 3 </option>
+			<option value="4"> 4 </option>
+			<option value="5"> 5 </option>
+			<option value="6"> 6 </option>
+			</select><br />
+
 <input type="submit" ng-click="createGame()" value="Host"/>
 </p>
 </form

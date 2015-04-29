@@ -27,6 +27,10 @@ var PlayerSchema = new Schema({
 		type: Date,
 		default: Date.now
 	},
+	isAdmin:{
+		type: Boolean,
+		default: false
+	}
 	user: {
 		type: Schema.Types.ObjectId,
 		ref: 'UserSchema'
@@ -42,7 +46,7 @@ var PlayerSchema = new Schema({
 	point: {
 		type: Number,
 		default: 0
-	}
+	}	
 });
 
 mongoose.model('Player', PlayerSchema);

@@ -7,7 +7,7 @@ var mongoose = require('mongoose'),
 	Schema = mongoose.Schema,
 	crypto = require('crypto');
 
-
+mongoose.set('debug', true);
 /**
  * Action Schema
  */
@@ -26,7 +26,7 @@ var ActionSchema = new Schema({
 	},
 	gameId :{
 		type: String
-	},
+	}
 	/*
 	// For Displacement
 	zoneA:{
@@ -44,11 +44,14 @@ var ActionSchema = new Schema({
 	},
 	*/
 	// For init
+	/*
 	game:{
 		type: Schema.Types.ObjectId,
 		ref: 'GameSchema'
 	}
-	
+	*/
 });
 
 mongoose.model('Action', ActionSchema);
+
+exports.ActionSchema = ActionSchema;

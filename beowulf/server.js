@@ -8,10 +8,11 @@ var init = require('../app/config/init')(),
 	chalk = require('chalk'),
 	Schema = mongoose.Schema;
 
-	mongoose.set('debug', true);
+	//mongoose.set('debug', true);
 //var ActionSchema=require('../app/app/models/action.server.model').ActionSchema;
+var i=1;
 var db =undefined;
-
+var Action = undefined;
 var ActionSchema = new Schema({
 
 	type :{
@@ -35,9 +36,43 @@ var ActionSchema = new Schema({
  */
 
 
+
+ var processAction = function(a){
+ 	a.status = 2;
+ };
+
+var checkAndProcess = function(){
+	setTimeout(function(){
+		//console.log('looking for action');
+		Action.find({'status':0}, function (err, docs) {
+			if (err){
+				console.log(err);
+			}
+			var actionList = [];
+			// Lock
+	        for(var j =0;j<docs.length;j++){
+	        	console.log('Found one !');
+	        	docs[j].status = 1;
+	        	docs[j].save();
+	        	actionList.push(docs[j]);
+	        }
+	        // Unlock
+	        if(actionList.length > 0){
+		        for(var j=0;j<actionList.length;j++){
+		        	processAction(actionList[j]);
+		        }
+		        // Lock
+		        for(var j=0;j<actionList.length;j++){
+		        	actionList[j].save();
+		        }
+		        // Unlock
+	        }
+	        checkAndProcess();
+	    });
+	},10);
+};
+
 var execute = function(){
-	//console.log(Action.collection.conn.collections);
-	var Action = db.model('Action');
 
 	//Cleanse
 	Action.remove({}, function(err,data){
@@ -45,29 +80,40 @@ var execute = function(){
 	});
 
 	console.log('Starting process');
-	// Dummy action
-	var a = new Action({
-		'type' : 0,
-		'date':new Date(),
-		'status' :0
-	});
-	a.save(function(err,data){
-		console.log('back');
-		if (err)
-            console.log('Error saving variable');
-        console.log(data);
-	});
 	//
+	checkAndProcess();
+
+};
+
+// Debug
+var displayDB = function(){
 	setTimeout(function(){
-		console.log('looking for action');
-		Action.find({type:0}, function (err, docs) {
+		Action.find({}, function (err, docs) {
 			if (err){
 				console.log(err);
 			}
 	        console.log(docs);
 	    });
-	},2000);
+		displayDB();
+	},5000);
+};
 
+// Dummy inject actions
+var dummyInject = function(){
+	setTimeout(function(){
+		var a = new Action({
+		'type' : i,
+		'date':new Date(),
+		'status' :0
+		});
+		a.save(function(err,data){
+			if (err)
+	            console.log('Error saving variable');
+	        //console.log(data);
+		});
+		i++;
+		dummyInject();
+	},6000);
 };
 
 // Bootstrap db connection
@@ -79,11 +125,14 @@ db = mongoose.connect(config.db, function(err) {
 	}
 	else{
 		db.model('Action', ActionSchema);
-
+		Action = db.model('Action');
 		execute();
+		displayDB();
+		dummyInject();
 	}
 });
 
 
 // Logging initialization
 console.log('Action processor started');
+

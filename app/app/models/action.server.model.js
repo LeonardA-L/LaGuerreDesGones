@@ -7,7 +7,7 @@ var mongoose = require('mongoose'),
 	Schema = mongoose.Schema,
 	crypto = require('crypto');
 
-mongoose.set('debug', true);
+	//mongoose.set('debug', true);
 /**
  * Action Schema
  */

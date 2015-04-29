@@ -1,3 +1,4 @@
+#!/bin/bash
 # nodejs
 pacman -S  --color never community/nodejs
 # mongodb
@@ -14,3 +15,6 @@ sudo npm install -g generator-meanjs
 yaourt -S  --nocolor aur/ruby-sass
 npm install grunt-contrib-sass --save
 npm install grunt-contrib-concat
+npm install ruby-sass --save-dev
+
+export PATH=$PATH:~/.gem/ruby/2.2.0/bin

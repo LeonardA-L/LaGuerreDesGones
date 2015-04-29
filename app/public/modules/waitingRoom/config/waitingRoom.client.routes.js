@@ -10,7 +10,10 @@ angular.module('waitingRoom').config(['$stateProvider', '$urlRouterProvider',
 		$stateProvider.
 		state('join', {
 			url: '/join',
-			templateUrl: 'modules/waitingRoom/views/waitingRoom.client.view.html'
+			templateUrl: 'modules/waitingRoom/views/waitingRoom.client.view.html',
+			access:{
+				requiresLogin: true
+			}
 		});
 	}
 ]);

@@ -46,8 +46,8 @@ describe('Player Model Unit Tests:', function() {
 			startTime: new Date(1430236800)
 		});
 		game1.save();
-		player1 = new Player(name: 'titi', user: user1._id, game: game1._id);
-		player2 = new Player(name: 'titi', user: user2._id, game: game1._id);
+		player1 = new Player({name: 'titi', user: user1._id, game: game1._id});
+		player2 = new Player({name: 'titi', user: user2._id, game: game1._id});
 		done();
 	});
 

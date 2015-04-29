@@ -8,11 +8,13 @@ var init = require('./config/init')(),
 	chalk = require('chalk'),
 	Schema = mongoose.Schema;
 
-	//mongoose.set('debug', true);
+//mongoose.set('debug', true);
 //var ActionSchema=require('../app/app/models/action.server.model').ActionSchema;
-var i=1;
-var db =undefined;
+
+// Action model
 var Action = undefined;
+
+// dirty pasted model
 var ActionSchema = new Schema({
 
 	type :{
@@ -30,60 +32,47 @@ var ActionSchema = new Schema({
 		type: String
 	}
 });
-/**
- * Main application entry file.
- * Please note that the order of loading is important.
- */
 
-
-
+// TODO
  var processAction = function(a){
  	a.status = 2;
  };
 
-var checkAndProcess = function(){
+// Main work
+var execute = function(){
 
 	setTimeout(function(){
-		//console.log('looking for action');
 
+		// Find an Action needing processing, tag it as assigned
 		Action.collection.findAndModify({'status':0},[['_id','asc']],{$set: {status: 1}},{}, function (err, doc) {
 			if (err){
 				console.log(err);
+				return;
 			}
-			var actionList = [];
+
 			if(doc !== null){
-				
+				// Find and modify doesn't output an Action object, so there's another request
+				// There's probably a better way
 				Action.findOne({'_id':doc._id}, function (err, action) {
 					if (err){
 						console.log(err);
 					}
-					console.log('Found one');
-			        //console.log(action);
+					
+					//console.log(action);
+
 			        processAction(action);
+
 			        action.save();
 			    });
-
 	    	}
-	        checkAndProcess();
+
+	    	// Re launch
+	        execute();
 	    });
-	},10);
+	},config.pollingInterval);
 };
 
-var execute = function(){
-
-	//Cleanse
-	Action.remove({}, function(err,data){
-		console.log('Remove return '+err);
-	});
-
-	console.log('Starting process');
-	//
-	
-	checkAndProcess();
-
-};
-
-// Debug
+// For debug purpose, display the Action collection
 var displayDB = function(){
 	setTimeout(function(){
 		Action.find({}, function (err, docs) {
@@ -97,6 +86,8 @@ var displayDB = function(){
 };
 
 // Dummy inject actions
+// For debug purpose, injects dummy Action objects into collection
+var i=1;
 var dummyInject = function(){
 	setTimeout(function(){
 		var a = new Action({
@@ -115,18 +106,24 @@ var dummyInject = function(){
 };
 
 // Bootstrap db connection
-var dbAddress = 'mongodb://'+(process.argv[2]||'localhost')+':'+(process.argv[3]||27017)+'/'+config.dbname;
+var dbAddress = 'mongodb://'+(process.argv[2]||config.defaultHost)+':'+(process.argv[3]||config.defaultPort)+'/'+config.dbname;
+
 console.log('Connecting to mongo '+dbAddress);
-db = mongoose.connect(dbAddress, function(err) {
-	console.log('Connection returned');
+
+var db = mongoose.connect(dbAddress, function(err) {
 	if (err) {
 		console.error(chalk.red('Could not connect to MongoDB!'));
 		console.log(chalk.red(err));
 	}
 	else{
+		console.log(chalk.green('MongoDB connection successful'));
 		db.model('Action', ActionSchema);
 		Action = db.model('Action');
+
+		// Start processing routine
 		execute();
+
+		// For debug purpose
 		displayDB();
 		dummyInject();
 	}

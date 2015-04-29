@@ -1,8 +1,8 @@
 #!/bin/bash
 # nodejs
-pacman -S  --color never community/nodejs
+sudo pacman -S  --color never community/nodejs
 # mongodb
-pacman -S  --color never community/mongodb
+sudo pacman -S  --color never community/mongodb
 sudo systemctl enable mongodb.service
 sudo mkdir /data /data/db
 sudo chmod -R 777 /data
@@ -20,3 +20,6 @@ npm install grunt-contrib-concat
 npm install ruby-sass --save-dev
 
 export PATH=$PATH:~/.gem/ruby/2.2.0/bin
+
+cd app
+npm install

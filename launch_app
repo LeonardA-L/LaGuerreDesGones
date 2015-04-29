@@ -1,4 +1,5 @@
 # Launch mongod
+sudo echo
 sudo nohup mongod --quiet --config /etc/mongodb.conf --smallfiles --port 27017 &
 # Launch grunt
 cd app

@@ -42,31 +42,28 @@ var ActionSchema = new Schema({
  };
 
 var checkAndProcess = function(){
+
 	setTimeout(function(){
 		//console.log('looking for action');
-		Action.find({'status':0}, function (err, docs) {
+
+		Action.collection.findAndModify({'status':0},[['_id','asc']],{$set: {status: 1}},{}, function (err, doc) {
 			if (err){
 				console.log(err);
 			}
 			var actionList = [];
-			// Lock
-	        for(var j =0;j<docs.length;j++){
-	        	console.log('Found one !');
-	        	docs[j].status = 1;
-	        	docs[j].save();
-	        	actionList.push(docs[j]);
-	        }
-	        // Unlock
-	        if(actionList.length > 0){
-		        for(var j=0;j<actionList.length;j++){
-		        	processAction(actionList[j]);
-		        }
-		        // Lock
-		        for(var j=0;j<actionList.length;j++){
-		        	actionList[j].save();
-		        }
-		        // Unlock
-	        }
+			if(doc !== null){
+				
+				Action.findOne({'_id':doc._id}, function (err, action) {
+					if (err){
+						console.log(err);
+					}
+					console.log('Found one');
+			        //console.log(action);
+			        processAction(action);
+			        action.save();
+			    });
+
+	    	}
 	        checkAndProcess();
 	    });
 	},10);
@@ -113,7 +110,7 @@ var dummyInject = function(){
 		});
 		i++;
 		dummyInject();
-	},6000);
+	},2000);
 };
 
 // Bootstrap db connection

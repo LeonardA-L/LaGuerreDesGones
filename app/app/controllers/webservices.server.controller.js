@@ -81,7 +81,7 @@ exports.joinGame = function(req, res) {
 var registerAction=function(newAction){
 	newAction.save(function(err,data){
 		if (err)
-            res.send(err);
+			console.log(err);
 	});
 };
 

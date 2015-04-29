@@ -2,8 +2,8 @@
 /**
  * Module dependencies.
  */
-var init = require('../app/config/init')(),
-	config = require('../app/config/config'),
+var init = require('./config/init')(),
+	config = require('./config/config'),
 	mongoose = require('mongoose'),
 	chalk = require('chalk'),
 	Schema = mongoose.Schema;
@@ -78,6 +78,7 @@ var execute = function(){
 
 	console.log('Starting process');
 	//
+	
 	checkAndProcess();
 
 };
@@ -110,12 +111,13 @@ var dummyInject = function(){
 		});
 		i++;
 		dummyInject();
-	},2000);
+	},3000);
 };
 
 // Bootstrap db connection
 console.log('Connecting to mongo '+config.db);
 db = mongoose.connect(config.db, function(err) {
+	console.log('Connection returned');
 	if (err) {
 		console.error(chalk.red('Could not connect to MongoDB!'));
 		console.log(chalk.red(err));

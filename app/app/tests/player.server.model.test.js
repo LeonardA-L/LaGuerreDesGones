@@ -20,8 +20,6 @@ var player1, player2, player3, user1, user2, game1;
 describe('Player Model Unit Tests:', function() {
 	before(function(done) {
 		user1 = new User({
-			firstName: 'Full',
-			lastName: 'Name',
 			displayName: 'Full Name',
 			email: 'test@test.com',
 			username: 'username',
@@ -29,25 +27,20 @@ describe('Player Model Unit Tests:', function() {
 			provider: 'local'
 		});
 		user2 = new User({
-			firstName: 'Full',
-			lastName: 'Name',
-			displayName: 'Full Name',
-			email: 'test@test.com',
-			username: 'username',
-			password: 'password',
+			displayName: 'Full Name 2',
+			email: 'test2@test.com',
+			username: 'username2',
+			password: 'password2',
 			provider: 'local'
 		});
-		user1.save();
-		user2.save();
 		game1 = new Game({
 			title: 'Fucking Game',
 			nMaxPlayerUnit: 8,
 			nMaxPlayer: 8,
 			startTime: new Date(1430236800)
 		});
-		game1.save();
-		player1 = new Player({name: 'titi', user: user1._id, game: game1._id});
-		player2 = new Player({name: 'titi', user: user2._id, game: game1._id});
+		player1 = new Player({name: 'titi', isAdmin: true, user: user1._id, game: game1._id});
+		player2 = new Player({name: '', user: user2._id, game: game1._id});
 		done();
 	});
 
@@ -59,20 +52,21 @@ describe('Player Model Unit Tests:', function() {
 			});
 		});
 		it('should be able to save without problems', function(done) {
-			player1.save(done);
-		});
-
-		it('should be able to save with 2 different name', function(done) {
 			player1.save();
-			player2.save();
-			should(player1.name != player2.name);
 			done();
+		});
+		it('should be able to show an error when try to save without player name', function(done) {
+			return player2.save(function(err) {
+				should.exist(err);
+				done();
+			});
 		});
 	});
 
 	after(function(done) {
 		Player.remove().exec();
-
+		User.remove().exec();
+		Game.remove().exec();
 		done();
 	});
 });

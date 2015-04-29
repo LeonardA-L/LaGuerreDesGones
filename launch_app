@@ -1,6 +1,7 @@
 #!/bin/bash
 # Launch mongod
-sudo nohup mongod --quiet --config /etc/mongodb.conf --port 27017 &
+sudo echo
+sudo nohup mongod --quiet --config /etc/mongodb.conf --smallfiles --port 27017 &
 # Launch grunt
 cd app
 grunt

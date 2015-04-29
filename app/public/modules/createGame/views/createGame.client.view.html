@@ -5,11 +5,6 @@
 <p>
 Party name : <input type="text" ng-model="newGame.title"><br />
 
-Starting time : <select ng-model="newGame.startTime" >
-		<option ng-repeat="hour in hours">{{hour.num}}</option>
-		</select><br />
-
-
 <div ng-controller="DatepickerDemoCtrl">
 Le choix dans la date
     <div class="row">
@@ -23,7 +18,10 @@ Le choix dans la date
         </div>
 </div>
 
-<button ng-click="createGame()">Host</button>
+
+Starting time : <select ng-model="newGame.startTime" >
+		<option ng-repeat="hour in hours">{{hour.num}}</option>
+		</select><br />
 
 Minimum number of players : <select ng-model="newGame.minPlayers">
 			<option value="2"> 2 </option>
@@ -40,6 +38,8 @@ Maximum number of players : <select ng-model="newGame.maxPlayers">
 			<option value="5"> 5 </option>
 			<option value="6"> 6 </option>
 			</select><br />
+
+<span ng-show="newGame.minPlayers > newGame.maxPlayers">Maximum number of players must be higher than the minimum.</span><br/>
 
 <input type="submit" ng-click="createGame()" value="Host"/>
 

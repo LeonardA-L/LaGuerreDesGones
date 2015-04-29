@@ -16,11 +16,13 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 			_date.setMinutes(30);
 		}
 
+		//TODO : ajouter un attribut jour à newGame
 		$scope.newGame = {
 			'startTime' : $filter('date')(_date,'HH:mm'),
 			'title':'',
-			'maxPlayers' : 6,
-			'minPlayers' : 2
+			'minPlayers' : 2,
+			'maxPlayers' : 6
+			
 		};
 		
 		$scope.hours = [{'num':'1'},{'num':'2'}];

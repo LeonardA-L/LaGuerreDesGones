@@ -5,8 +5,8 @@
  */
 var should = require('should'),
 	mongoose = require('mongoose'),
-	Player = mongoose.model('Player');
-	User = mongoose.model('User');
+	Player = mongoose.model('Player'),
+	User = mongoose.model('User'),
 	Game = mongoose.model('Game');
 
 /**
@@ -72,7 +72,7 @@ describe('Player Model Unit Tests:', function() {
 
 	after(function(done) {
 		Player.remove().exec();
-		
+
 		done();
 	});
 });

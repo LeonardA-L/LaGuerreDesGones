@@ -5,7 +5,7 @@
 Party name : <input type="text" ng-model="newGame.title"><br />
 Starting time in s (default : now + 1h) : <input type="text" name="timestamp" ng-model="newGame.startTime"/><br />
 Maximum number of players : <input type="text" name="maxPlayers" ng-model="newGame.maxPlayers"/><br />
-<span ng-show="error.maxPlayers">{{newGame.maxPlayers}}</span><br />
+<span ng-show="error.maxPlayers">{{error.maxPlayers}}</span><br />
 
 Minimum number of players : <input type="text" name="minPlayers" ng-model="newGame.minPlayers"/><br />
 <button ng-click="createGame()">Host</button>

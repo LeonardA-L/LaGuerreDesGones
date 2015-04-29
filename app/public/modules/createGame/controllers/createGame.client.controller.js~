@@ -17,7 +17,7 @@ angular.module('createGame').controller('CreateGameController', ['$scope',
 		};
 
 		$scope.error = {
-			'maxPlayers' : $scope.newGame.maxPlayers>6 || $scope.newGame.maxPlayers<2
+			'maxPlayers' : $scope.newGame.maxPlayers<6
 		};
 
 		$scope.createGame = function(){

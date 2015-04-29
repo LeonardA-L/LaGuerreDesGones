@@ -1,19 +1,17 @@
 <section class="createGameSection" data-ng-controller="CreateGameController">
-	<div  class="createGameSection">
+
+<form name="form" class="createGameForm" novalidate>
 <h1>Create a new game</h1>
 <p>
 Party name : <input type="text" ng-model="newGame.title"><br />
 Starting time in s (default : now + 1h) : <input type="text" name="timestamp" ng-model="newGame.startTime"/><br />
-Maximum number of players : <input type="text" name="maxPlayers" ng-model="newGame.maxPlayers"/><br />
-<span ng-show="error.maxPlayers">{{newGame.maxPlayers}}</span><br />
-
-Minimum number of players : <input type="text" name="minPlayers" ng-model="newGame.minPlayers"/><br />
-<select name="AA">
-      <option value ="1900">1</option>
-	  <option value ="1901">2</option>
-	  <option value ="1902">3</option>
-	  <option value ="1903">4</option>
-</select>
+Maximum number of players : <select ng-model="newGame.maxPlayers">
+<option value="2"> 2 </option>
+<option value="3"> 3 </option>
+<option value="4"> 4 </option>
+<option value="5"> 5 </option>
+<option value="6"> 6 </option>
+</select><br />
 
 <div ng-controller="DatepickerDemoCtrl">
 Le choix dans la date
@@ -30,6 +28,15 @@ Le choix dans la date
 
 <button ng-click="createGame()">Host</button>
 
+Minimum number of players : <select ng-model="newGame.minPlayers">
+<option value="2"> 2 </option>
+<option value="3"> 3 </option>
+<option value="4"> 4 </option>
+<option value="5"> 5 </option>
+<option value="6"> 6 </option>
+</select><br />
+<input type="submit" ng-click="createGame()" value="Host"/>
+
 </p>
-</div>
+</form
 </section>

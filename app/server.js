@@ -5,7 +5,31 @@
 var init = require('./config/init')(),
 	config = require('./config/config'),
 	mongoose = require('mongoose'),
-	chalk = require('chalk');
+	chalk = require('chalk'),
+	schedule = require('node-schedule'),
+    XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
+
+/**
+* Recupererer service
+* Traiter le resultat (parser, maj des infos....)
+* Persistance dans la base
+*/
+function registerCronJob(serviceAddress, resultTreatment, cronMinutesInterval)
+{  
+	console.log(serviceAddress);
+	console.log(cronMinutesInterval+' * * * *');
+	var cron = schedule.scheduleJob(cronMinutesInterval+' * * * *', function(){
+		console.log(new Date());
+		var xmlHttp = new XMLHttpRequest();	
+		xmlHttp.open( 'GET', serviceAddress, false );
+		xmlHttp.send();
+		console.log('response '+xmlHttp.responseText);
+		var data = JSON.parse(xmlHttp.responseText);
+		console.log(data);
+		//var result = resultTreatment(data);
+		//On persiste les infos dans la base
+		});
+}
 
 /**
  * Main application entry file.
@@ -34,3 +58,6 @@ exports = module.exports = app;
 
 // Logging initialization
 console.log('MEAN.JS application started on port ' + config.port);
+
+registerCronJob('http://dfournier.ovh/api/tag/?format=json', null, '*');
+

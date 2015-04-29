@@ -24,7 +24,7 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 			'maxPlayers' : 6
 			
 		};
-		
+
 		$scope.hours = [{'num':'1'},{'num':'2'}];
 		for(var i=0; i<24; i++){
 			 if(i<10){
@@ -42,7 +42,12 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 			$http.post('/services/game/create', $scope.newGame).
 			  //success(function(data, status, headers, config) {
 			  success(function(data) {
-				console.log('returned success '+data.success);				
+				// console.log('returned success '+data.success);
+				console.log('------ New Game ---------');	
+				console.log('Start Time : '+ $scope.newGame.startTime);	
+				console.log('Title : '+ $scope.newGame.title);	
+				console.log('Min Players : '+ $scope.newGame.minPlayers);
+				console.log('Max Players : '+ $scope.newGame.maxPlayers);					
 			  }).
 			  error(function(data) {
 			    console.log('error');

@@ -4,6 +4,8 @@ pacman -S  --color never community/nodejs
 # mongodb
 pacman -S  --color never community/mongodb
 sudo systemctl enable mongodb.service
+sudo mkdir /data /data/db
+sudo chmod -R 777 /data
 # bower
 sudo npm install -g bower
 # Grunt

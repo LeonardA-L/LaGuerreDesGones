@@ -39,4 +39,46 @@ angular.module('createGame').controller('CreateGameController', ['$scope',
 
 		
 	}
+
 ]);
+
+angular.module('createGame').controller('DatepickerDemoCtrl', function ($scope) {
+	$scope.today = function() {
+		$scope.dt = new Date();
+	};
+	$scope.today();
+
+	$scope.clear = function () {
+		$scope.dt = null;
+	};
+
+	$scope.toggleMin = function() {
+		$scope.minDate = $scope.minDate ? null : new Date();
+	};
+	$scope.toggleMin();
+
+	// No max, we can create a game in 2058 !
+	/* $scope.toggleMax = function() {
+		var date = new Date();
+		date.setMonth(date.getMonth() + 1);
+		$scope.maxDate = $scope.maxDate ? null : date ;
+	};
+	$scope.toggleMax(); */
+
+	$scope.open = function($event) {
+		$event.preventDefault();
+		$event.stopPropagation();
+
+		$scope.opened = true;
+	};
+
+	$scope.dateOptions = {
+		formatYear: 'yy',
+		startingDay: 1
+	};
+	
+	// Choose date format
+	$scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
+	$scope.format = $scope.formats[0];
+
+});

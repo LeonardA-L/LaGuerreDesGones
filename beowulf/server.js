@@ -115,8 +115,9 @@ var dummyInject = function(){
 };
 
 // Bootstrap db connection
-console.log('Connecting to mongo '+config.db);
-db = mongoose.connect(config.db, function(err) {
+var dbAddress = 'mongodb://'+(process.argv[2]||'localhost')+':'+(process.argv[3]||27017)+'/'+config.dbname;
+console.log('Connecting to mongo '+dbAddress);
+db = mongoose.connect(dbAddress, function(err) {
 	console.log('Connection returned');
 	if (err) {
 		console.error(chalk.red('Could not connect to MongoDB!'));

@@ -6,6 +6,9 @@
 var mongoose = require('mongoose'),
 	Schema = mongoose.Schema,
 	crypto = require('crypto');
+	
+	require('mongoose-type-url');
+
 
 /**
  * A Validation function for local strategy properties
@@ -42,6 +45,9 @@ var UserSchema = new Schema({
 		unique: 'testing error message',
 		required: 'Please fill in a username',
 		trim: true
+	},
+	avatarUrl: {
+		type: mongoose.SchemaTypes.Url
 	},
 	password: {
 		type: String,
@@ -88,9 +94,20 @@ UserSchema.pre('save', function(next) {
 		this.salt = new Buffer(crypto.randomBytes(16).toString('base64'), 'base64');
 		this.password = this.hashPassword(this.password);
 	}
-
+	
+	this.avatarUrl = this.generateGravatarURL();
 	next();
 });
+
+/**
+ * Generate the URL to Gravatar Webservice
+ */
+UserSchema.methods.generateGravatarURL = function() {
+	var md5 = crypto.createHash('md5');
+	md5.update(this.email);
+	var hash = md5.digest();
+	return 'http://www.gravatar.com/avatar/' + hash + '?d=identicon';
+};
 
 /**
  * Create instance method for hashing a password

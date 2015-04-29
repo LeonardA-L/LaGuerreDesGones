@@ -86,7 +86,7 @@ describe('Game Model Unit Tests:', function() {
 			game4.save();
 			game1.should.have.property('_id');
 			game4.should.have.property('_id');
-			should(game1._id != game4._id);
+			should(game1._id !== game4._id);
 			done();
 		});
 

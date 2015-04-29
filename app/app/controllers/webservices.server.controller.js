@@ -75,3 +75,14 @@ exports.joinGame = function(req, res) {
 	console.log('User '+req.user.displayName+' wants to join game n°'+req.params.gameId);
 	res.json(result);
 };
+
+
+// Game action related
+var registerAction=function(newAction){
+	newAction.save(function(err,data){
+		if (err)
+            res.send(err);
+	});
+};
+
+

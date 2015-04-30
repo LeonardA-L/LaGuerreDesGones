@@ -210,17 +210,18 @@ exports.displacementAction = function(req, res) {
 
 	var Action = mongoose.model('Action');
 
-
+	console.log(req.body);
 	var a = new Action ({
 		type:0,
 		date:new Date(),
 		status:0,
 		game: req.body.gameId,
-		zoneAId:req.body.zoneAId,
-		zoneBId:req.body.zoneBId,
-		units:req.body.unitsId
+		zoneA:req.body.zoneAId,
+		zoneB:req.body.zoneBId,
+		units:req.body.unitIds
 	});
-
+	console.log('registering disp');
+	console.log(a);
 	registerAction(a);
 /*
 	var Zone = mongoose.model('Zone');

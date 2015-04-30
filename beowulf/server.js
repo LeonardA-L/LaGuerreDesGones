@@ -198,8 +198,9 @@ var affectUnitToZone = function(u,z){
 };
 
 var processDisplacement = function(a){
-	var duration = 60000;
+	var duration = 30000;
  	console.log('Processing displacement action');
+ 	//console.log(a);
  	for (var i=0 ; i < a.units.length ; ++i) {
  		var u = a.units[i];
  		u.available=false;
@@ -221,12 +222,27 @@ var processDisplacement = function(a){
 		units:a.units,
 		zone:a.zoneB,
 	});
-	console.log(b.date);
+	//console.log(b.date);
+	console.log('Saving end displacement action');
 	b.save();
 };
 
 var processEndDisplacement = function(a){
 	console.log('Processing end displacement action');
+	//console.log(a);
+	for (var i=0 ; i < a.units.length ; ++i) {
+ 		var u = a.units[i];
+ 		u.available=true;
+ 		u.ts=a.date.getTime();
+ 		u.te=u.ts;
+ 		u.xt=a.zone.x;
+ 		u.yt=a.zone.y;
+ 		u.x=a.zone.x;
+ 		u.y=a.zone.y;
+		
+		// TODO
+		u.save();
+ 	}
 };
 
 
@@ -297,7 +313,7 @@ var execute = function(){
 					processAction(action);
 
 					action.save();
-				    };
+				};
 
 				switch(doc.type){
 					case 0:
@@ -375,7 +391,7 @@ var db = mongoose.connect(dbAddress, function(err) {
 		Game = db.model('Game');
 
 
-		Action.collection.remove({},function(){});
+		//Action.collection.remove({},function(){});
 
 		// Start processing routine
 		execute();

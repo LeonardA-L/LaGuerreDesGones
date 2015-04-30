@@ -28,8 +28,8 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
   		$scope.testDisp = function(){
   			var dto = {
   				'gameId':gameId,
-  				'zoneAId':$scope.game.zones[0],
-  				'zoneBId':$scope.game.zones[1],
+  				'zoneAId':$scope.game.zones[0]._id,
+  				'zoneBId':$scope.game.zones[1]._id,
   				'unitIds':[$scope.game.units[0]._id]
   			};
 			$http.post('/services/action/disp',dto).

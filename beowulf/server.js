@@ -15,6 +15,94 @@ var init = require('./config/init')(),
 var Action = undefined;
 
 // dirty pasted model
+
+var UnitSchema = new Schema({
+	type: {
+		type: Number,
+		default: 0
+	},
+	zone: {
+		type: Schema.Types.ObjectId,
+		ref: 'ZoneSchema'
+	},
+	attack: {
+		type: Number,
+		default: 0
+	},
+	defence: {
+		type: Number,
+		default: 0
+	},
+	health: {
+		type: Number,
+		default: 0
+	},
+	point: {
+		type: Number,
+		default: 0
+	},
+	x: {
+		type: Number,
+		default: 0
+	},
+	y: {
+		type: Number,
+		default: 0
+	},
+	xt: {
+		type: Number,
+		default: 0
+	},
+	yt: {
+		type: Number,
+		default: 0
+	},
+	te: {
+		type: Number,
+		default: 0
+	},
+	ts: {
+		type: Number,
+		default: 0
+	},
+	available: {
+		type: Boolean,
+		default: true
+	}
+});
+
+
+var ZoneSchema = new Schema({
+	type: {
+		type: Number,
+		default: 0
+	},
+	name: {
+		type: String,
+		default: ''
+	},
+	nbUnitMax: {
+		type: Number,
+		default: 0
+	},
+	point: {
+		type: Number,
+		default: 0
+	},
+	x: {
+		type: Number,
+		default: 0
+	},
+	y: {
+		type: Number,
+		default: 0
+	},
+	unit: [{
+		type: Schema.Types.ObjectId,
+		ref: 'UnitSchema'
+	}],
+});
+
 var ActionSchema = new Schema({
 
 	type :{
@@ -35,27 +123,27 @@ var ActionSchema = new Schema({
 	// For Displacement
 	zoneA:{
 		type: Schema.Types.ObjectId,
-		ref: 'ZoneSchema'
+		ref: 'Zone'
 	},
 	zoneB:{
 		type: Schema.Types.ObjectId,
-		ref: 'ZoneSchema'
+		ref: 'Zone'
 	},
 	units:[{
 		type: Schema.Types.ObjectId,
-		ref: 'UnitSchema'
+		ref: 'Unit'
 	}],
 	// For battle
 	zone:{
 		type: Schema.Types.ObjectId,
-		ref: 'ZoneSchema'
+		ref: 'Zone'
 	},
 	
 	// For init
 	
 	game:{
 		type: Schema.Types.ObjectId,
-		ref: 'GameSchema'
+		ref: 'Game'
 	}
 	
 });
@@ -63,8 +151,9 @@ var ActionSchema = new Schema({
 // TODO
  var processAction = function(a){
  	var duration = 1000;
+ 	console.log('Processing action');
  	for (var i=0 ; i < a.units.length ; ++i) {
- 		var u = a.unit[i];
+ 		var u = a.units[i];
  		u.available=false;
  		u.ts=a.date.getTime();
  		u.te=u.ts+duration;
@@ -91,7 +180,7 @@ var execute = function(){
 			if(doc !== null){
 				// Find and modify doesn't output an Action object, so there's another request
 				// There's probably a better way
-				Action.findOne({'_id':doc._id}, function (err, action) {
+				Action.findOne({'_id':doc._id}).populate('units').exec(function (err, action) {
 					if (err){
 						console.log(err);
 					}
@@ -102,6 +191,7 @@ var execute = function(){
 
 			        action.save();
 			    });
+
 	    	}
 
 	    	// Re launch
@@ -113,14 +203,14 @@ var execute = function(){
 // For debug purpose, display the Action collection
 var displayDB = function(){
 	setTimeout(function(){
-		Action.find({}, function (err, docs) {
+		Action.find({}).populate('units').populate('zoneA').populate('zoneB').exec(function (err, docs) {
 			if (err){
 				console.log(err);
 			}
 	        console.log(docs);
 	    });
 		displayDB();
-	},5000);
+	},10000);
 };
 
 // Dummy inject actions
@@ -155,7 +245,10 @@ var db = mongoose.connect(dbAddress, function(err) {
 	}
 	else{
 		console.log(chalk.green('MongoDB connection successful'));
+		db.model('Unit', UnitSchema);
+		db.model('Zone', ZoneSchema);
 		db.model('Action', ActionSchema);
+		
 		Action = db.model('Action');
 
 		// Start processing routine

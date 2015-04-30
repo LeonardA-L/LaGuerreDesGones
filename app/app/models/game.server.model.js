@@ -56,11 +56,15 @@ var GameSchema = new Schema({
 	},
 	startTime: {
 		type: Date,
-		validate: [validateDate, 'The Start Day must be delayed']
+		validate: [validateDate, 'The game must set in the future']
 	},
 	zones: [{
 		type: Schema.Types.ObjectId,
 		ref: 'Zone'
+	}],
+	players: [{
+		type: Schema.Types.ObjectId,
+		ref: 'Player'
 	}]
 });
 

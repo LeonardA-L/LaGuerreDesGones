@@ -17,7 +17,7 @@ var UnitSchema = new Schema({
 	},
 	zone: {
 		type: Schema.Types.ObjectId,
-		ref: 'ZoneSchema'
+		ref: 'Zone'
 	},
 	attack: {
 		type: Number,
@@ -62,6 +62,14 @@ var UnitSchema = new Schema({
 	available: {
 		type: Boolean,
 		default: true
+	},
+	game:{
+		type: Schema.Types.ObjectId,
+		ref: 'Game'
+	},
+	player: {
+		type: Schema.Types.ObjectId,
+		ref: 'Player'
 	}
 });
 

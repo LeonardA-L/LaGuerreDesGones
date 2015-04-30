@@ -42,16 +42,5 @@ angular.module('waitingRoom').controller('WaitingRoomController', ['$scope',
 		};
 
 		retrieveAvailable();
-
-		$scope.testDisp = function(){
-			$http.post('/services/action/disp',{'test':true}).
-			  //success(function(data, status, headers, config) {
-			  success(function(data) {
-			  	console.log(data);
-			  }).
-			  error(function(data) {
-			    console.log('error');
-			  });
-		};
 	}
 ]);

@@ -93,25 +93,28 @@ exports.createGame = function(req, res) {
 		'isInit':false,
 		'startTime':new Date(req.body.startTime)
 	});
+	console.log(g);
 	var player = new Player({
 			name: req.user.nickname || 'Anonymous',
 			isAdmin: true,
 			user: req.user._id,
 			game: g._id 
 	});
+	g.players = [player._id];
 
 	player.save(function(err){
-		if (err)
+		/*if (err){
             res.send(err);
+        }*/
 	});
 	g.save(function(err,data){
-		if (err) {
+		/*if (err) {
             res.send(err);
-        }
+        }*/
 	});
 	var initAction = new Action({
 		type:2,
-		date:new Date(),	//TODO set in future
+		date:req.body.startTime,	//TODO set in future
 		status:0,
 		game:g._id
 	});
@@ -130,7 +133,7 @@ exports.getWaiting = function(req, res) {
 	  if (err)
             res.send(err);
 
-        console.log(docs);
+        //console.log(docs);
         res.json({'success':docs}); // return all nerds in JSON format
     });
 	// Dummy list
@@ -158,26 +161,91 @@ exports.joinGame = function(req, res) {
 	var result = {
 		success : true
 	};
-	console.log('User '+req.user.displayName+' wants to join game n°'+req.params.gameId);
+	console.log(req.params);
+	var Player = mongoose.model('Player');
+	var player = new Player({
+			name: req.user.username,
+			user: req.user._id,
+			game: req.params.gameId
+	});
+	player.save(function(err){
+		if (err)
+            res.send(err);
+	});
+	var Game = mongoose.model('Game');
+	var gameId = req.params.gameId,
+		playerID = player._id;
+    Game.findByIdAndUpdate(
+    gameId,
+    {$push: {'players': { _id: playerID }}}, function(err){
+      if(err){
+       	console.log(err);
+      }
+    });
+	console.log('Player '+player.name+' wants to join game n°'+req.params.gameId);
 	res.json(result);
+};
+
+exports.startPlay = function(req,res){
+	var result = {
+		success:{}
+	};
+	var syncCallback = 3;
+	var Game = mongoose.model('Game');
+	var Player = mongoose.model('Player');
+	var Zone = mongoose.model('Zone');
+	var Unit = mongoose.model('Unit');
+
+	console.log(req.params.gameId);
+	Game.findOne({'_id':req.params.gameId}, function(err,game){
+		if(err)
+			res.send(err);
+		result.success.title = game.title;
+		if(--syncCallback === 0){
+			res.json(result);
+		}
+	});
+	Unit.find({'game':req.params.gameId}, function(err,units){
+		if(err)
+			res.send(err);
+		result.success.units = units;
+		if(--syncCallback === 0){
+			res.json(result);
+		}
+	});
+	Zone.find({'game':req.params.gameId}, function(err,zones){
+		if(err)
+			res.send(err);
+		result.success.zones = zones;
+		if(--syncCallback === 0){
+			res.json(result);
+		}
+	});
+	// TODO players
 };
 
 
 exports.displacementAction = function(req, res) {
 
-
+	// TODO rules
 
 
 	var Action = mongoose.model('Action');
 
-
+	console.log(req.body);
 	var a = new Action ({
 		type:0,
 		date:new Date(),
 		status:0,
-		game: req.body.gameId
+		game: req.body.gameId,
+		zoneA:req.body.zoneAId,
+		zoneB:req.body.zoneBId,
+		units:req.body.unitIds
 	});
-
+	console.log('registering disp');
+	console.log(a);
+	registerAction(a);
+/*
 	var Zone = mongoose.model('Zone');
 	var Unit = mongoose.model('Unit');
 	if(req.body.test){
@@ -235,4 +303,5 @@ exports.displacementAction = function(req, res) {
 	    });
 
 	},30);
+*/
 };

@@ -16,9 +16,8 @@ var Action = undefined;
 var Zone = undefined;
 var Unit = undefined;
 var Game = undefined;
+
 // dirty pasted model
-
-
 
 var GameSchema = new Schema({
 	title: {
@@ -29,6 +28,9 @@ var GameSchema = new Schema({
 	nMaxPlayerUnit: {
 		type: Number,
 		required: true
+	},
+	nMinPlayer: {
+		type: Number
 	},
 	nMaxPlayer: {
 		type: Number,
@@ -44,6 +46,10 @@ var GameSchema = new Schema({
 	zones: [{
 		type: Schema.Types.ObjectId,
 		ref: 'Zone'
+	}],
+	players: [{
+		type: Schema.Types.ObjectId,
+		ref: 'Player'
 	}]
 });
 
@@ -54,7 +60,7 @@ var UnitSchema = new Schema({
 	},
 	zone: {
 		type: Schema.Types.ObjectId,
-		ref: 'ZoneSchema'
+		ref: 'Zone'
 	},
 	attack: {
 		type: Number,
@@ -99,6 +105,14 @@ var UnitSchema = new Schema({
 	available: {
 		type: Boolean,
 		default: true
+	},
+	game:{
+		type: Schema.Types.ObjectId,
+		ref: 'Game'
+	},
+	player: {
+		type: Schema.Types.ObjectId,
+		ref: 'Player'
 	}
 });
 
@@ -130,7 +144,7 @@ var ZoneSchema = new Schema({
 	},
 	units: [{
 		type: Schema.Types.ObjectId,
-		ref: 'UnitSchema'
+		ref: 'Unit'
 	}],
 	game:{
 		type: Schema.Types.ObjectId,
@@ -150,9 +164,6 @@ var ActionSchema = new Schema({
 	status :{
 		type: Number,
 		default: 0
-	},
-	gameId :{
-		type: String
 	},
 	
 	// For Displacement
@@ -175,7 +186,6 @@ var ActionSchema = new Schema({
 	},
 	
 	// For init
-	
 	game:{
 		type: Schema.Types.ObjectId,
 		ref: 'Game'
@@ -189,14 +199,14 @@ var affectUnitToZone = function(u,z){
 	u.y = z.y;
 	u.xt = z.x;
 	u.yt = z.y;
-
-	console.log(z);
+	u.game = z.game;
 	z.units.push(u._id);
 };
 
 var processDisplacement = function(a){
-	var duration = 1000;
- 	console.log('Processing action');
+	var duration = 30000;
+ 	console.log('Processing displacement action');
+ 	//console.log(a);
  	for (var i=0 ; i < a.units.length ; ++i) {
  		var u = a.units[i];
  		u.available=false;
@@ -210,15 +220,41 @@ var processDisplacement = function(a){
 		// TODO
 		u.save();
  	}
+
+ 	var b = new Action({
+		type :1,
+		date: new Date(a.date.getTime() + duration),
+		status :0,
+		units:a.units,
+		zone:a.zoneB,
+	});
+	//console.log(b.date);
+	console.log('Saving end displacement action');
+	b.save();
 };
 
 var processEndDisplacement = function(a){
-
+	console.log('Processing end displacement action');
+	//console.log(a);
+	for (var i=0 ; i < a.units.length ; ++i) {
+ 		var u = a.units[i];
+ 		u.available=true;
+ 		u.ts=a.date.getTime();
+ 		u.te=u.ts;
+ 		u.xt=a.zone.x;
+ 		u.yt=a.zone.y;
+ 		u.x=a.zone.x;
+ 		u.y=a.zone.y;
+		
+		// TODO
+		u.save();
+ 	}
 };
 
 
 // Dummy process init
 var processInit = function(a){
+	console.log('Processing init action');
 	// DUMMY
 	var zdA = new Zone({
 		name:'Charpennes',
@@ -264,7 +300,7 @@ var execute = function(){
 	setTimeout(function(){
 
 		// Find an Action needing processing, tag it as assigned
-		Action.collection.findAndModify({'status':0},[['_id','asc']],{$set: {status: 1}},{}, function (err, doc) {
+		Action.collection.findAndModify({'status':0, 'date':{$lte:new Date()}},[['_id','asc']],{$set: {status: 1}},{}, function (err, doc) {
 			if (err){
 				console.log(err);
 				return;
@@ -283,17 +319,20 @@ var execute = function(){
 					processAction(action);
 
 					action.save();
-				    };
+				};
 
 				switch(doc.type){
 					case 0:
 						Action.findOne({'_id':doc._id}).populate('units').populate('zoneA').populate('zoneB').exec(actionCallback);
 					break;
+					case 1:
+						Action.findOne({'_id':doc._id}).populate('zone').populate('units').exec(actionCallback);
+					break;
 					case 2:
 						Action.findOne({'_id':doc._id}).populate('game').exec(actionCallback);
 					break;
 				}
-	    		}
+	    	}
 
 	    	// Re launch
 	        execute();
@@ -304,14 +343,15 @@ var execute = function(){
 // For debug purpose, display the Action collection
 var displayDB = function(){
 	setTimeout(function(){
-		Action.find({}).populate('units').populate('zoneA').populate('zoneB').exec(function (err, docs) {
+		Action.find({'status':0}).exec(function (err, docs) {
 			if (err){
 				console.log(err);
 			}
-	        console.log(docs);
+	        //console.log(docs);
+	        console.log(docs.length + ' unprocessed actions');
 	    });
 		displayDB();
-	},10000);
+	},5000);
 };
 
 // Dummy inject actions
@@ -355,6 +395,9 @@ var db = mongoose.connect(dbAddress, function(err) {
 		Zone = db.model('Zone');
 		Unit = db.model('Unit');
 		Game = db.model('Game');
+
+
+		//Action.collection.remove({},function(){});
 
 		// Start processing routine
 		execute();

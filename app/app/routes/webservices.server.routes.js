@@ -19,4 +19,5 @@ module.exports = function(app) {
 	app.route('/services/api/units').get(webservices.getAllUnits);
 	app.route('/services/api/zones').get(webservices.getAllZones);
 
+	app.route('/services/play/:gameId/start').get(webservices.startPlay);	
 };

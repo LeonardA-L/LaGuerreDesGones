@@ -99,6 +99,10 @@ var UnitSchema = new Schema({
 	available: {
 		type: Boolean,
 		default: true
+	},
+	game:{
+		type: Schema.Types.ObjectId,
+		ref: 'Game'
 	}
 });
 
@@ -189,14 +193,13 @@ var affectUnitToZone = function(u,z){
 	u.y = z.y;
 	u.xt = z.x;
 	u.yt = z.y;
-
-	console.log(z);
+	u.game = z.game;
 	z.units.push(u._id);
 };
 
 var processDisplacement = function(a){
 	var duration = 1000;
- 	console.log('Processing action');
+ 	console.log('Processing displacement action');
  	for (var i=0 ; i < a.units.length ; ++i) {
  		var u = a.units[i];
  		u.available=false;
@@ -219,6 +222,7 @@ var processEndDisplacement = function(a){
 
 // Dummy process init
 var processInit = function(a){
+	console.log('Processing init action');
 	// DUMMY
 	var zdA = new Zone({
 		name:'Charpennes',

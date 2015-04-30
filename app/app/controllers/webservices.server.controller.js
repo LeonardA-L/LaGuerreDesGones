@@ -163,10 +163,50 @@ exports.joinGame = function(req, res) {
 	res.json(result);
 };
 
+exports.startPlay = function(req,res){
+	var result = {
+		success:{};
+	};
+	var syncCallback = 3;
+	var Game = mongoose.model('Game');
+	var Player = mongoose.model('Player');
+	var Zone = mongoose.model('Zone');
+	var Unit = mongoose.model('Unit');
+
+	Game.find({'_id':req.params.gameId}, function(err,game){
+		if(err)
+			res.send(err);
+		result.success.title = game.title;
+		syncCallback--;
+		if(syncCallback === 0){
+			res.json(result);
+		}
+	});
+	Unit.find({'game':req.params.gameId}, function(err,units){
+		if(err)
+			res.send(err);
+		result.success.units = units;
+		syncCallback--;
+		if(syncCallback === 0){
+			res.json(result);
+		}
+	});
+	Zone.find({'game':req.params.gameId}, function(err,zones){
+		if(err)
+			res.send(err);
+		result.success.zones = zones;
+		syncCallback--;
+		if(syncCallback === 0){
+			res.json(result);
+		}
+	});
+	// TODO players
+};
+
 
 exports.displacementAction = function(req, res) {
 
-
+	// TODO rules
 
 
 	var Action = mongoose.model('Action');

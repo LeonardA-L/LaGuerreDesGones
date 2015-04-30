@@ -62,6 +62,10 @@ var UnitSchema = new Schema({
 	available: {
 		type: Boolean,
 		default: true
+	},
+	game:{
+		type: Schema.Types.ObjectId,
+		ref: 'Game'
 	}
 });
 

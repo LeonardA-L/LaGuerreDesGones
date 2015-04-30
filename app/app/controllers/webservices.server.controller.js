@@ -191,8 +191,33 @@ exports.unjoinGame = function(req, res) {
 	var result = {
 		success : true
 	};
-	
-	res.json(result);
+	console.log('Unsubscribe');
+	var Game = mongoose.model('Game');
+	var Player = mongoose.model('Player');
+	Game.findOne({'_id':req.params.gameId}).populate('players').exec(function(err,game){
+		if(err)
+			res.send(err);
+
+		var destroyCallback = function(err){
+			if(err)
+				res.send(err);
+			console.log('destroyed');
+		};
+
+		for(var i=0;i<game.players.length;i++){
+			var p = game.players[i];
+			console.log(p.user);
+			console.log(req.user._id);
+			if(''+p.user === ''+req.user._id){
+				console.log('destroy');
+				game.players.splice(i, 1);
+				Player.findByIdAndRemove(p._id,destroyCallback);
+				game.save(destroyCallback);
+			}
+		}
+		//if(game.players.)
+	});
+	//res.json(result);
 };
 
 exports.startPlay = function(req,res){
@@ -254,63 +279,4 @@ exports.displacementAction = function(req, res) {
 	console.log('registering disp');
 	console.log(a);
 	registerAction(a);
-/*
-	var Zone = mongoose.model('Zone');
-	var Unit = mongoose.model('Unit');
-	if(req.body.test){
-		// DUMMY
-		var zdA = new Zone({
-			x:10,
-			y:15
-		});
-		var zdB = new Zone({
-			x:20,
-			y:25
-		});
-		var ud = new Unit();
-		zdA.save();
-		zdB.save();
-		ud.save();
-
-		req.body.zoneAId = zdA._id;
-		req.body.zoneBId = zdB._id;
-		req.body.unitIds = [ud._id];
-	}
-	console.log(req.body);
-
-	var syncCallback = 2;
-
-	setTimeout(function(){
-
-	    Zone.find({'_id':{$in:[req.body.zoneAId, req.body.zoneBId]}}, function (err, zones) {
-	    	syncCallback--;
-		  	if (err) {
-	            res.send(err);
-	       	}
-	       	if(zones[0]._id === req.body.zoneAId){
-	       		a.zoneA = zones[0];
-	       		a.zoneB = zones[1];
-	       	}
-	       	else{
-	       		a.zoneA = zones[1];
-	       		a.zoneB = zones[0];
-	       	}
-	       	if (0===syncCallback) {
-	       		registerAction(a);
-	       	}
-	    });
-
-	    Unit.find({'_id':{$in:req.body.unitIds}}, function (err, units) {
-	    	syncCallback--;
-		  	if (err) {
-	            res.send(err);
-	      	}
-	      	a.units = units;
-	      	if (0===syncCallback) {
-	       		registerAction(a);
-	       	}
-	    });
-
-	},30);
-*/
 };

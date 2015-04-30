@@ -2,6 +2,8 @@
 # Launch mongod
 sudo echo
 sudo nohup mongod --quiet --config /etc/mongodb.conf --smallfiles --port 27017 &
+# run nextline if ENOSPC issue for watch
+# echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
 # Launch grunt
 cd app
 grunt

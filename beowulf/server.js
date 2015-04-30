@@ -16,9 +16,8 @@ var Action = undefined;
 var Zone = undefined;
 var Unit = undefined;
 var Game = undefined;
+
 // dirty pasted model
-
-
 
 var GameSchema = new Schema({
 	title: {
@@ -29,6 +28,9 @@ var GameSchema = new Schema({
 	nMaxPlayerUnit: {
 		type: Number,
 		required: true
+	},
+	nMinPlayer: {
+		type: Number
 	},
 	nMaxPlayer: {
 		type: Number,
@@ -44,6 +46,10 @@ var GameSchema = new Schema({
 	zones: [{
 		type: Schema.Types.ObjectId,
 		ref: 'Zone'
+	}],
+	players: [{
+		type: Schema.Types.ObjectId,
+		ref: 'Player'
 	}]
 });
 
@@ -54,7 +60,7 @@ var UnitSchema = new Schema({
 	},
 	zone: {
 		type: Schema.Types.ObjectId,
-		ref: 'ZoneSchema'
+		ref: 'Zone'
 	},
 	attack: {
 		type: Number,
@@ -103,6 +109,10 @@ var UnitSchema = new Schema({
 	game:{
 		type: Schema.Types.ObjectId,
 		ref: 'Game'
+	},
+	player: {
+		type: Schema.Types.ObjectId,
+		ref: 'Player'
 	}
 });
 
@@ -134,7 +144,7 @@ var ZoneSchema = new Schema({
 	},
 	units: [{
 		type: Schema.Types.ObjectId,
-		ref: 'UnitSchema'
+		ref: 'Unit'
 	}],
 	game:{
 		type: Schema.Types.ObjectId,
@@ -154,9 +164,6 @@ var ActionSchema = new Schema({
 	status :{
 		type: Number,
 		default: 0
-	},
-	gameId :{
-		type: String
 	},
 	
 	// For Displacement
@@ -179,7 +186,6 @@ var ActionSchema = new Schema({
 	},
 	
 	// For init
-	
 	game:{
 		type: Schema.Types.ObjectId,
 		ref: 'Game'

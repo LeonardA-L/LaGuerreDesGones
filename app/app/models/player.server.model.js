@@ -7,25 +7,21 @@ var mongoose = require('mongoose'),
 	Schema = mongoose.Schema;
 
 /**
- * A Validation function for local strategy properties
- */
-var validateLocalStrategyProperty = function(property) {
-	return ((this.provider !== 'local' && !this.updated) || property.length);
-};
-
-/**
  * Player Schema
  */
 var PlayerSchema = new Schema({
 	name: {
 		type: String,
 		trim: true,
-		default: '',
-		validate: [validateLocalStrategyProperty, 'Please fill in your player name']
+		required: true
 	},
 	dateCreated: {
 		type: Date,
 		default: Date.now
+	},
+	isAdmin:{
+		type: Boolean,
+		default: false
 	},
 	user: {
 		type: Schema.Types.ObjectId,
@@ -42,7 +38,7 @@ var PlayerSchema = new Schema({
 	point: {
 		type: Number,
 		default: 0
-	}
+	}	
 });
 
 mongoose.model('Player', PlayerSchema);

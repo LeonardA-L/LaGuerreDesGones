@@ -6,6 +6,9 @@
 var mongoose = require('mongoose'),
 	Schema = mongoose.Schema,
 	crypto = require('crypto');
+	
+	require('mongoose-type-url');
+
 
 /**
  * A Validation function for local strategy properties
@@ -25,22 +28,6 @@ var validateLocalStrategyPassword = function(password) {
  * User Schema
  */
 var UserSchema = new Schema({
-	firstName: {
-		type: String,
-		trim: true,
-		default: '',
-		validate: [validateLocalStrategyProperty, 'Please fill in your first name']
-	},
-	lastName: {
-		type: String,
-		trim: true,
-		default: '',
-		validate: [validateLocalStrategyProperty, 'Please fill in your last name']
-	},
-	displayName: {
-		type: String,
-		trim: true
-	},
 	email: {
 		type: String,
 		trim: true,
@@ -48,11 +35,19 @@ var UserSchema = new Schema({
 		validate: [validateLocalStrategyProperty, 'Please fill in your email'],
 		match: [/.+\@.+\..+/, 'Please fill a valid email address']
 	},
+	displayName: {
+		type: String,
+		trim: true,
+		required: 'Please fill in a displayName',
+	},
 	username: {
 		type: String,
 		unique: 'testing error message',
 		required: 'Please fill in a username',
 		trim: true
+	},
+	avatarUrl: {
+		type: mongoose.SchemaTypes.Url
 	},
 	password: {
 		type: String,
@@ -99,9 +94,20 @@ UserSchema.pre('save', function(next) {
 		this.salt = new Buffer(crypto.randomBytes(16).toString('base64'), 'base64');
 		this.password = this.hashPassword(this.password);
 	}
-
+	
+	this.avatarUrl = this.generateGravatarURL();
 	next();
 });
+
+/**
+ * Generate the URL to Gravatar Webservice
+ */
+UserSchema.methods.generateGravatarURL = function() {
+	var md5 = crypto.createHash('md5');
+	md5.update(this.email);
+	var hash = md5.digest();
+	return 'http://www.gravatar.com/avatar/' + hash + '?d=identicon';
+};
 
 /**
  * Create instance method for hashing a password

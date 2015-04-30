@@ -12,6 +12,8 @@ sudo npm install -g grunt-cli
 sudo npm install -g yo
 sudo npm install -g generator-meanjs
 sudo apt-get -y install ruby-sass
+sudo apt-get install build-essential
+sudo apt-get install ruby-dev
 cd app && sudo npm install
 #sudo npm install grunt-contrib-sass --save-dev
 sudo bower install --allow-root

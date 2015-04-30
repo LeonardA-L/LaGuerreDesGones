@@ -37,7 +37,7 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 		$scope.toggleMin = function() {
 			$scope.minDate = $scope.minDate ? null : new Date();
 		};
-<<<<<<< HEAD
+
 		$scope.toggleMin();
 
 		$scope.open = function($event) {
@@ -56,9 +56,6 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 		$scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
 		$scope.format = $scope.formats[0];
 		
-=======
-
->>>>>>> b536a1241527420921e840fc58c168ee5cfe130f
 		$scope.hours = [{'num':'1'},{'num':'2'}];
 		for(var i=0; i<24; i++){
 			 if(i<10){
@@ -94,7 +91,3 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 	}
 
 ]);
-
-//angular.module('createGame').controller('DatepickerDemoCtrl', function ($scope) {
-	
-//});

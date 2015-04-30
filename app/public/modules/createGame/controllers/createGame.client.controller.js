@@ -35,7 +35,7 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 		};
 
 		$scope.toggleMin = function() {
-			$scope.minDate = $scope.minDate ? null : new Date();
+			$scope.minDate = new Date();
 		};
 
 		$scope.toggleMin();

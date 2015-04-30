@@ -58,6 +58,10 @@ var UnitSchema = new Schema({
 	ts: {
 		type: Number,
 		default: 0
+	},
+	available: {
+		type: Boolean,
+		default: true
 	}
 });
 

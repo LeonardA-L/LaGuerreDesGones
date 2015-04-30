@@ -35,6 +35,17 @@ var ActionSchema = new Schema({
 
 // TODO
  var processAction = function(a){
+ 	var duration = 1000;
+ 	for (var i=0 ; i < a.units.length ; ++i) {
+ 		var u = a.unit[i];
+ 		u.available=false;
+ 		u.ts=a.date.getTime();
+ 		u.te=u.ts+duration;
+ 		u.xt=a.zoneB.x;
+ 		u.yt=a.zoneB.y;
+ 		u.x=a.zoneA.x;
+ 		u.y=a.zoneA.y;
+ 	}
  	a.status = 2;
  };
 

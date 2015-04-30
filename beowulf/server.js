@@ -30,7 +30,34 @@ var ActionSchema = new Schema({
 	},
 	gameId :{
 		type: String
+	},
+	
+	// For Displacement
+	zoneA:{
+		type: Schema.Types.ObjectId,
+		ref: 'ZoneSchema'
+	},
+	zoneB:{
+		type: Schema.Types.ObjectId,
+		ref: 'ZoneSchema'
+	},
+	units:[{
+		type: Schema.Types.ObjectId,
+		ref: 'UnitSchema'
+	}],
+	// For battle
+	zone:{
+		type: Schema.Types.ObjectId,
+		ref: 'ZoneSchema'
+	},
+	
+	// For init
+	
+	game:{
+		type: Schema.Types.ObjectId,
+		ref: 'GameSchema'
 	}
+	
 });
 
 // TODO

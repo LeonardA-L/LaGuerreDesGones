@@ -198,7 +198,7 @@ var affectUnitToZone = function(u,z){
 };
 
 var processDisplacement = function(a){
-	var duration = 1000;
+	var duration = 60000;
  	console.log('Processing displacement action');
  	for (var i=0 ; i < a.units.length ; ++i) {
  		var u = a.units[i];
@@ -213,10 +213,20 @@ var processDisplacement = function(a){
 		// TODO
 		u.save();
  	}
+
+ 	var b = new Action({
+		type :1,
+		date: new Date(a.date.getTime() + duration),
+		status :0,
+		units:a.units,
+		zone:a.zoneB,
+	});
+	console.log(b.date);
+	b.save();
 };
 
 var processEndDisplacement = function(a){
-
+	console.log('Processing end displacement action');
 };
 
 
@@ -293,6 +303,9 @@ var execute = function(){
 					case 0:
 						Action.findOne({'_id':doc._id}).populate('units').populate('zoneA').populate('zoneB').exec(actionCallback);
 					break;
+					case 1:
+						Action.findOne({'_id':doc._id}).populate('zone').populate('units').exec(actionCallback);
+					break;
 					case 2:
 						Action.findOne({'_id':doc._id}).populate('game').exec(actionCallback);
 					break;
@@ -360,6 +373,9 @@ var db = mongoose.connect(dbAddress, function(err) {
 		Zone = db.model('Zone');
 		Unit = db.model('Unit');
 		Game = db.model('Game');
+
+
+		Action.collection.remove({},function(){});
 
 		// Start processing routine
 		execute();

@@ -161,6 +161,9 @@ var ActionSchema = new Schema({
  		u.yt=a.zoneB.y;
  		u.x=a.zoneA.x;
  		u.y=a.zoneA.y;
+		
+		// TODO
+		u.save();
  	}
  	a.status = 2;
  };

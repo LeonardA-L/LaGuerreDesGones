@@ -3,64 +3,61 @@
 <h1>Create a new game</h1>
 
 <form name="myForm" class="createGameForm" novalidate>
-<div class="row">
-<div class="form-group col-md-6">
-	<label>Party name :</label> <input type="text" ng-model="newGame.title" class="form-control" required>
-</div>
-</div>
+	<div class="row">
+		<div class="form-group col-md-6">
+			<label>Party name :</label> <input type="text" ng-model="newGame.title" class="form-control" required>
+		</div>
+	</div>
 
 	<div ng-controller="CreateGameController">
-<label>Choose the day of your fight !</label>
-    <div class="row">
-        <div class="col-md-6">
-            <p class="input-group">
-              <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="newGame.startDay" is-open="opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close"/>
-              <span class="input-group-btn">
-                <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
-              </span>
-            </p>
-        </div>
-</div>
+	<label>Choose the day of your fight !</label>
+		<div class="row">
+			<div class="col-md-6">
+			    <p class="input-group">
+			      <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="startDay" is-open="opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close"/>
+			      <span class="input-group-btn">
+				<button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+			      </span>
+			    </p>
+			</div>
+		</div>
 
-
-<div class="row">
-
-	<label class="col-md-3">Starting time :</label> 
-<div class="col-md-3">
-			<select ng-model="newGame.startTime" class="form-control">
-			<option ng-repeat="hour in hours">{{hour.num}}</option>
-			</select><br />
-</div>
-</div>
-
-<div class="row">
-	<label class="col-md-3">Minimum number of players :</label> 
-<div class="col-md-3">
-			<select ng-model="newGame.minPlayers" class="form-control">
-				<option value="2"> 2 </option>
-				<option ng-show="newGame.maxPlayers >= 3" value="3"> 3 </option>
-				<option ng-show="newGame.maxPlayers >= 4" value="4"> 4 </option>
-				<option ng-show="newGame.maxPlayers >= 5" value="5"> 5 </option>
-				<option ng-show="newGame.maxPlayers >= 6" value="6"> 6 </option>
-			</select><br />
+	<div class="row">
+		<label class="col-md-3">Starting time :</label> 
+			<div class="col-md-3">
+				<select ng-model="$filter('date')(startTime,'HH:mm')" class="form-control">
+					<option ng-repeat="hour in hours">{{hour.num}}</option>
+				</select><br />
+			</div>
 	</div>
-</div>
 
-<div class="row">
-	<label class="col-md-3"> Maximum number of players :</label> 
-<div class="col-md-3">
-			<select ng-model="newGame.maxPlayers" class="form-control">
-				<option ng-show="newGame.minPlayers <= 2" value="2"> 2 </option>
-				<option ng-show="newGame.minPlayers <= 3" value="3"> 3 </option>
-				<option ng-show="newGame.minPlayers <= 4" value="4"> 4 </option>
-				<option ng-show="newGame.minPlayers <= 5" value="5"> 5 </option>
+	<div class="row">
+		<label class="col-md-3">Minimum number of players :</label> 
+	<div class="col-md-3">
+		<select ng-model="newGame.nMinPlayer" class="form-control">
+			<option value="2"> 2 </option>
+			<option ng-show="newGame.nMaxPlayer >= 3" value="3"> 3 </option>
+			<option ng-show="newGame.nMaxPlayer >= 4" value="4"> 4 </option>
+			<option ng-show="newGame.nMaxPlayer >= 5" value="5"> 5 </option>
+			<option ng-show="newGame.nMaxPlayer >= 6" value="6"> 6 </option>
+		</select><br />
+	</div>
+	</div>
+
+	<div class="row">
+		<label class="col-md-3"> Maximum number of players :</label> 
+		<div class="col-md-3">
+			<select ng-model="newGame.nMaxPlayer" class="form-control">
+				<option ng-show="newGame.nMinPlayer <= 2" value="2"> 2 </option>
+				<option ng-show="newGame.nMinPlayer <= 3" value="3"> 3 </option>
+				<option ng-show="newGame.nMinPlayer <= 4" value="4"> 4 </option>
+				<option ng-show="newGame.nMinPlayer <= 5" value="5"> 5 </option>
 				<option value="6"> 6 </option>
 			</select><br />
-</div>
-</div>
+		</div>
+	</div>
 	
-	<!-- TODO : post le game même si formulaire pas rempli -->
-	<input type="submit" ng-click="createGame()" value="Host" class="col-md-offset-2 col-md-2" />
+	<input type="submit" ng-disabled="myForm.$invalid" ng-click="createGame()" value="Host your party !" class="col-md-offset-2 col-md-2" />
 
 </form>
 </section>

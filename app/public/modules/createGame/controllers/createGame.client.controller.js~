@@ -15,27 +15,28 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 			_date.setMinutes(30);
 		}
 
+		$scope.startTime=$filter('date')(_date,'HH:mm');
+		$scope.startDay=new Date();
 
 		$scope.newGame = {
-			'startDay': new Date(),
-			'startTime' : $filter('date')(_date,'HH:mm'),
-			'title':'',
-			'minPlayers' : 2,
-			'maxPlayers' : 6			
+			'startTime' : '',
+			'title':'New Game',
+			'nMinPlayer' : 2,
+			'nMaxPlayer' : 6			
 		};
 
 
 		$scope.today = function() {
-			$scope.newGame.startDay = new Date();
+			$scope.startDay = new Date();
 		};
 
 
 		$scope.clear = function () {
-			$scope.newGame.startDay = null;
+			$scope.startDay = null;
 		};
 
 		$scope.toggleMin = function() {
-			$scope.minDate = $scope.minDate ? null : new Date();
+			$scope.minDate = new Date();
 		};
 
 		$scope.toggleMin();
@@ -67,24 +68,29 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 			}
 				
 		}
-
-	
-
+		
 		$scope.createGame = function(){
+			var _time=$scope.startTime.split(':');
+			console.log('tab '+_time);
+console.log('h : '+_time[0]);
+console.log('m : '+_time[1]);
+			$scope.startDay.setHours(_time[0]);
+			$scope.startDay.setMinutes(_time[1]);
+			$scope.newGame.startTime=$scope.startDay;
 			console.log('Asking for game creation');
+			console.log($scope.newGame);
 			$http.post('/services/game/create', $scope.newGame).
-			  //success(function(data, status, headers, config) {
-			  success(function(data) {
+			//success(function(data, status, headers, config) {
+			success(function(data) {
 				// console.log('returned success '+data.success);
 				console.log('------ New Game ---------');	
 				console.log('Start Time : '+ $scope.newGame.startTime);	
 				console.log('Title : '+ $scope.newGame.title);	
-				console.log('Min Players : '+ $scope.newGame.minPlayers);
-				console.log('Max Players : '+ $scope.newGame.maxPlayers);					
-			  }).
-			  error(function(data) {
-			    console.log('error');
-			  });
+				console.log('Min Players : '+ $scope.newGame.nMinPlayer);
+				console.log('Max Players : '+ $scope.newGame.nMaxPlayer);					
+			 }).error(function(data) {
+			  	console.log('error');
+			 });
 		};
 
 		

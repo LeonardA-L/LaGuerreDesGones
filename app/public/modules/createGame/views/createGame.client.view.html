@@ -14,7 +14,7 @@
 		<div class="row">
 			<div class="col-md-6">
 			    <p class="input-group">
-			      <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="newGame.startDay" is-open="opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close"/>
+			      <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="startDay" is-open="opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close"/>
 			      <span class="input-group-btn">
 				<button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
 			      </span>
@@ -25,7 +25,7 @@
 	<div class="row">
 		<label class="col-md-3">Starting time :</label> 
 			<div class="col-md-3">
-				<select ng-model="newGame.startTime" class="form-control">
+				<select ng-model="startTime" class="form-control">
 					<option ng-repeat="hour in hours">{{hour.num}}</option>
 				</select><br />
 			</div>
@@ -34,12 +34,12 @@
 	<div class="row">
 		<label class="col-md-3">Minimum number of players :</label> 
 	<div class="col-md-3">
-		<select ng-model="newGame.minPlayers" class="form-control">
+		<select ng-model="newGame.nMinPlayer" class="form-control">
 			<option value="2"> 2 </option>
-			<option ng-show="newGame.maxPlayers >= 3" value="3"> 3 </option>
-			<option ng-show="newGame.maxPlayers >= 4" value="4"> 4 </option>
-			<option ng-show="newGame.maxPlayers >= 5" value="5"> 5 </option>
-			<option ng-show="newGame.maxPlayers >= 6" value="6"> 6 </option>
+			<option ng-show="newGame.nMaxPlayer >= 3" value="3"> 3 </option>
+			<option ng-show="newGame.nMaxPlayer >= 4" value="4"> 4 </option>
+			<option ng-show="newGame.nMaxPlayer >= 5" value="5"> 5 </option>
+			<option ng-show="newGame.nMaxPlayer >= 6" value="6"> 6 </option>
 		</select><br />
 	</div>
 	</div>
@@ -47,11 +47,11 @@
 	<div class="row">
 		<label class="col-md-3"> Maximum number of players :</label> 
 		<div class="col-md-3">
-			<select ng-model="newGame.maxPlayers" class="form-control">
-				<option ng-show="newGame.minPlayers <= 2" value="2"> 2 </option>
-				<option ng-show="newGame.minPlayers <= 3" value="3"> 3 </option>
-				<option ng-show="newGame.minPlayers <= 4" value="4"> 4 </option>
-				<option ng-show="newGame.minPlayers <= 5" value="5"> 5 </option>
+			<select ng-model="newGame.nMaxPlayer" class="form-control">
+				<option ng-show="newGame.nMinPlayer <= 2" value="2"> 2 </option>
+				<option ng-show="newGame.nMinPlayer <= 3" value="3"> 3 </option>
+				<option ng-show="newGame.nMinPlayer <= 4" value="4"> 4 </option>
+				<option ng-show="newGame.nMinPlayer <= 5" value="5"> 5 </option>
 				<option value="6"> 6 </option>
 			</select><br />
 		</div>

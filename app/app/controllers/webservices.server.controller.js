@@ -93,6 +93,7 @@ exports.createGame = function(req, res) {
 		'isInit':false,
 		'startTime':new Date(req.body.startTime)
 	});
+	console.log(g);
 	var player = new Player({
 			name: req.user.nickname || 'Anonymous',
 			isAdmin: true,
@@ -173,12 +174,12 @@ exports.startPlay = function(req,res){
 	var Zone = mongoose.model('Zone');
 	var Unit = mongoose.model('Unit');
 
-	Game.find({'_id':req.params.gameId}, function(err,game){
+	console.log(req.params.gameId);
+	Game.findOne({'_id':req.params.gameId}, function(err,game){
 		if(err)
 			res.send(err);
 		result.success.title = game.title;
-		syncCallback--;
-		if(syncCallback === 0){
+		if(--syncCallback === 0){
 			res.json(result);
 		}
 	});
@@ -186,8 +187,7 @@ exports.startPlay = function(req,res){
 		if(err)
 			res.send(err);
 		result.success.units = units;
-		syncCallback--;
-		if(syncCallback === 0){
+		if(--syncCallback === 0){
 			res.json(result);
 		}
 	});
@@ -195,8 +195,7 @@ exports.startPlay = function(req,res){
 		if(err)
 			res.send(err);
 		result.success.zones = zones;
-		syncCallback--;
-		if(syncCallback === 0){
+		if(--syncCallback === 0){
 			res.json(result);
 		}
 	});

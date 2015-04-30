@@ -9,8 +9,9 @@ angular.module('play').config(['$stateProvider', '$urlRouterProvider',
 		// Home state routing
 		$stateProvider.
 		state('play', {
-			url: '/play/:gameid',
-			templateUrl: 'modules/play/views/play.client.view.html'
+			url: '/play/:gameId',
+			templateUrl: 'modules/play/views/play.client.view.html',
+			controller: 'PlayController'
 		});
 	}
 ]);

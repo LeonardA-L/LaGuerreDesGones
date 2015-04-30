@@ -42,5 +42,16 @@ angular.module('waitingRoom').controller('WaitingRoomController', ['$scope',
 		};
 
 		retrieveAvailable();
+
+		$scope.testDisp = function(){
+			$http.post('/services/game/getWaiting',{}).
+			  //success(function(data, status, headers, config) {
+			  success(function(data) {
+			  	console.log(data);
+			  }).
+			  error(function(data) {
+			    console.log('error');
+			  });
+		};
 	}
 ]);

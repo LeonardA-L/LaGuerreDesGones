@@ -13,8 +13,39 @@ var init = require('./config/init')(),
 
 // Action model
 var Action = undefined;
-
+var Zone = undefined;
+var Unit = undefined;
+var Game = undefined;
 // dirty pasted model
+
+
+
+var GameSchema = new Schema({
+	title: {
+		type: String,
+		trim: true,
+		default: '',
+	},
+	nMaxPlayerUnit: {
+		type: Number,
+		required: true
+	},
+	nMaxPlayer: {
+		type: Number,
+		required: true
+	},
+	isInit: {
+		type: Boolean,
+		default: false,
+	},
+	startTime: {
+		type: Date
+	},
+	zones: [{
+		type: Schema.Types.ObjectId,
+		ref: 'Zone'
+	}]
+});
 
 var UnitSchema = new Schema({
 	type: {
@@ -97,10 +128,14 @@ var ZoneSchema = new Schema({
 		type: Number,
 		default: 0
 	},
-	unit: [{
+	units: [{
 		type: Schema.Types.ObjectId,
 		ref: 'UnitSchema'
 	}],
+	game:{
+		type: Schema.Types.ObjectId,
+		ref: 'Game'
+	}
 });
 
 var ActionSchema = new Schema({
@@ -148,6 +183,17 @@ var ActionSchema = new Schema({
 	
 });
 
+var affectUnitToZone = function(u,z){
+	u.zone = z._id;
+	u.x = z.x;
+	u.y = z.y;
+	u.xt = z.x;
+	u.yt = z.y;
+
+	console.log(z);
+	z.units.push(u._id);
+};
+
 var processDisplacement = function(a){
 	var duration = 1000;
  	console.log('Processing action');
@@ -170,20 +216,35 @@ var processEndDisplacement = function(a){
 
 };
 
+
+// Dummy process init
 var processInit = function(a){
 	// DUMMY
 	var zdA = new Zone({
+		name:'Charpennes',
+		point:42,
 		x:10,
-		y:15
+		y:15,
+		game:a.game._id,
+		units:[]
 	});
 	var zdB = new Zone({
+		name:'Charles Hernu',
+		point:42,
 		x:20,
-		y:25
+		y:25,
+		game:a.game._id,
+		units:[]
 	});
 	var ud = new Unit();
+	affectUnitToZone(ud,zdA);
 	zdA.save();
 	zdB.save();
 	ud.save();
+	a.game.zones = [zdA,zdB];
+	a.game.startTime = a.date;
+	a.game.isInit = true;
+	a.game.save();
 };
 
 var actionHandlers = [];
@@ -288,8 +349,12 @@ var db = mongoose.connect(dbAddress, function(err) {
 		db.model('Unit', UnitSchema);
 		db.model('Zone', ZoneSchema);
 		db.model('Action', ActionSchema);
+		db.model('Game', GameSchema);
 		
 		Action = db.model('Action');
+		Zone = db.model('Zone');
+		Unit = db.model('Unit');
+		Game = db.model('Game');
 
 		// Start processing routine
 		execute();

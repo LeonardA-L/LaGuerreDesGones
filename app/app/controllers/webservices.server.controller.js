@@ -5,6 +5,16 @@
  */
  var mongoose = require('mongoose');
 
+// Game action related
+var registerAction=function(newAction){
+	newAction.save(function(err,data){
+		if (err)
+			console.log(err);
+		console.log('Saved');
+		console.log(data);
+	});
+};
+
 exports.testapi = function(req, res) {
 	var ret = {
 		result:'ok'
@@ -74,6 +84,7 @@ exports.createGame = function(req, res) {
 	//console.log('A new game creation request called "'+req.body.title+'" by user '+req.user.displayName);
 	var Game = mongoose.model('Game');
 	var Player = mongoose.model('Player');
+	var Action = mongoose.model('Action');
 	var g = new Game({
 		'title':req.body.title,
 		'nMaxPlayerUnit':40,
@@ -81,23 +92,30 @@ exports.createGame = function(req, res) {
 		'isInit':false,
 		'startTime':new Date(req.body.startTime)
 	});
+	var player = new Player({
+			name: req.user.nickname || 'Anonymous',
+			isAdmin: true,
+			user: req.user._id,
+			game: g._id 
+	});
+
+	player.save(function(err){
+		if (err)
+            res.send(err);
+	});
 	g.save(function(err,data){
 		if (err) {
             res.send(err);
         }
-        else {
-        	var player = new Player({
-					name: req.body.playername,
-					isAdmin: true,
-					user: req.user._id,
-					game: g._id 
-			});
-			player.save(function(err){
-				if (err)
-		            res.send(err);
-			});
-        }
 	});
+	var initAction = new Action({
+		type:2,
+		date:new Date(),	//TODO set in future
+		status:0,
+		game:g._id
+	});
+	console.log('Registering init action');
+	registerAction(initAction);
 	res.json(result);
 };
 
@@ -144,16 +162,6 @@ exports.joinGame = function(req, res) {
 };
 
 
-// Game action related
-var registerAction=function(newAction){
-	newAction.save(function(err,data){
-		if (err)
-			console.log(err);
-		console.log('Saved');
-		console.log(data);
-	});
-};
-
 exports.displacementAction = function(req, res) {
 
 
@@ -166,7 +174,7 @@ exports.displacementAction = function(req, res) {
 		type:0,
 		date:new Date(),
 		status:0,
-		gameId: req.body.gameId
+		game: req.body.gameId
 	});
 
 	var Zone = mongoose.model('Zone');

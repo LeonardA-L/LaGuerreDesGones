@@ -1,12 +1,12 @@
 <section class="createGameSection" data-ng-controller="CreateGameController">
 
-<form name="form" class="createGameForm" novalidate>
 <h1>Create a new game</h1>
-<p>
-Party name : <input type="text" ng-model="newGame.title"><br />
 
-<div ng-controller="CreateGameController">
-Le choix dans la date
+<form name="myForm" class="createGameForm" novalidate>
+	<label>Party name :</label> <input type="text" ng-model="newGame.title" required>
+
+	<div ng-controller="CreateGameController">
+<label>Choose the day of your fight !</label>
     <div class="row">
         <div class="col-md-6">
             <p class="input-group">
@@ -18,30 +18,32 @@ Le choix dans la date
         </div>
 </div>
 
-Starting time : <select ng-model="newGame.startTime" >
-		<option ng-repeat="hour in hours">{{hour.num}}</option>
-		</select><br />
-
-Minimum number of players : <select ng-model="newGame.minPlayers">
-			<option value="2"> 2 </option>
-			<option value="3"> 3 </option>
-			<option value="4"> 4 </option>
-			<option value="5"> 5 </option>
-			<option value="6"> 6 </option>
+<span>{{newGame.startDay}}</span>
+	<label>Starting time :</label> 
+			<select ng-model="newGame.startTime" >
+			<option ng-repeat="hour in hours">{{hour.num}}</option>
 			</select><br />
 
-Maximum number of players : <select ng-model="newGame.maxPlayers">
-			<option value="2"> 2 </option>
-			<option value="3"> 3 </option>
-			<option value="4"> 4 </option>
-			<option value="5"> 5 </option>
-			<option value="6"> 6 </option>
+	<label>Minimum number of players :</label> 
+			<select ng-model="newGame.minPlayers">
+				<option value="2"> 2 </option>
+				<option ng-show="newGame.maxPlayers >= 3" value="3"> 3 </option>
+				<option ng-show="newGame.maxPlayers >= 4" value="4"> 4 </option>
+				<option ng-show="newGame.maxPlayers >= 5" value="5"> 5 </option>
+				<option ng-show="newGame.maxPlayers >= 6" value="6"> 6 </option>
 			</select><br />
+	
+	<label> Maximum number of players :</label> 
+			<select ng-model="newGame.maxPlayers">
+				<option ng-show="newGame.minPlayers <= 2" value="2"> 2 </option>
+				<option ng-show="newGame.minPlayers <= 3" value="3"> 3 </option>
+				<option ng-show="newGame.minPlayers <= 4" value="4"> 4 </option>
+				<option ng-show="newGame.minPlayers <= 5" value="5"> 5 </option>
+				<option value="6"> 6 </option>
+			</select><br />
+	
+	<!-- TODO : post le game même si formulaire pas rempli -->
+	<input type="submit" ng-click="createGame()" value="Host" />
 
-<span ng-show="newGame.minPlayers > newGame.maxPlayers">Maximum number of players must be higher than the minimum.</span><br/>
-
-<input type="submit" ng-click="createGame()" value="Host"/>
-
-</p>
-</form
+</form>
 </section>

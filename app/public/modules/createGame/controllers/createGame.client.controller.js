@@ -37,6 +37,7 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 		$scope.toggleMin = function() {
 			$scope.minDate = $scope.minDate ? null : new Date();
 		};
+
 		$scope.toggleMin();
 
 		$scope.open = function($event) {
@@ -74,7 +75,12 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 			$http.post('/services/game/create', $scope.newGame).
 			  //success(function(data, status, headers, config) {
 			  success(function(data) {
-				console.log('returned success '+data.success);				
+				// console.log('returned success '+data.success);
+				console.log('------ New Game ---------');	
+				console.log('Start Time : '+ $scope.newGame.startTime);	
+				console.log('Title : '+ $scope.newGame.title);	
+				console.log('Min Players : '+ $scope.newGame.minPlayers);
+				console.log('Max Players : '+ $scope.newGame.maxPlayers);					
 			  }).
 			  error(function(data) {
 			    console.log('error');
@@ -85,7 +91,3 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 	}
 
 ]);
-
-//angular.module('createGame').controller('DatepickerDemoCtrl', function ($scope) {
-	
-//});

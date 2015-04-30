@@ -33,7 +33,7 @@ exports.createGame = function(req, res) {
             res.send(err);
         }
 	});
-	exports.joinGame(req, res, g);
+	exports.joinGame(req, res);
 	Player.findByIdAndUpdate(g.players[0]._id,
 							{ isAdmin: true	}, function(err){
 								if (err)
@@ -75,23 +75,23 @@ exports.getWaiting = function(req, res) {
 };
 
 // User joins a game
-exports.joinGame = function(req, res, game) {
+exports.joinGame = function(req, res) {
 	// TODO rules
 	var result = {
 		success : true
 	};
 	var Player = mongoose.model('Player');
 	var player = new Player({
-			name: req.body.playername,
+			name: req.user.displayName,
 			user: req.user._id,
-			game: game._id 
+			game: req.params.gameId
 	});
 	player.save(function(err){
 		if (err)
             res.send(err);
 	});
 	var Game = mongoose.model('Game');
-	var gameId = game._id,
+	var gameId = req.params.gameId,
 		playerID = player._id;
     Game.findByIdAndUpdate(
     gameId,

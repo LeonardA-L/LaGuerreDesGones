@@ -171,25 +171,25 @@ exports.displacementAction = function(req, res) {
 
 	var Zone = mongoose.model('Zone');
 	var Unit = mongoose.model('Unit');
+	if(req.body.test){
+		// DUMMY
+		var zdA = new Zone({
+			x:10,
+			y:15
+		});
+		var zdB = new Zone({
+			x:20,
+			y:25
+		});
+		var ud = new Unit();
+		zdA.save();
+		zdB.save();
+		ud.save();
 
-	// DUMMY
-	var zdA = new Zone({
-		x:10,
-		y:15
-	});
-	var zdB = new Zone({
-		x:20,
-		y:25
-	});
-	var ud = new Unit();
-	zdA.save();
-	zdB.save();
-	ud.save();
-
-	req.body.zoneAId = zdA._id;
-	req.body.zoneBId = zdB._id;
-	req.body.unitIds = [ud._id];
-
+		req.body.zoneAId = zdA._id;
+		req.body.zoneBId = zdB._id;
+		req.body.unitIds = [ud._id];
+	}
 	console.log(req.body);
 
 	var syncCallback = 2;

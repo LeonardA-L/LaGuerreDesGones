@@ -201,7 +201,6 @@ exports.unjoinGame = function(req, res) {
 		var destroyCallback = function(err){
 			if(err)
 				res.send(err);
-			console.log('destroyed');
 		};
 
 		for(var i=0;i<game.players.length;i++){
@@ -209,15 +208,18 @@ exports.unjoinGame = function(req, res) {
 			console.log(p.user);
 			console.log(req.user._id);
 			if(''+p.user === ''+req.user._id){
-				console.log('destroy');
 				game.players.splice(i, 1);
 				Player.findByIdAndRemove(p._id,destroyCallback);
-				game.save(destroyCallback);
+				if(game.players.length > 0){
+					game.save(destroyCallback);
+				}
+				else{
+					Game.findByIdAndRemove(game._id,destroyCallback);
+				}
 			}
 		}
-		//if(game.players.)
 	});
-	//res.json(result);
+	res.json(result);
 };
 
 exports.startPlay = function(req,res){

@@ -6,7 +6,8 @@ angular.module('plddirectives').directive('gameBox', ['$http',
 			templateUrl: 'modules/plddirectives/directives/game-box/game-box.html',
 			scope : { data : '=',
 			join : '=',
-			playp : '='
+			playp : '=',
+			user:'='
 			},
 			restrict: 'E',
 			link: function postLink(scope) {
@@ -14,6 +15,8 @@ angular.module('plddirectives').directive('gameBox', ['$http',
 				scope.load = false;
 				scope.joinok = scope.join;
 				scope.play = scope.playp && scope.data.isInit;
+				console.log(scope);
+				scope.unsub = scope.playp && !scope.data.isInit && scope.data.creator !== scope.user._id;
 				scope.joinGame = function(gameId){
 					scope.joinok = false;
 					scope.load = true;
@@ -23,6 +26,25 @@ angular.module('plddirectives').directive('gameBox', ['$http',
 						//console.log(data.success);
 						if(data.success){
 							scope.joinok = false;
+							scope.load = false;
+						}
+					  }).
+					  error(function(data) {
+					    console.log('error');
+					  });
+				};
+
+				scope.unjoinGame = function(gameId){
+					scope.unsub = false;
+					scope.play = false;
+					scope.load = true;
+					console.log('unjoining game '+gameId);
+					$http.get('/services/game/'+gameId+'/unjoin').
+					  success(function(data) {
+						//console.log(data.success);
+						if(data.success){
+							scope.play = false;
+							scope.unsub = false;
 							scope.load = false;
 						}
 					  }).

@@ -101,7 +101,7 @@ exports.createGame = function(req, res) {
 			game: g._id 
 	});
 	g.players = [player._id];
-
+	g.creator = req.user._id;
 	player.save(function(err){
 		/*if (err){
             res.send(err);
@@ -183,6 +183,15 @@ exports.joinGame = function(req, res) {
       }
     });
 	console.log('Player '+player.name+' wants to join game n°'+req.params.gameId);
+	res.json(result);
+};
+
+exports.unjoinGame = function(req, res) {
+	// TODO rules
+	var result = {
+		success : true
+	};
+	
 	res.json(result);
 };
 

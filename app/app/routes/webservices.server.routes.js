@@ -11,6 +11,7 @@ module.exports = function(app) {
 	app.route('/services/game/getWaiting').get(webservices.getWaiting);
 	// User subscribes to a game
 	app.route('/services/game/:gameId/join').get(webservices.joinGame);
+	app.route('/services/game/:gameId/unjoin').get(webservices.unjoinGame);
 
 	app.route('/services/action/disp').post(webservices.displacementAction);
 

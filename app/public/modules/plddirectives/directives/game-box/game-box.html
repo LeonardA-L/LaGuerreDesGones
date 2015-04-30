@@ -1,4 +1,4 @@
 <div class="gameBox">
 Game : {{data.title}} by {{data.creator}}. Starts at {{data.startTime}} <button ng-if="joinok && !load" ng-click="joinGame(data._id)">Join</button> <span ng-if="load"> Load</span>
-<a ng-if="play" href="/#!/play/{{data._id}}">Play</a>
+<a ng-if="play" href="/#!/play/{{data._id}}">Play</a> <button ng-if="unsub" ng-click="unjoinGame(data._id)">Unsubscribe</button>
 </div>

@@ -29,8 +29,9 @@ exports.createGame = function(req, res) {
 		'startTime':new Date(req.body.startTime)
 	});
 	g.save(function(err,data){
-		if (err)
-            res.send(err)
+		if (err) {
+            res.send(err);
+        }
         else {
         	var player = new Player({
 					name: req.body.playername,
@@ -98,4 +99,44 @@ var registerAction=function(newAction){
 	});
 };
 
+exports.displacementAction = function(req, res) {
+	var Action = mongoose.model('Action');
+	var a = new Action ({
+		type:0,
+		date:new Date(),
+		status:0,
+		gameId: req.body.gameId
+	});
 
+	var Zone = mongoose.model('Zone');
+	var Unit = mongoose.model('Unit');
+
+	var syncCallback = 2;
+
+    Zone.find({'_id':{$in:[req.body.zoneAId, req.body.zoneBId]}}, function (err, zones) {
+	  	if (err) {
+            res.send(err);
+       	}
+       	if(zones[0]._id === req.body.zoneAId){
+       		a.zoneA = zones[0];
+       		a.zoneB = zones[1];
+       	}
+       	else{
+       		a.zoneA = zones[1];
+       		a.zoneB = zones[0];
+       	}
+       	if (0===syncCallback--) {
+       		registerAction(a);
+       	}
+    });
+
+    Unit.find({'_id':{$in:req.body.unitIds}}, function (err, units) {
+	  	if (err) {
+            res.send(err);
+      	}
+      	a.units = units;
+      	if (0===syncCallback--) {
+       		registerAction(a);
+       	}
+    });
+};

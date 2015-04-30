@@ -29,7 +29,10 @@
 					<option ng-repeat="hour in hours">{{hour.num}}</option>
 				</select><br />
 			</div>
+			<span ng-show="errDate">Starting hour is too early</span>
 	</div>
+
+
 
 	<div class="row">
 		<label class="col-md-3">Minimum number of players :</label> 

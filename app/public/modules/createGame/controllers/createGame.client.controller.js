@@ -6,7 +6,9 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 		console.log($scope);
 		// This provides Authentication context.
 		$scope.authentication = Authentication;
-		
+
+		$scope.errDate=false;		
+
 		var _date=new Date();
 		_date.setHours(_date.getHours()+1);
 		if(_date.getMinutes()<15 || _date.getMinutes()>45){
@@ -70,13 +72,18 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 		}
 		
 		$scope.createGame = function(){
+			$scope.errDate=false;
 			var _time=$scope.startTime.split(':');
 			$scope.startDay.setHours(_time[0]);
 			$scope.startDay.setMinutes(_time[1]);
 			$scope.startDay.setSeconds(0);
 			$scope.newGame.startTime=$scope.startDay;
+
+			if($scope.newGame.startTime.getTime()<new Date().getTime()){
+				$scope.errDate=true;
+				return;
+			}
 			console.log('Asking for game creation');
-			console.log($scope.newGame);
 			$http.post('/services/game/create', $scope.newGame).
 			//success(function(data, status, headers, config) {
 			success(function(data) {

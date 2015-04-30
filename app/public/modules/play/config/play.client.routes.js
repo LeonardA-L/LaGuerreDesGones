@@ -1,19 +1,17 @@
 'use strict';
 
 // Setting up route
-angular.module('perso').config(['$stateProvider', '$urlRouterProvider',
+angular.module('play').config(['$stateProvider', '$urlRouterProvider',
 	function($stateProvider, $urlRouterProvider) {
 		// Redirect to home view when route not found
 		$urlRouterProvider.otherwise('/');
 
 		// Home state routing
 		$stateProvider.
-		state('perso', {
-			url: '/perso',
-			templateUrl: 'modules/perso/views/perso.client.view.html',
-			access:{
-				loginRequired: true
-			}
+		state('play', {
+			url: '/play/:gameId',
+			templateUrl: 'modules/play/views/play.client.view.html',
+			controller: 'PlayController'
 		});
 	}
 ]);

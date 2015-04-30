@@ -25,11 +25,11 @@ var PlayerSchema = new Schema({
 	},
 	user: {
 		type: Schema.Types.ObjectId,
-		ref: 'UserSchema'
+		ref: 'User'
 	},
 	game: {
 		type: Schema.Types.ObjectId,
-		ref: 'GameSchema'
+		ref: 'Game'
 	},
 	money: {
 		type: Number,

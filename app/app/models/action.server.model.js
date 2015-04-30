@@ -24,32 +24,32 @@ var ActionSchema = new Schema({
 		type: Number,
 		default: 0
 	},
-	gameId :{
-		type: String
-	}
-	/*
+	
 	// For Displacement
 	zoneA:{
-		
+		type: Schema.Types.ObjectId,
+		ref: 'Zone'
 	},
-	zoneB :{
-		
+	zoneB:{
+		type: Schema.Types.ObjectId,
+		ref: 'Zone'
 	},
-	units{
-
-	},
+	units:[{
+		type: Schema.Types.ObjectId,
+		ref: 'Unit'
+	}],
 	// For battle
 	zone:{
-
+		type: Schema.Types.ObjectId,
+		ref: 'Zone'
 	},
-	*/
+	
 	// For init
-	/*
 	game:{
 		type: Schema.Types.ObjectId,
-		ref: 'GameSchema'
+		ref: 'Game'
 	}
-	*/
+	
 });
 
 mongoose.model('Action', ActionSchema);

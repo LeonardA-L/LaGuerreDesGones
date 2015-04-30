@@ -35,10 +35,14 @@ var ZoneSchema = new Schema({
 		type: Number,
 		default: 0
 	},
-	unit: [{
+	units: [{
 		type: Schema.Types.ObjectId,
-		ref: 'UnitSchema'
+		ref: 'Unit'
 	}],
+	game:{
+		type: Schema.Types.ObjectId,
+		ref: 'Game'
+	}
 });
 
 mongoose.model('Zone', ZoneSchema);

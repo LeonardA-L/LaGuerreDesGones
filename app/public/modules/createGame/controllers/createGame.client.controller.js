@@ -22,7 +22,7 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 			'startTime' : '',
 			'title':'New Game',
 			'nMinPlayer' : 2,
-			'nMaxPlayer' : 6			
+			'nMaxPlayer' : 8			
 		};
 
 

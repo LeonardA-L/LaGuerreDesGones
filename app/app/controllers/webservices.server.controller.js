@@ -101,17 +101,18 @@ exports.createGame = function(req, res) {
 	});
 
 	player.save(function(err){
-		if (err)
+		/*if (err){
             res.send(err);
+        }*/
 	});
 	g.save(function(err,data){
-		if (err) {
+		/*if (err) {
             res.send(err);
-        }
+        }*/
 	});
 	var initAction = new Action({
 		type:2,
-		date:new Date(),	//TODO set in future
+		date:req.body.startTime,	//TODO set in future
 		status:0,
 		game:g._id
 	});

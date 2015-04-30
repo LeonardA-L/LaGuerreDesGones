@@ -264,7 +264,7 @@ var execute = function(){
 	setTimeout(function(){
 
 		// Find an Action needing processing, tag it as assigned
-		Action.collection.findAndModify({'status':0},[['_id','asc']],{$set: {status: 1}},{}, function (err, doc) {
+		Action.collection.findAndModify({'status':0, 'date':{$lte:new Date()}},[['_id','asc']],{$set: {status: 1}},{}, function (err, doc) {
 			if (err){
 				console.log(err);
 				return;
@@ -293,7 +293,7 @@ var execute = function(){
 						Action.findOne({'_id':doc._id}).populate('game').exec(actionCallback);
 					break;
 				}
-	    		}
+	    	}
 
 	    	// Re launch
 	        execute();
@@ -304,14 +304,15 @@ var execute = function(){
 // For debug purpose, display the Action collection
 var displayDB = function(){
 	setTimeout(function(){
-		Action.find({}).populate('units').populate('zoneA').populate('zoneB').exec(function (err, docs) {
+		Action.find({'status':0}).exec(function (err, docs) {
 			if (err){
 				console.log(err);
 			}
-	        console.log(docs);
+	        //console.log(docs);
+	        console.log(docs.length + ' unprocessed actions');
 	    });
 		displayDB();
-	},10000);
+	},5000);
 };
 
 // Dummy inject actions

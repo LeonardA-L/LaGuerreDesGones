@@ -13,7 +13,7 @@ angular.module('plddirectives').directive('gameBox', ['$http',
 				// Game box directive logic
 				scope.load = false;
 				scope.joinok = scope.join;
-				scope.play = scope.playp && (new Date(scope.data.startTime)).getTime() < (new Date()).getTime();
+				scope.play = scope.playp && scope.data.isInit;
 				scope.joinGame = function(gameId){
 					scope.joinok = false;
 					scope.load = true;

@@ -139,8 +139,6 @@ exports.getWaiting = function(req, res) {
         		continue;
         	}
         	for(var j=0;j<g.players.length;j++){
-        		console.log(g.players[j].user);
-        		console.log(req.user._id);
         		if(''+g.players[j].user === ''+req.user._id){
         			docs.splice(i, 1);
         		}
@@ -148,6 +146,29 @@ exports.getWaiting = function(req, res) {
         }
         //console.log(docs);
         res.json({'success':docs}); // return all nerds in JSON format
+    });
+};
+
+exports.getSubscribed = function(req,res){
+	var Game = mongoose.model('Game');
+
+    Game.find({}).populate('players').exec(function (err, docs) {
+	  if (err)
+            res.send(err);
+        var accurate = [];
+        for(var i=0;i<docs.length;i++){
+        	var g = docs[i];
+        	if(g.players===null){
+        		continue;
+        	}
+        	for(var j=0;j<g.players.length;j++){
+        		if(''+g.players[j].user === ''+req.user._id){
+        			accurate.push(g);
+        		}
+        	}
+        }
+        //console.log(docs);
+        res.json({'success':accurate}); // return all nerds in JSON format
     });
 };
 

@@ -216,7 +216,9 @@ var processDisplacement = function(a){
  		u.yt=a.zoneB.y;
  		u.x=a.zoneA.x;
  		u.y=a.zoneA.y;
-		
+ 		console.log(a.zoneA.units);
+		a.zoneA.units.splice(a.zoneA.units.indexOf(u._id), 1);
+		console.log(a.zoneA.units);
 		// TODO
 		u.save();
  	}
@@ -241,11 +243,8 @@ var processEndDisplacement = function(a){
  		u.available=true;
  		u.ts=a.date.getTime();
  		u.te=u.ts;
- 		u.xt=a.zone.x;
- 		u.yt=a.zone.y;
- 		u.x=a.zone.x;
- 		u.y=a.zone.y;
-		
+ 		affectUnitToZone(u,a.zone);
+		a.zone.save();
 		// TODO
 		u.save();
  	}
@@ -277,7 +276,7 @@ var processInit = function(a){
 	zdA.save();
 	zdB.save();
 	ud.save();
-	a.game.zones = [zdA,zdB];
+	a.game.zones = [zdA._id,zdB._id];
 	a.game.startTime = a.date;
 	a.game.isInit = true;
 	a.game.save();
@@ -301,6 +300,7 @@ var execute = function(){
 
 		// Find an Action needing processing, tag it as assigned
 		Action.collection.findAndModify({'status':0, 'date':{$lte:new Date()}},[['_id','asc']],{$set: {status: 1}},{}, function (err, doc) {
+		//Action.collection.findAndModify({'status':0},[['_id','asc']],{$set: {status: 1}},{}, function (err, doc) {
 			if (err){
 				console.log(err);
 				return;

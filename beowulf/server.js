@@ -148,9 +148,8 @@ var ActionSchema = new Schema({
 	
 });
 
-// TODO
- var processAction = function(a){
- 	var duration = 1000;
+var processDisplacement = function(a){
+	var duration = 1000;
  	console.log('Processing action');
  	for (var i=0 ; i < a.units.length ; ++i) {
  		var u = a.units[i];
@@ -165,6 +164,36 @@ var ActionSchema = new Schema({
 		// TODO
 		u.save();
  	}
+};
+
+var processEndDisplacement = function(a){
+
+};
+
+var processInit = function(a){
+	// DUMMY
+	var zdA = new Zone({
+		x:10,
+		y:15
+	});
+	var zdB = new Zone({
+		x:20,
+		y:25
+	});
+	var ud = new Unit();
+	zdA.save();
+	zdB.save();
+	ud.save();
+};
+
+var actionHandlers = [];
+actionHandlers.push(processDisplacement);
+actionHandlers.push(processEndDisplacement);
+actionHandlers.push(processInit);
+
+// TODO
+ var processAction = function(a){
+ 	actionHandlers[a.type](a);
  	a.status = 2;
  };
 
@@ -183,19 +212,27 @@ var execute = function(){
 			if(doc !== null){
 				// Find and modify doesn't output an Action object, so there's another request
 				// There's probably a better way
-				Action.findOne({'_id':doc._id}).populate('units').exec(function (err, action) {
-					if (err){
-						console.log(err);
-					}
+				var actionCallback = function (err, action) {
+						if (err){
+							console.log(err);
+						}
 					
-					//console.log(action);
+						//console.log(action);
 
-			        processAction(action);
+					processAction(action);
 
-			        action.save();
-			    });
+					action.save();
+				    };
 
-	    	}
+				switch(doc.type){
+					case 0:
+						Action.findOne({'_id':doc._id}).populate('units').populate('zoneA').populate('zoneB').exec(actionCallback);
+					break;
+					case 2:
+						Action.findOne({'_id':doc._id}).populate('game').exec(actionCallback);
+					break;
+				}
+	    		}
 
 	    	// Re launch
 	        execute();

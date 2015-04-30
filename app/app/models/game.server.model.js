@@ -57,6 +57,10 @@ var GameSchema = new Schema({
 	zone: [{
 		type: Schema.Types.ObjectId,
 		ref: 'ZoneSchema'
+	}],
+	players: [{
+		type: Schema.Types.ObjectId,
+		ref: 'PlayerSchema'
 	}]
 });
 

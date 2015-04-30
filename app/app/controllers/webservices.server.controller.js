@@ -32,19 +32,13 @@ exports.createGame = function(req, res) {
 		if (err) {
             res.send(err);
         }
-        else {
-        	var player = new Player({
-					name: req.body.playername,
-					isAdmin: true,
-					user: req.user._id,
-					game: g._id 
-			});
-			player.save(function(err){
-				if (err)
-		            res.send(err);
-			});
-        }
 	});
+	exports.joinGame(req, res, g);
+	Player.findByIdAndUpdate(g.players[0]._id,
+							{ isAdmin: true	}, function(err){
+								if (err)
+								res.send(err);
+								});
 	res.json(result);
 };
 
@@ -81,12 +75,32 @@ exports.getWaiting = function(req, res) {
 };
 
 // User joins a game
-exports.joinGame = function(req, res) {
+exports.joinGame = function(req, res, game) {
 	// TODO rules
 	var result = {
 		success : true
 	};
-	console.log('User '+req.user.displayName+' wants to join game n°'+req.params.gameId);
+	var Player = mongoose.model('Player');
+	var player = new Player({
+			name: req.body.playername,
+			user: req.user._id,
+			game: game._id 
+	});
+	player.save(function(err){
+		if (err)
+            res.send(err);
+	});
+	var Game = mongoose.model('Game');
+	var gameId = game._id,
+		playerID = player._id;
+    Game.findByIdAndUpdate(
+    gameId,
+    {$push: {'players': { _id: playerID }}}, function(err){
+      if(err){
+       	console.log(err);
+      }
+    });
+	console.log('Player '+player.name+' wants to join game n°'+req.params.gameId);
 	res.json(result);
 };
 

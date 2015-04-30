@@ -2,4 +2,14 @@
 	<div  class="playSection">
 		<h1>{{game.title}}</h1>
 	</div>
+	<span ng-click="testDisp()">CLICK ME</span>
+	<br/>
+	<label>Zones (pour ceux qui se demandent, Charpennes != Charles Hernu)</label>
+	<div ng-repeat="zone in game.zones">
+		<div style="height:300px; width:300px;background-color:#FEE; border: solid; border-color: green;">
+			{{zone.name}}
+		</div>
+	</div>
+	<label>Grosses unités</label>
+	<p ng-repeat="unit in game.units">{{unit._id}} - ({{unit.x}},{{unit.y}})</p>
 </section>

@@ -10,7 +10,10 @@ angular.module('perso').config(['$stateProvider', '$urlRouterProvider',
 		$stateProvider.
 		state('perso', {
 			url: '/perso',
-			templateUrl: 'modules/perso/views/perso.client.view.html'
+			templateUrl: 'modules/perso/views/perso.client.view.html',
+			access:{
+				loginRequired: true
+			}
 		});
 	}
 ]);

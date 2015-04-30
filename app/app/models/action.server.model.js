@@ -24,9 +24,6 @@ var ActionSchema = new Schema({
 		type: Number,
 		default: 0
 	},
-	gameId :{
-		type: String
-	},
 	
 	// For Displacement
 	zoneA:{
@@ -48,7 +45,6 @@ var ActionSchema = new Schema({
 	},
 	
 	// For init
-	
 	game:{
 		type: Schema.Types.ObjectId,
 		ref: 'Game'

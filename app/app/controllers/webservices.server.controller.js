@@ -5,11 +5,74 @@
  */
  var mongoose = require('mongoose');
 
+// Game action related
+var registerAction=function(newAction){
+	newAction.save(function(err,data){
+		if (err)
+			console.log(err);
+		console.log('Saved');
+		console.log(data);
+	});
+};
+
 exports.testapi = function(req, res) {
 	var ret = {
 		result:'ok'
 	};
 	res.json(ret);
+};
+
+
+// TMP : Get all games
+exports.getAllGames = function(req, res) {
+	var Game = mongoose.model('Game');
+
+    Game.find({}, function (err, docs) {
+	  if (err)
+            res.send(err);
+
+        console.log(docs);
+        res.json({'success':docs}); // return all nerds in JSON format
+    });
+};
+
+// TMP : Get all actions
+exports.getAllActions = function(req, res) {
+	var Action = mongoose.model('Action');
+
+    Action.find({}, function (err, docs) {
+	  if (err)
+            res.send(err);
+
+        console.log(docs);
+        res.json({'success':docs}); // return all nerds in JSON format
+    });
+};
+
+// TMP : Get all units
+exports.getAllUnits = function(req, res) {
+	var Unit = mongoose.model('Unit');
+
+    Unit.find({}, function (err, docs) {
+	  if (err)
+            res.send(err);
+
+        console.log(docs);
+        res.json({'success':docs}); // return all nerds in JSON format
+    });
+};
+
+// TMP : Get all zones
+exports.getAllZones = function(req, res) {
+	var Zone = mongoose.model('Zone');
+
+    Zone.find({}, function (err, docs) {
+	  if (err)
+            res.send(err);
+
+        console.log(docs);
+        res.json({'success':docs}); // return all nerds in JSON format
+    });
 };
 
 // Game Creation
@@ -21,30 +84,40 @@ exports.createGame = function(req, res) {
 	//console.log('A new game creation request called "'+req.body.title+'" by user '+req.user.displayName);
 	var Game = mongoose.model('Game');
 	var Player = mongoose.model('Player');
+	var Action = mongoose.model('Action');
 	var g = new Game({
 		'title':req.body.title,
 		'nMaxPlayerUnit':40,
-		'nMaxPlayer':6,
+		'nMinPlayer':2,
+		'nMaxPlayer':8,
 		'isInit':false,
 		'startTime':new Date(req.body.startTime)
 	});
-	g.save(function(err,data){
-		if (err) {
-            res.send(err);
-        }
-        else {
-        	var player = new Player({
-					name: req.body.playername,
-					isAdmin: true,
-					user: req.user._id,
-					game: g._id 
-			});
-			player.save(function(err){
-				if (err)
-		            res.send(err);
-			});
-        }
+	var player = new Player({
+			name: req.user.nickname || 'Anonymous',
+			isAdmin: true,
+			user: req.user._id,
+			game: g._id 
 	});
+
+	player.save(function(err){
+		/*if (err){
+            res.send(err);
+        }*/
+	});
+	g.save(function(err,data){
+		/*if (err) {
+            res.send(err);
+        }*/
+	});
+	var initAction = new Action({
+		type:2,
+		date:req.body.startTime,	//TODO set in future
+		status:0,
+		game:g._id
+	});
+	console.log('Registering init action');
+	registerAction(initAction);
 	res.json(result);
 };
 
@@ -91,16 +164,6 @@ exports.joinGame = function(req, res) {
 };
 
 
-// Game action related
-var registerAction=function(newAction){
-	newAction.save(function(err,data){
-		if (err)
-			console.log(err);
-		console.log('Saved');
-		console.log(data);
-	});
-};
-
 exports.displacementAction = function(req, res) {
 
 
@@ -113,30 +176,30 @@ exports.displacementAction = function(req, res) {
 		type:0,
 		date:new Date(),
 		status:0,
-		gameId: req.body.gameId
+		game: req.body.gameId
 	});
 
 	var Zone = mongoose.model('Zone');
 	var Unit = mongoose.model('Unit');
+	if(req.body.test){
+		// DUMMY
+		var zdA = new Zone({
+			x:10,
+			y:15
+		});
+		var zdB = new Zone({
+			x:20,
+			y:25
+		});
+		var ud = new Unit();
+		zdA.save();
+		zdB.save();
+		ud.save();
 
-	// DUMMY
-	var zdA = new Zone({
-		x:10,
-		y:15
-	});
-	var zdB = new Zone({
-		x:20,
-		y:25
-	});
-	var ud = new Unit();
-	zdA.save();
-	zdB.save();
-	ud.save();
-
-	req.body.zoneAId = zdA._id;
-	req.body.zoneBId = zdB._id;
-	req.body.unitIds = [ud._id];
-
+		req.body.zoneAId = zdA._id;
+		req.body.zoneBId = zdB._id;
+		req.body.unitIds = [ud._id];
+	}
 	console.log(req.body);
 
 	var syncCallback = 2;

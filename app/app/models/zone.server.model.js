@@ -37,7 +37,7 @@ var ZoneSchema = new Schema({
 	},
 	unit: [{
 		type: Schema.Types.ObjectId,
-		ref: 'UnitSchema'
+		ref: 'Unit'
 	}],
 });
 

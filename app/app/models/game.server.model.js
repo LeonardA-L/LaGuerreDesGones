@@ -56,7 +56,7 @@ var GameSchema = new Schema({
 	},
 	zone: [{
 		type: Schema.Types.ObjectId,
-		ref: 'ZoneSchema'
+		ref: 'Zone'
 	}]
 });
 

@@ -1,22 +1,22 @@
 'use strict';
 
-angular.module('users').factory('Authorisation', ['Authentication', 'authorisationConst',
-	function (Authentication) {
-		var authorize = function (loginRequired, requiredPermissions, permissionCheckType) {
-			var result = authorisationConst.authorisation.authorised,
-				user = authentication.getCurrentLoginUser(),
+angular.module('users').factory('Authorisation', ['Authentication', 'UserConst',
+	function (Authentication, UserConst) {
+		var authorise = function (loginRequired, requiredPermissions, permissionCheckType) {
+			var result = UserConst.authorisation.authorised,
+				user = Authentication.user,
 				loweredPermissions = [],
 				hasPermission = true,
 				permission, i;
 
-			permissionCheckType = permissionCheckType || authorisationConst.permissionType.atLeastOne;
-
-			if (loginRequired === true && user === undefined) {
+			permissionCheckType = permissionCheckType || UserConst.permissionType.atLeastOne;
+			
+			if (loginRequired === true && user === '') {
 			// Login required and not connected
-				result = authorisationConst.authorization.loginRequired;
-			} else if ((loginRequired === true && user !== undefined) && (requiredPermissions === undefined || requiredPermissions.length === 0)) {
+				result = UserConst.authorisation.loginRequired;
+			} else if ((loginRequired === true && user !== '') && (requiredPermissions === undefined || requiredPermissions.length === 0)) {
 			// Login required, connected but no specific permissions are specified.
-				result = authorisationConst.authorization.const.authorization.loginRequired;
+				result = UserConst.authorisation.authorised;
 			} else if (requiredPermissions) {
 				// Login required, connected and specific permissions are specified.
 				loweredPermissions = [];
@@ -25,13 +25,13 @@ angular.module('users').factory('Authorisation', ['Authentication', 'authorisati
 				});
 				for (i = 0; i < requiredPermissions.length; i += 1) {
 					permission = requiredPermissions[i].toLowerCase();
-					if (permissionCheckType === authorisationConst.permissionType.combinationRequired) { //jcs.modules.auth.enums.permissionCheckType.combinationRequired) {
+					if (permissionCheckType === UserConst.permissionType.combinationRequired) {
 						hasPermission = hasPermission && loweredPermissions.indexOf(permission) > -1;
 						// if all the permissions are required and hasPermission is false there is no point carrying on
 						if (hasPermission === false) {
 						    break;
 						}
-					} else if (permissionCheckType === authorisationConst.permissionType.atLeastOne) {
+					} else if (permissionCheckType === UserConst.permissionType.atLeastOne) {
 						hasPermission = loweredPermissions.indexOf(permission) > -1;
 						// if we only need one of the permissions and we have it there is no point carrying on
 						if (hasPermission) {
@@ -39,13 +39,13 @@ angular.module('users').factory('Authorisation', ['Authentication', 'authorisati
 						}
 					}
 				}
-				result = hasPermission ? authorisationConst.authorization.authorised : authorisationConst.authorization.notAuthorised;
+				result = hasPermission ? UserConst.authorisation.authorised : UserConst.authorisation.notAuthorised;
 			}
 			return result;
 		};
 
 	    return {
-	    	authorize: authorize
+	    	authorise: authorise
 	    };
 }
 ]);

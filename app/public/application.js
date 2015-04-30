@@ -13,24 +13,24 @@ angular.module(ApplicationConfiguration.applicationModuleName)
 		}
 	]);
 
-// Setting Authorization Redirection
+// Setting Authorisation Redirection
 angular.module(ApplicationConfiguration.applicationModuleName)
-	.run(['$rootScope', '$location', 'Authorization', 'authorisationConst',
-		function ($rootScope, $location, authorization) {
+	.run(['$rootScope', '$location', 'Authorisation', 'UserConst',
+		function ($rootScope, $location, Authorisation, UserConst) {
 			var routeChangeRequiredAfterLogin = false,
 				loginRedirectUrl;
 			$rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
 				var authorised;
-				if (routeChangeRequiredAfterLogin && next.originalPath !== 'signin') {
+				if (routeChangeRequiredAfterLogin && toState.url !== '/signin') {
 					routeChangeRequiredAfterLogin = false;
 					$location.path(loginRedirectUrl).replace();
 				} else if (toState.access !== undefined) {
-					authorised = authorization.authorize(toState.access.loginRequired, toState.access.permissions, toState.access.permissionCheckType);
-					if (authorised === authorisationConst.authorization.loginRequired) {
+					authorised = Authorisation.authorise(toState.access.loginRequired, toState.access.permissions, toState.access.permissionCheckType);
+					if (authorised === UserConst.authorisation.loginRequired) {
 						routeChangeRequiredAfterLogin = true;
-						loginRedirectUrl = toState.originalPath;
+						loginRedirectUrl = toState.url;
 						$location.path('signin');
-					} else if (authorised === authorisationConst.authorization.notAuthorised) {
+					} else if (authorised === UserConst.authorisation.notAuthorised) {
 						$location.path('').replace();
 					}
 				}

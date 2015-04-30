@@ -12,7 +12,7 @@ angular.module('perso').config(['$stateProvider', '$urlRouterProvider',
 			url: '/perso',
 			templateUrl: 'modules/perso/views/perso.client.view.html',
 			access:{
-				requiresLogin: true
+				loginRequired: true
 			}
 		});
 	}

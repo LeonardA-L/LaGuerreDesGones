@@ -12,7 +12,7 @@ angular.module('createGame').config(['$stateProvider', '$urlRouterProvider',
 			url: '/host',
 			templateUrl: 'modules/createGame/views/createGame.client.view.html',
 			access:{
-				requiresLogin: true
+				loginRequired: true
 			}
 		});
 	}

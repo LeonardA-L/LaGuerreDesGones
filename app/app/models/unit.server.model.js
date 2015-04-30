@@ -34,6 +34,30 @@ var UnitSchema = new Schema({
 	point: {
 		type: Number,
 		default: 0
+	},
+	x: {
+		type: Number,
+		default: 0
+	},
+	y: {
+		type: Number,
+		default: 0
+	},
+	xt: {
+		type: Number,
+		default: 0
+	}
+	yt: {
+		type: Number,
+		default: 0
+	}
+	te: {
+		type: Number,
+		default: 0
+	}
+	ts: {
+		type: Number,
+		default: 0
 	}
 });
 

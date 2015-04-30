@@ -53,7 +53,11 @@ var GameSchema = new Schema({
 	startTime: {
 		type: Date,
 		validate: [validateDate, 'The Start Day must be delayed']
-	}
+	},
+	zone: [{
+		type: Schema.Types.ObjectId,
+		ref: 'ZoneSchema'
+	}]
 });
 
 mongoose.model('Game', GameSchema);

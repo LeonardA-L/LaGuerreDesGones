@@ -9,6 +9,11 @@ var init = require('./config/init')(),
 	schedule = require('node-schedule'),
     XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
 
+function velovProcess(data)
+{
+	
+}
+
 /**
 * Recupererer service
 * Traiter le resultat (parser, maj des infos....)
@@ -16,14 +21,10 @@ var init = require('./config/init')(),
 */
 function registerCronJob(serviceAddress, resultTreatment, cronMinutesInterval)
 {  
-	console.log(serviceAddress);
-	console.log(cronMinutesInterval+' * * * *');
 	var cron = schedule.scheduleJob(cronMinutesInterval+' * * * *', function(){
-		console.log(new Date());
 		var xmlHttp = new XMLHttpRequest();	
 		xmlHttp.open( 'GET', serviceAddress, false );
 		xmlHttp.send();
-		console.log('response '+xmlHttp.responseText);
 		var data = JSON.parse(xmlHttp.responseText);
 		console.log(data);
 		//var result = resultTreatment(data);
@@ -59,5 +60,5 @@ exports = module.exports = app;
 // Logging initialization
 console.log('MEAN.JS application started on port ' + config.port);
 
-registerCronJob('http://dfournier.ovh/api/tag/?format=json', null, '*');
+registerCronJob('https://api.jcdecaux.com/vls/v1/stations?contract=Lyon&apiKey=d7f8e02837f368139f58a1efda258d77b8366bfe', null, '*');
 

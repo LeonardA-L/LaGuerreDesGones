@@ -15,23 +15,24 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 			_date.setMinutes(30);
 		}
 
+		$scope.startTime=$filter('date')(_date,'HH:mm');
+		$scope.startDay=new Date();
 
 		$scope.newGame = {
-			'startDay': new Date(),
-			'startTime' : $filter('date')(_date,'HH:mm'),
+			'startTime' : '',
 			'title':'New Game',
-			'minPlayers' : 2,
-			'maxPlayers' : 6			
+			'nMinPlayer' : 2,
+			'nMaxPlayer' : 6			
 		};
 
 
 		$scope.today = function() {
-			$scope.newGame.startDay = new Date();
+			$scope.startDay = new Date();
 		};
 
 
 		$scope.clear = function () {
-			$scope.newGame.startDay = null;
+			$scope.startDay = null;
 		};
 
 		$scope.toggleMin = function() {
@@ -69,6 +70,11 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 		}
 		
 		$scope.createGame = function(){
+			var _time=$scope.startTime.split(':');
+			$scope.startDay.setHours(_time[0]);
+			$scope.startDay.setMinutes(_time[1]);
+			$scope.startDay.setSeconds(0);
+			$scope.newGame.startTime=$scope.startDay;
 			console.log('Asking for game creation');
 			console.log($scope.newGame);
 			$http.post('/services/game/create', $scope.newGame).
@@ -78,8 +84,8 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 				console.log('------ New Game ---------');	
 				console.log('Start Time : '+ $scope.newGame.startTime);	
 				console.log('Title : '+ $scope.newGame.title);	
-				console.log('Min Players : '+ $scope.newGame.minPlayers);
-				console.log('Max Players : '+ $scope.newGame.maxPlayers);					
+				console.log('Min Players : '+ $scope.newGame.nMinPlayer);
+				console.log('Max Players : '+ $scope.newGame.nMaxPlayer);					
 			 }).error(function(data) {
 			  	console.log('error');
 			 });

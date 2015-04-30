@@ -20,6 +20,7 @@ exports.createGame = function(req, res) {
 	};
 	//console.log('A new game creation request called "'+req.body.title+'" by user '+req.user.displayName);
 	var Game = mongoose.model('Game');
+	var Player = mongoose.model('Player');
 	var g = new Game({
 		'title':req.body.title,
 		'nMaxPlayerUnit':40,
@@ -29,7 +30,19 @@ exports.createGame = function(req, res) {
 	});
 	g.save(function(err,data){
 		if (err)
-            res.send(err);
+            res.send(err)
+        else {
+        	var player = new Player({
+					name: req.body.playername,
+					isAdmin: true,
+					user: req.user._id,
+					game: g._id 
+			});
+			player.save(function(err){
+				if (err)
+		            res.send(err);
+			});
+        }
 	});
 	res.json(result);
 };

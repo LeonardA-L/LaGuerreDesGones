@@ -19,7 +19,7 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 		$scope.newGame = {
 			'startDay': new Date(),
 			'startTime' : $filter('date')(_date,'HH:mm'),
-			'title':'',
+			'title':'New Game',
 			'minPlayers' : 2,
 			'maxPlayers' : 6			
 		};
@@ -67,24 +67,22 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 			}
 				
 		}
-
-	
-
+		
 		$scope.createGame = function(){
 			console.log('Asking for game creation');
+			console.log($scope.newGame);
 			$http.post('/services/game/create', $scope.newGame).
-			  //success(function(data, status, headers, config) {
-			  success(function(data) {
+			//success(function(data, status, headers, config) {
+			success(function(data) {
 				// console.log('returned success '+data.success);
 				console.log('------ New Game ---------');	
 				console.log('Start Time : '+ $scope.newGame.startTime);	
 				console.log('Title : '+ $scope.newGame.title);	
 				console.log('Min Players : '+ $scope.newGame.minPlayers);
 				console.log('Max Players : '+ $scope.newGame.maxPlayers);					
-			  }).
-			  error(function(data) {
-			    console.log('error');
-			  });
+			 }).error(function(data) {
+			  	console.log('error');
+			 });
 		};
 
 		

@@ -215,9 +215,14 @@ exports.displacementAction = function(req, res) {
 		type:0,
 		date:new Date(),
 		status:0,
-		game: req.body.gameId
+		game: req.body.gameId,
+		zoneAId:req.body.zoneAId,
+		zoneBId:req.body.zoneBId,
+		units:req.body.unitsId
 	});
 
+	registerAction(a);
+/*
 	var Zone = mongoose.model('Zone');
 	var Unit = mongoose.model('Unit');
 	if(req.body.test){
@@ -275,4 +280,5 @@ exports.displacementAction = function(req, res) {
 	    });
 
 	},30);
+*/
 };

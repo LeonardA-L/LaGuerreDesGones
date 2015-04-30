@@ -26,7 +26,13 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		});
 
   		$scope.testDisp = function(){
-			$http.post('/services/action/disp',{'test':true}).
+  			var dto = {
+  				'gameId':gameId,
+  				'zoneAId':$scope.game.zones[0],
+  				'zoneBId':$scope.game.zones[1],
+  				'unitIds':[$scope.game.units[0]._id]
+  			};
+			$http.post('/services/action/disp',dto).
 			//success(function(data, status, headers, config) {
 			success(function(data) {
 		  		console.log(data);

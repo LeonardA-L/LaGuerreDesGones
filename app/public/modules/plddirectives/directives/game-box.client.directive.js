@@ -6,13 +6,14 @@ angular.module('plddirectives').directive('gameBox', ['$http',
 			templateUrl: 'modules/plddirectives/directives/game-box/game-box.html',
 			scope : { data : '=',
 			join : '=',
-			play : '='
+			playp : '='
 			},
 			restrict: 'E',
 			link: function postLink(scope) {
 				// Game box directive logic
 				scope.load = false;
 				scope.joinok = scope.join;
+				scope.play = scope.playp && (new Date(scope.data.startTime)).getTime() < (new Date()).getTime();
 				scope.joinGame = function(gameId){
 					scope.joinok = false;
 					scope.load = true;

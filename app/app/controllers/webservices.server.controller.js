@@ -165,7 +165,7 @@ exports.joinGame = function(req, res) {
 
 exports.startPlay = function(req,res){
 	var result = {
-		success:{};
+		success:{}
 	};
 	var syncCallback = 3;
 	var Game = mongoose.model('Game');

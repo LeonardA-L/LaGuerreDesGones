@@ -12,6 +12,59 @@ exports.testapi = function(req, res) {
 	res.json(ret);
 };
 
+
+// TMP : Get all games
+exports.getAllGames = function(req, res) {
+	var Game = mongoose.model('Game');
+
+    Game.find({}, function (err, docs) {
+	  if (err)
+            res.send(err);
+
+        console.log(docs);
+        res.json({'success':docs}); // return all nerds in JSON format
+    });
+};
+
+// TMP : Get all actions
+exports.getAllActions = function(req, res) {
+	var Action = mongoose.model('Action');
+
+    Action.find({}, function (err, docs) {
+	  if (err)
+            res.send(err);
+
+        console.log(docs);
+        res.json({'success':docs}); // return all nerds in JSON format
+    });
+};
+
+// TMP : Get all units
+exports.getAllUnits = function(req, res) {
+	var Unit = mongoose.model('Unit');
+
+    Unit.find({}, function (err, docs) {
+	  if (err)
+            res.send(err);
+
+        console.log(docs);
+        res.json({'success':docs}); // return all nerds in JSON format
+    });
+};
+
+// TMP : Get all zones
+exports.getAllZones = function(req, res) {
+	var Zone = mongoose.model('Zone');
+
+    Zone.find({}, function (err, docs) {
+	  if (err)
+            res.send(err);
+
+        console.log(docs);
+        res.json({'success':docs}); // return all nerds in JSON format
+    });
+};
+
 // Game Creation
 exports.createGame = function(req, res) {
 	// TODO rules

@@ -2,22 +2,22 @@
 
 <h1>Create a new game</h1>
 
-<form name="myForm" class="createGameForm" novalidate ng-submit="createGame()">
+<form name="myForm" class="createGameForm">
 	
 	<label>Party name :</label> <input type="text" ng-model="newGame.title" required>
 
-	<div ng-controller="DatepickerDemoCtrl">
-	<label>Choose the day of your fight !</label>
-	    <div class="row">
-		<div class="col-md-6">
-		    <p class="input-group">
-		      <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="dt" is-open="opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
-		      <span class="input-group-btn">
-		        <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
-		      </span>
-		    </p>
-		</div>
-	</div>
+	<div ng-controller="CreateGameController">
+<label>Choose the day of your fight !</label>
+    <div class="row">
+        <div class="col-md-6">
+            <p class="input-group">
+              <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="newGame.startDay" is-open="opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close"/>
+              <span class="input-group-btn">
+                <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+              </span>
+            </p>
+        </div>
+</div>
 
 	<label>Starting time :</label> 
 			<select ng-model="newGame.startTime" >
@@ -25,7 +25,7 @@
 			</select><br />
 
 	<label>Minimum number of players :</label> 
-			<select ng-model="newGame.minPlayers">
+			<select name="minPlayers" ng-model="newGame.minPlayers" ng-change=f_minPlayers()>
 				<option value="2"> 2 </option>
 				<option ng-show="newGame.maxPlayers >= 3" value="3"> 3 </option>
 				<option ng-show="newGame.maxPlayers >= 4" value="4"> 4 </option>
@@ -34,7 +34,7 @@
 			</select><br />
 	
 	<label> Maximum number of players :</label> 
-			<select ng-model="newGame.maxPlayers">
+			<select name="maxPlayers" ng-model="newGame.maxPlayers">
 				<option ng-show="newGame.minPlayers <= 2" value="2"> 2 </option>
 				<option ng-show="newGame.minPlayers <= 3" value="3"> 3 </option>
 				<option ng-show="newGame.minPlayers <= 4" value="4"> 4 </option>
@@ -42,7 +42,7 @@
 				<option value="6"> 6 </option>
 			</select><br />
 	
-	<input type="submit" ng-disabled="myForm.$invalid" value="Host your party !" />
+	<input type="submit" ng-disabled="myForm.$invalid" ng-click="createGame()" value="Host your party !" />
 
 </form>
 </section>

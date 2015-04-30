@@ -6,7 +6,6 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 		console.log($scope);
 		// This provides Authentication context.
 		$scope.authentication = Authentication;
-
 		
 		var _date=new Date();
 		_date.setHours(_date.getHours()+1);
@@ -16,15 +15,47 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 			_date.setMinutes(30);
 		}
 
-		//TODO : ajouter un attribut jour à newGame
+
 		$scope.newGame = {
+			'startDay': new Date(),
 			'startTime' : $filter('date')(_date,'HH:mm'),
-			'title':'',
+			'title':'New Game',
 			'minPlayers' : 2,
-			'maxPlayers' : 6
-			
+			'maxPlayers' : 6			
 		};
 
+
+		$scope.today = function() {
+			$scope.newGame.startDay = new Date();
+		};
+
+
+		$scope.clear = function () {
+			$scope.newGame.startDay = null;
+		};
+
+		$scope.toggleMin = function() {
+			$scope.minDate = $scope.minDate ? null : new Date();
+		};
+
+		$scope.toggleMin();
+
+		$scope.open = function($event) {
+			$event.preventDefault();
+			$event.stopPropagation();
+
+			$scope.opened = true;
+		};
+
+		$scope.dateOptions = {
+			formatYear: 'yy',
+			startingDay: 1
+		};
+	
+		// Choose date format
+		$scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
+		$scope.format = $scope.formats[0];
+		
 		$scope.hours = [{'num':'1'},{'num':'2'}];
 		for(var i=0; i<24; i++){
 			 if(i<10){
@@ -39,7 +70,7 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 		
 		$scope.createGame = function(){
 			console.log('Asking for game creation');
-			
+			console.log($scope.newGame);
 			$http.post('/services/game/create', $scope.newGame).
 			//success(function(data, status, headers, config) {
 			success(function(data) {
@@ -58,44 +89,3 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 	}
 
 ]);
-
-angular.module('createGame').controller('DatepickerDemoCtrl', function ($scope) {
-	$scope.today = function() {
-		$scope.dt = new Date();
-	};
-	$scope.today();
-
-	$scope.clear = function () {
-		$scope.dt = null;
-	};
-
-	$scope.toggleMin = function() {
-		$scope.minDate = $scope.minDate ? null : new Date();
-	};
-	$scope.toggleMin();
-
-	// No max, we can create a game in 2058 !
-	/* $scope.toggleMax = function() {
-		var date = new Date();
-		date.setMonth(date.getMonth() + 1);
-		$scope.maxDate = $scope.maxDate ? null : date ;
-	};
-	$scope.toggleMax(); */
-
-	$scope.open = function($event) {
-		$event.preventDefault();
-		$event.stopPropagation();
-
-		$scope.opened = true;
-	};
-
-	$scope.dateOptions = {
-		formatYear: 'yy',
-		startingDay: 1
-	};
-	
-	// Choose date format
-	$scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
-	$scope.format = $scope.formats[0];
-
-});

@@ -10,7 +10,10 @@ angular.module('createGame').config(['$stateProvider', '$urlRouterProvider',
 		$stateProvider.
 		state('host', {
 			url: '/host',
-			templateUrl: 'modules/createGame/views/createGame.client.view.html'
+			templateUrl: 'modules/createGame/views/createGame.client.view.html',
+			access:{
+				loginRequired: true
+			}
 		});
 	}
 ]);

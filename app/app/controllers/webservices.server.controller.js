@@ -88,7 +88,8 @@ exports.createGame = function(req, res) {
 	var g = new Game({
 		'title':req.body.title,
 		'nMaxPlayerUnit':40,
-		'nMaxPlayer':6,
+		'nMinPlayer':2,
+		'nMaxPlayer':8,
 		'isInit':false,
 		'startTime':new Date(req.body.startTime)
 	});

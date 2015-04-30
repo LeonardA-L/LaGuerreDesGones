@@ -129,30 +129,26 @@ exports.getWaiting = function(req, res) {
 	
 	var Game = mongoose.model('Game');
 
-    Game.find({}, function (err, docs) {
+    Game.find({'isInit':false}).populate('players').exec(function (err, docs) {
 	  if (err)
             res.send(err);
-
+        for(var i=0;i<docs.length;i++){
+        	var g = docs[i];
+        	if(g.players===null){
+        		docs.splice(i, 1);
+        		continue;
+        	}
+        	for(var j=0;j<g.players.length;j++){
+        		console.log(g.players[j].user);
+        		console.log(req.user._id);
+        		if(''+g.players[j].user === ''+req.user._id){
+        			docs.splice(i, 1);
+        		}
+        	}
+        }
         //console.log(docs);
         res.json({'success':docs}); // return all nerds in JSON format
     });
-	// Dummy list
-	/*
-	var ret = {
-		success:[{
-			'id':42,
-			'startTime' : 1430234252,
-			'title':'Les joyeux lyonnais',
-			'creator' : 'LeonardA-L'
-		},
-		{
-			'id':1337,
-			'startTime' : 1430236252,
-			'title':'Par ici les gonnettes',
-			'creator' : 'LeonardA-L'
-		}]
-	};
-	*/
 };
 
 // User joins a game
@@ -194,6 +190,7 @@ exports.unjoinGame = function(req, res) {
 	console.log('Unsubscribe');
 	var Game = mongoose.model('Game');
 	var Player = mongoose.model('Player');
+	// TODO possibly optimizable
 	Game.findOne({'_id':req.params.gameId}).populate('players').exec(function(err,game){
 		if(err)
 			res.send(err);

@@ -2,7 +2,8 @@
 
 <h1>Create a new game</h1>
 
-<form name="myForm" class="createGameForm" novalidate>
+<form name="myForm" class="createGameForm" novalidate ng-submit="createGame()">
+	
 	<label>Party name :</label> <input type="text" ng-model="newGame.title" required>
 
 	<div ng-controller="DatepickerDemoCtrl">
@@ -17,7 +18,6 @@
 		    </p>
 		</div>
 	</div>
-
 
 	<label>Starting time :</label> 
 			<select ng-model="newGame.startTime" >
@@ -42,11 +42,7 @@
 				<option value="6"> 6 </option>
 			</select><br />
 	
-	<!-- Should not appear -->
-	<span ng-show="newGame.minPlayers > newGame.maxPlayers">Maximum number of players must be higher than the minimum.</span><br/>
-	
-	<!-- TODO : post le game même si formulaire pas rempli -->
-	<input type="submit" ng-click="createGame()" value="Host" />
+	<input type="submit" ng-disabled="myForm.$invalid" value="Host your party !" />
 
 </form>
 </section>

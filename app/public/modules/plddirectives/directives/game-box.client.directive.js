@@ -5,7 +5,8 @@ angular.module('plddirectives').directive('gameBox', ['$http',
 		return {
 			templateUrl: 'modules/plddirectives/directives/game-box/game-box.html',
 			scope : { data : '=',
-			join : '='
+			join : '=',
+			play : '='
 			},
 			restrict: 'E',
 			link: function postLink(scope) {

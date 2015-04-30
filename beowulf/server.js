@@ -136,7 +136,7 @@ var db = mongoose.connect(dbAddress, function(err) {
 
 		// For debug purpose
 		displayDB();
-		dummyInject();
+		//dummyInject();
 	}
 });
 

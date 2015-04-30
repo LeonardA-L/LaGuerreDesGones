@@ -44,7 +44,7 @@ angular.module('waitingRoom').controller('WaitingRoomController', ['$scope',
 		retrieveAvailable();
 
 		$scope.testDisp = function(){
-			$http.post('/services/game/getWaiting',{}).
+			$http.post('/services/action/disp',{}).
 			  //success(function(data, status, headers, config) {
 			  success(function(data) {
 			  	console.log(data);

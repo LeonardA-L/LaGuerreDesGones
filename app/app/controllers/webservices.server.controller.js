@@ -96,6 +96,8 @@ var registerAction=function(newAction){
 	newAction.save(function(err,data){
 		if (err)
 			console.log(err);
+		console.log('Saved');
+		console.log(data);
 	});
 };
 
@@ -105,6 +107,8 @@ exports.displacementAction = function(req, res) {
 
 
 	var Action = mongoose.model('Action');
+
+
 	var a = new Action ({
 		type:0,
 		date:new Date(),
@@ -137,30 +141,36 @@ exports.displacementAction = function(req, res) {
 
 	var syncCallback = 2;
 
-    Zone.find({'_id':{$in:[req.body.zoneAId, req.body.zoneBId]}}, function (err, zones) {
-	  	if (err) {
-            res.send(err);
-       	}
-       	if(zones[0]._id === req.body.zoneAId){
-       		a.zoneA = zones[0];
-       		a.zoneB = zones[1];
-       	}
-       	else{
-       		a.zoneA = zones[1];
-       		a.zoneB = zones[0];
-       	}
-       	if (0===syncCallback--) {
-       		registerAction(a);
-       	}
-    });
+	setTimeout(function(){
 
-    Unit.find({'_id':{$in:req.body.unitIds}}, function (err, units) {
-	  	if (err) {
-            res.send(err);
-      	}
-      	a.units = units;
-      	if (0===syncCallback--) {
-       		registerAction(a);
-       	}
-    });
+	    Zone.find({'_id':{$in:[req.body.zoneAId, req.body.zoneBId]}}, function (err, zones) {
+	    	syncCallback--;
+		  	if (err) {
+	            res.send(err);
+	       	}
+	       	if(zones[0]._id === req.body.zoneAId){
+	       		a.zoneA = zones[0];
+	       		a.zoneB = zones[1];
+	       	}
+	       	else{
+	       		a.zoneA = zones[1];
+	       		a.zoneB = zones[0];
+	       	}
+	       	if (0===syncCallback) {
+	       		registerAction(a);
+	       	}
+	    });
+
+	    Unit.find({'_id':{$in:req.body.unitIds}}, function (err, units) {
+	    	syncCallback--;
+		  	if (err) {
+	            res.send(err);
+	      	}
+	      	a.units = units;
+	      	if (0===syncCallback) {
+	       		registerAction(a);
+	       	}
+	    });
+
+	},30);
 };

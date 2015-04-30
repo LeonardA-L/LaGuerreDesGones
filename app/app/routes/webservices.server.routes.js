@@ -12,6 +12,6 @@ module.exports = function(app) {
 	// User subscribes to a game
 	app.route('/services/game/:gameId/join').get(webservices.joinGame);
 
-	app.route('/services/action/disp').get(webservices.displacementAction);
+	app.route('/services/action/disp').post(webservices.displacementAction);
 
 };

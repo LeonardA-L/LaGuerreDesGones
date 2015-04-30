@@ -226,7 +226,7 @@ exports.startPlay = function(req,res){
 	var result = {
 		success:{}
 	};
-	var syncCallback = 3;
+	var syncCallback = 4;
 	var Game = mongoose.model('Game');
 	var Player = mongoose.model('Player');
 	var Zone = mongoose.model('Zone');
@@ -253,6 +253,14 @@ exports.startPlay = function(req,res){
 		if(err)
 			res.send(err);
 		result.success.zones = zones;
+		if(--syncCallback === 0){
+			res.json(result);
+		}
+	});
+	Player.find({'game':req.params.gameId}, function(err,players){
+		if(err)
+			res.send(err);
+		result.success.players = players;
 		if(--syncCallback === 0){
 			res.json(result);
 		}

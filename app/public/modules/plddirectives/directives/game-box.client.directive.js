@@ -16,7 +16,7 @@ angular.module('plddirectives').directive('gameBox', ['$http',
 				scope.joinok = scope.join;
 				scope.play = scope.playp && scope.data.isInit;
 				console.log(scope);
-				scope.unsub = scope.playp && !scope.data.isInit && scope.data.creator !== scope.user._id;
+				scope.unsub = scope.playp && !scope.data.isInit && (scope.data.creator !== scope.user._id || scope.data.players.length===1);
 				scope.joinGame = function(gameId){
 					scope.joinok = false;
 					scope.load = true;

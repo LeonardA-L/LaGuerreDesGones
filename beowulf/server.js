@@ -17,14 +17,45 @@ var Zone = undefined;
 var Unit = undefined;
 var Game = undefined;
 var ZoneDescription = undefined;
+var Player = undefined;
 
 // dirty pasted model
 
+var PlayerSchema = new Schema({
+	name: {
+		type: String,
+		trim: true,
+		required: true
+	},
+	dateCreated: {
+		type: Date,
+		default: Date.now
+	},
+	isAdmin:{
+		type: Boolean,
+		default: false
+	},
+	user: {
+		type: Schema.Types.ObjectId,
+		ref: 'User'
+	},
+	game: {
+		type: Schema.Types.ObjectId,
+		ref: 'Game'
+	},
+	money: {
+		type: Number,
+		default: 0
+	},
+	point: {
+		type: Number,
+		default: 0
+	}	
+});
+
 var ZoneDescriptionSchema = new Schema({
 	type: {
-		type: String,
-		enum: [NEUTRAL, HOSPITAL, PARK, UNIVERSITY, CHURCH, WOODSTOCK, STATION, AIRPORT, CITY_HALL, SQUARE, BANK, SHOPPING_CENTRE],
-		default: NEUTRAL
+		type: String
 	},
 	name: {
 		type: String,
@@ -32,8 +63,7 @@ var ZoneDescriptionSchema = new Schema({
 		default: ''
 	},
 	nbUnitMax: {
-		type: Number,
-		default: DEFAULT_MAX_UNIT_NUMBER
+		type: Number
 	},
 	border: Schema.Types.Mixed,
 	x : Number,
@@ -152,7 +182,7 @@ var ZoneSchema = new Schema({
 		ref: 'ZoneDescription',
 // TODO		required: true
 	}
-});
+}); 
 
 var ActionSchema = new Schema({
 
@@ -265,8 +295,8 @@ var processInit = function(a){
 		for(var i=0;i<zdList.length;i++){
 			var zd = zdList[i];
 			var z = new Zone({
-				zoneDesc : zd._id;
-				game : a.game._id;
+				zoneDesc : zd._id,
+				game : a.game._id
 			});
 			zoneIdList.push(z._id);
 			if(zd.type === 'neutral'){
@@ -275,19 +305,31 @@ var processInit = function(a){
 			z.save();
 		}
 
-		for(var i=0;i<a.game.players.length;i++){
-			var nz = neutralZones[Math.floor(Math.random() * neutralZones.length)];
-			for(var j=0;j<initPlayers;j++){
-				var u = new Unit({
-					game:a.game._id,
-					player:a.game.players[i]._id,
-					zone:nz._id
-				});
-				a.game.players[i].units.push(u._id);
-				u.save();
-			}
-			a.game.players[i].save();
-		}
+		Player.find({'_id':{$in:a.game.players}}, function(err,players){
+			for(var i=0;i<players.length;i++){
+				var nz = neutralZones[Math.floor(Math.random() * neutralZones.length)];
+				console.log(nz);
+				for(var j=0;j<initPlayers;j++){
+					var u = new Unit({
+						game:a.game._id,
+						player:players[i]._id,
+						zone:nz._id
+					});
+					affectUnitToZone(u,nz);
+					if(players[i].units === undefined){
+						players[i].units = [u._id];
+					}
+					else{
+						players[i].units.push(u._id);
+					}
+					u.save();
+				}
+				console.log(i);
+				console.log(players[i]);
+				players[i].save();
+			}	
+		});
+
 
 		a.game.zones = zoneIdList;
 		a.game.startTime = a.date;
@@ -342,8 +384,8 @@ var execute = function(){
 	setTimeout(function(){
 
 		// Find an Action needing processing, tag it as assigned
-		Action.collection.findAndModify({'status':0, 'date':{$lte:new Date()}},[['_id','asc']],{$set: {status: 1}},{}, function (err, doc) {
-		//Action.collection.findAndModify({'status':0},[['_id','asc']],{$set: {status: 1}},{}, function (err, doc) {
+		//Action.collection.findAndModify({'status':0, 'date':{$lte:new Date()}},[['_id','asc']],{$set: {status: 1}},{}, function (err, doc) {
+		Action.collection.findAndModify({'status':0},[['_id','asc']],{$set: {status: 1}},{}, function (err, doc) {
 			if (err){
 				console.log(err);
 				return;
@@ -372,7 +414,7 @@ var execute = function(){
 						Action.findOne({'_id':doc._id}).populate('zone units').populate('zone.zoneDesc').exec(actionCallback);
 					break;
 					case 2: // Init
-						Action.findOne({'_id':doc._id}).populate('game players').exec(actionCallback);
+						Action.findOne({'_id':doc._id}).populate('game').populate('game.players').exec(actionCallback);
 					break;
 				}
 	    	}
@@ -433,12 +475,18 @@ var db = mongoose.connect(dbAddress, function(err) {
 		db.model('Zone', ZoneSchema);
 		db.model('Action', ActionSchema);
 		db.model('Game', GameSchema);
+		db.model('Player', PlayerSchema);
+		db.model('ZoneDescription', ZoneDescriptionSchema);
 		
 		Action = db.model('Action');
 		Zone = db.model('Zone');
 		Unit = db.model('Unit');
 		Game = db.model('Game');
+		Player = db.model('Player');
+		ZoneDescription = db.model('ZoneDescription');
 
+		var zdDummy = new ZoneDescription({type:'neutral'});
+		zdDummy.save();
 
 		//Action.collection.remove({},function(){});
 

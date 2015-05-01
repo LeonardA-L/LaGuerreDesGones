@@ -26,4 +26,5 @@ module.exports = function(app) {
 
 	app.route('/services/action/disp').post(webservices.displacementAction);
 	app.route('/services/action/sell').post(webservices.sellAction);
+	app.route('/services/action/buy').post(webservices.buyAction);
 };

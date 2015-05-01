@@ -57,5 +57,21 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		    	console.log('error');
 			});
 		};
+
+
+		$scope.testBuy = function(){
+  			var dto = {
+  				'zone':$scope.game.units[0].zone,
+  				'player':$scope.game.units[0].player
+  			};
+			$http.post('/services/action/buy',dto).
+			//success(function(data, status, headers, config) {
+			success(function(data) {
+		  		console.log(data);
+		  	}).
+			error(function(data) {
+		    	console.log('error');
+			});
+		};
 	}
 ]);

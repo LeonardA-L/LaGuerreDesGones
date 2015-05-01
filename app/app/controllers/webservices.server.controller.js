@@ -380,3 +380,22 @@ exports.sellAction = function(req, res) {
 	console.log(a);
 	registerAction(a);
 };
+
+exports.buyAction = function(req, res) {
+
+	// TODO rules
+
+	var Action = mongoose.model('Action');
+
+	console.log(req.body);
+	var a = new Action ({
+		type:3,
+		date:new Date(),
+		status:0,
+		zone:req.body.zone,
+		player:req.body.player
+	});
+	console.log('registering buy');
+	console.log(a);
+	registerAction(a);
+};

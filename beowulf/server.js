@@ -373,6 +373,7 @@ var processInit = function(a){
 };
 
 var processBuy = function(a){
+	console.log(a);
 	var price = 42;
 	a.player.money -= price;
 	// TODO create unit according to real stuff
@@ -380,6 +381,7 @@ var processBuy = function(a){
 	affectUnitToZone(u,a.zone);
 	a.player.units.push(u._id);
 	u.save();
+	a.zone.save();
 	a.player.save();
 };
 

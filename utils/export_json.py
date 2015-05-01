@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 import xml.etree.ElementTree as ET
+import json
 
 ####
 # CONST
@@ -19,27 +19,72 @@ map_type[9] = "airport"
 map_type[10] = "shopping_centre"
 map_type[11] = "woodstock"
 map_type[12] = "station"
-namespace = "http://www.opengis.net/kml/2.2"
+namespace = {'ns': 'http://www.opengis.net/kml/2.2'}
+
+####
+# VAR
+####
+listeZone = [];
 
 ####
 # PROG
 ####
-print("Lecture du fichier")
-mapTree = ET.parse('map_lyon_20150501_1043.kml')
+print("--- Lecture du fichier ---")
+mapTree = ET.parse('map_lyon_20150501_1231.kml')
 rootTree = mapTree.getroot()
-mapObj = [];
 
-domain = rootTree.attrib
-print(domain)
 
-print("Parcours de l'arborescence")
-i = 0
-allzones=rootTree.findall("./{"+namespace+"}Document/{"+namespace+"}Folder/{"+namespace+"}Placemark")
 
-for zone in allzones:
-	print("Zone "+str(i)+" :")
-	if zone.find("{"+namespace+"}Point") == None:
-		pass
-	zone_text = zone.find("{"+namespace+"}name").text
-	print (zone_text)
-	i=i+1
+print("--- Parcours de l'arborescence ---")
+allzones=rootTree.findall(".//ns:Placemark", namespace)
+
+for zoneElt in allzones:
+	zone = {}
+	try:
+		coord_elt = zoneElt.find("ns:Polygon/ns:outerBoundaryIs/ns:LinearRing/ns:coordinates", namespace)
+		if coord_elt == None:	# Case of icon / pin
+			continue
+		coord_text = coord_elt.text
+		coord_split = coord_text.split()
+		coord_list = []
+		for coord in coord_split:
+			coord_unit = coord.split(',')
+			coord_list.append([float(coord_unit[0]), float(coord_unit[1])])
+		name_text = zoneElt.find("ns:name", namespace).text
+		name_split = name_text.split(';') # ['16', 'Confluence', '2007', '10']
+
+		zone["border"] = coord_list
+		if name_split[2] == "":
+			zone["velov"] = -1
+		else:
+			zone["velov"] = int(name_split[2])
+		zone["type"] = map_type[int(name_split[3])]
+		zone["name"] = name_split[1]
+		zone["id"] = int(name_split[0])
+	except ValueError:
+		continue
+	listeZone.append(zone)
+
+print("--- Calcul des centres ---")
+for zone in listeZone:
+	lat = 0
+	lon = 0
+	length = len(zone["border"])
+	for coord in zone["border"]:
+		lat = lat + coord[1]
+		lon = lon + coord[0]
+	lat = lat / length
+	lon = lon / length
+	zone["y"] = lat
+	zone["x"] = lon
+	
+
+print("--- Export en Json ---")
+with open('map_lyon_20150501_1231.json', 'w') as outfile:
+    json.dump(listeZone, outfile)
+
+print("--- Termine ---")
+
+
+
+

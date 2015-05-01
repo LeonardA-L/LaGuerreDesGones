@@ -16,7 +16,6 @@ var SQUARE = 'square';
 var BANK = 'bank';
 var SHOPPING_CENTRE = 'shopping_centre';
 
-var DEFAULT_MAX_UNIT_NUMBER = 8;
 
 /**
  * Module dependencies.
@@ -38,10 +37,6 @@ var ZoneDescriptionSchema = new Schema({
 		type: String,
 		trim: true,
 		default: ''
-	},
-	nbUnitMax: {
-		type: Number,
-		default: DEFAULT_MAX_UNIT_NUMBER
 	},
 	border: [{
 		type: Schema.Types.ObjectId,

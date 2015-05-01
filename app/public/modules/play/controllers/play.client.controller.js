@@ -16,10 +16,18 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		$http.get('/services/play/'+gameId+'/start').
 		  //success(function(data, status, headers, config) {
 		  success(function(data) {
-		  	
-			console.log(data);
-
+			
 			$scope.game = data.success;
+
+			// Connection between player and hash
+			for(var i=0;i<$scope.game.players.length;i++){
+				$scope.game.players[$scope.game.players[i]._id] = $scope.game.players[i];
+			}
+			// Connection between zone and hash
+			for(var i=0;i<$scope.game.zones.length;i++){
+				$scope.game.zones[$scope.game.zones[i]._id] = $scope.game.zones[i];
+			}
+			console.log($scope.game);
 		  }).
 		  error(function(data) {
 		    console.log('error');

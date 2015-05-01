@@ -388,6 +388,7 @@ var processBuy = function(a){
 	var u = new Unit(matrixes.UnitData.content[a.newUnitType]);
 	affectUnitToZone(u,a.zone);
 	a.player.units.push(u._id);
+	u.player = a.player._id;
 	u.save();
 	a.zone.save();
 	a.player.save();

@@ -16,8 +16,29 @@ var Action = undefined;
 var Zone = undefined;
 var Unit = undefined;
 var Game = undefined;
+var ZoneDescription = undefined;
 
 // dirty pasted model
+
+var ZoneDescriptionSchema = new Schema({
+	type: {
+		type: String,
+		enum: [NEUTRAL, HOSPITAL, PARK, UNIVERSITY, CHURCH, WOODSTOCK, STATION, AIRPORT, CITY_HALL, SQUARE, BANK, SHOPPING_CENTRE],
+		default: NEUTRAL
+	},
+	name: {
+		type: String,
+		trim: true,
+		default: ''
+	},
+	nbUnitMax: {
+		type: Number,
+		default: DEFAULT_MAX_UNIT_NUMBER
+	},
+	border: Schema.Types.Mixed,
+	x : Number,
+	y : Number
+});
 
 var GameSchema = new Schema({
 	title: {
@@ -118,30 +139,6 @@ var UnitSchema = new Schema({
 
 
 var ZoneSchema = new Schema({
-	type: {
-		type: Number,
-		default: 0
-	},
-	name: {
-		type: String,
-		default: ''
-	},
-	nbUnitMax: {
-		type: Number,
-		default: 0
-	},
-	point: {
-		type: Number,
-		default: 0
-	},
-	x: {
-		type: Number,
-		default: 0
-	},
-	y: {
-		type: Number,
-		default: 0
-	},
 	units: [{
 		type: Schema.Types.ObjectId,
 		ref: 'Unit'
@@ -149,6 +146,11 @@ var ZoneSchema = new Schema({
 	game:{
 		type: Schema.Types.ObjectId,
 		ref: 'Game'
+	},
+	zoneDesc:{
+		type: Schema.Types.ObjectId,
+		ref: 'ZoneDescription',
+// TODO		required: true
 	}
 });
 
@@ -253,6 +255,46 @@ var processEndDisplacement = function(a){
 
 // Dummy process init
 var processInit = function(a){
+	var zoneIdList = [];
+	var neutralZones = [];
+
+	var initPlayers = 8;
+
+	ZoneDescription.find({},function(err,zdList){
+
+		for(var i=0;i<zdList.length;i++){
+			var zd = zdList[i];
+			var z = new Zone({
+				zoneDesc : zd._id;
+				game : a.game._id;
+			});
+			zoneIdList.push(z._id);
+			if(zd.type === 'neutral'){
+				neutralZones.push(z);
+			}
+			z.save();
+		}
+
+		for(var i=0;i<a.game.players.length;i++){
+			var nz = neutralZones[Math.floor(Math.random() * neutralZones.length)];
+			for(var j=0;j<initPlayers;j++){
+				var u = new Unit({
+					game:a.game._id,
+					player:a.game.players[i]._id,
+					zone:nz._id
+				});
+				a.game.players[i].units.push(u._id);
+				u.save();
+			}
+			a.game.players[i].save();
+		}
+
+		a.game.zones = zoneIdList;
+		a.game.startTime = a.date;
+		a.game.isInit = true;
+		a.game.save();
+	});
+/*
 	console.log('Processing init action');
 	// DUMMY
 	var zdA = new Zone({
@@ -280,6 +322,7 @@ var processInit = function(a){
 	a.game.startTime = a.date;
 	a.game.isInit = true;
 	a.game.save();
+*/
 };
 
 var actionHandlers = [];
@@ -322,14 +365,14 @@ var execute = function(){
 				};
 
 				switch(doc.type){
-					case 0:
-						Action.findOne({'_id':doc._id}).populate('units').populate('zoneA').populate('zoneB').exec(actionCallback);
+					case 0: // Displacement
+						Action.findOne({'_id':doc._id}).populate('units zoneA zoneB').populate('zoneA.zoneDesc zoneB.zoneDesc').exec(actionCallback);
 					break;
-					case 1:
-						Action.findOne({'_id':doc._id}).populate('zone').populate('units').exec(actionCallback);
+					case 1: // End Displacement
+						Action.findOne({'_id':doc._id}).populate('zone units').populate('zone.zoneDesc').exec(actionCallback);
 					break;
-					case 2:
-						Action.findOne({'_id':doc._id}).populate('game').exec(actionCallback);
+					case 2: // Init
+						Action.findOne({'_id':doc._id}).populate('game players').exec(actionCallback);
 					break;
 				}
 	    	}

@@ -43,14 +43,9 @@ var ZoneDescriptionSchema = new Schema({
 		type: Number,
 		default: DEFAULT_MAX_UNIT_NUMBER
 	},
-	border: [{
-		type: Schema.Types.ObjectId,
-		ref: 'PointGeo'
-	}],
-	center:{
-		type: Schema.Types.ObjectId,
-		ref: 'PointGeo'
-	}
+	border: Schema.Types.Mixed,
+	x : Number,
+	y : Number
 });
 
 mongoose.model('ZoneDescription', ZoneDescriptionSchema);

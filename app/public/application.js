@@ -17,19 +17,12 @@ angular.module(ApplicationConfiguration.applicationModuleName)
 angular.module(ApplicationConfiguration.applicationModuleName)
 	.run(['$rootScope', '$location', 'Authorisation', 'UserConst',
 		function ($rootScope, $location, Authorisation, UserConst) {
-			var routeChangeRequiredAfterLogin = false,
-				loginRedirectUrl;
 			$rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
 				var authorised;
-				if (routeChangeRequiredAfterLogin && toState.url !== '/signin') {
-					routeChangeRequiredAfterLogin = false;
-					$location.path(loginRedirectUrl).replace();
-				} else if (toState.access !== undefined) {
+				if (toState.access !== undefined) {
 					authorised = Authorisation.authorise(toState.access.loginRequired, toState.access.permissions, toState.access.permissionCheckType);
 					if (authorised === UserConst.authorisation.loginRequired) {
-						routeChangeRequiredAfterLogin = true;
-						loginRedirectUrl = toState.url;
-						$location.path('signin');
+						$location.path('signin').replace();
 					} else if (authorised === UserConst.authorisation.notAuthorised) {
 						$location.path('').replace();
 					}

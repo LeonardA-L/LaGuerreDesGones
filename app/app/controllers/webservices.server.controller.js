@@ -21,14 +21,14 @@ exports.cleanAll = function(req, res) {
 	var Zone = mongoose.model('Zone');
 	var Unit = mongoose.model('Unit');
 	var Action = mongoose.model('Action');
-	var ZoneDescription = mongoose.model('ZoneDescription');
+	//var ZoneDescription = mongoose.model('ZoneDescription');
 
 	Game.remove({},function(){});
 	Player.remove({},function(){});
 	Zone.remove({},function(){});
 	Unit.remove({},function(){});
 	Action.remove({},function(){});
-	ZoneDescription.remove({},function(){});
+	//ZoneDescription.remove({},function(){});
 	var ret = {
 		result:'ok'
 	};
@@ -52,6 +52,18 @@ exports.testapi = function(req, res) {
 		result:'ok'
 	};
 	res.json(ret);
+};
+
+exports.getAllPlayers = function(req, res) {
+	var Player = mongoose.model('Player');
+
+    Player.find({}, function (err, docs) {
+	  if (err)
+            res.send(err);
+
+        console.log(docs);
+        res.json({'success':docs}); // return all nerds in JSON format
+    });
 };
 
 
@@ -345,6 +357,26 @@ exports.displacementAction = function(req, res) {
 		units:req.body.unitIds
 	});
 	console.log('registering disp');
+	console.log(a);
+	registerAction(a);
+};
+
+exports.sellAction = function(req, res) {
+
+	// TODO rules
+
+	var Action = mongoose.model('Action');
+
+	console.log(req.body);
+	var a = new Action ({
+		type:4,
+		date:new Date(),
+		status:0,
+		zone:req.body.zone,
+		units:[req.body.unit],
+		player:req.body.player
+	});
+	console.log('registering sell');
 	console.log(a);
 	registerAction(a);
 };

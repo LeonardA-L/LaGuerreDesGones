@@ -50,7 +50,11 @@ var PlayerSchema = new Schema({
 	point: {
 		type: Number,
 		default: 0
-	}	
+	},
+	units: [{
+		type: Schema.Types.ObjectId,
+		ref: 'Unit'
+	}]
 });
 
 var ZoneDescriptionSchema = new Schema({
@@ -380,17 +384,22 @@ var processBuy = function(a){
 };
 
 var processSell = function(a){
+	console.log(a);
 	var price = 21;
 	a.player.money += price;
 	Unit.remove({'_id':a.units[0]}, function(){});
 	a.zone.units.splice(a.zone.units.indexOf(a.units[0]),1);
 	a.player.units.splice(a.player.units.indexOf(a.units[0]),1);
+	a.player.save();
+	a.zone.save();
 };
 
 var actionHandlers = [];
 actionHandlers.push(processDisplacement);
 actionHandlers.push(processEndDisplacement);
 actionHandlers.push(processInit);
+actionHandlers.push(processBuy);
+actionHandlers.push(processSell);
 
 // TODO
  var processAction = function(a){

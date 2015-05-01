@@ -2,14 +2,16 @@
 	<div  class="playSection">
 		<h1>{{game.title}}</h1>
 	</div>
-	<span ng-click="testDisp()">CLICK ME</span>
+	<span ng-click="testDisp()">CLICK ME To Move</span> | <span ng-click="testSell()">CLICK ME To sell first unit</span>
 	<br/>
 	<label>Zones (pour ceux qui se demandent, Charpennes != Charles Hernu)</label>
-	<div ng-repeat="zone in game.zones">
-		<div style="height:300px; width:300px;background-color:#FEE; border: solid; border-color: green;">
-			{{zone.name}}
+	<div ng-repeat="zone in game.zones" class="zoneBox">
+		<div class="zoneBox">
+			{{zone.zoneDesc.name}}
 		</div>
 	</div>
 	<label>Grosses unités</label>
 	<p ng-repeat="unit in game.units">{{unit._id}} - ({{unit.x}},{{unit.y}})</p>
+	<lavel>Players</label>
+	<p ng-repeat="p in game.players">{{p._id}} - {{p.name}} - {{p.money}}$</p>
 </section>

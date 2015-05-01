@@ -38,7 +38,11 @@ var PlayerSchema = new Schema({
 	point: {
 		type: Number,
 		default: 0
-	}
+	},
+	units: [{
+		type: Schema.Types.ObjectId,
+		ref: 'Unit'
+	}]
 });
 
 mongoose.model('Player', PlayerSchema);

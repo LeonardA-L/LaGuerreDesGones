@@ -62,7 +62,8 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		$scope.testBuy = function(){
   			var dto = {
   				'zone':$scope.game.units[0].zone,
-  				'player':$scope.game.units[0].player
+  				'player':$scope.game.units[0].player,
+  				'newUnitType':7
   			};
 			$http.post('/services/action/buy',dto).
 			//success(function(data, status, headers, config) {

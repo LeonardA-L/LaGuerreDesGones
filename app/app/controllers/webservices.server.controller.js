@@ -406,7 +406,8 @@ exports.buyAction = function(req, res) {
 		date:new Date(),
 		status:0,
 		zone:req.body.zone,
-		player:req.body.player
+		player:req.body.player,
+		newUnitType : req.body.newUnitType
 	});
 	console.log('registering buy');
 	console.log(a);

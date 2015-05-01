@@ -53,7 +53,7 @@ var ActionSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: 'Player'
 	},
-	unitDescription:Schema.Types.Mixed
+	newUnitType : Number
 	
 });
 

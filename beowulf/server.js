@@ -18,8 +18,16 @@ var Unit = undefined;
 var Game = undefined;
 var ZoneDescription = undefined;
 var Player = undefined;
+var Matrix = undefined;
+
+var matrixes = undefined;
 
 // dirty pasted model
+
+var MatrixSchema = new Schema({
+	name : String,
+	content: Schema.Types.Mixed
+});
 
 var PlayerSchema = new Schema({
 	name: {
@@ -225,9 +233,11 @@ var ActionSchema = new Schema({
 	player: {
 		type: Schema.Types.ObjectId,
 		ref: 'Player'
-	}
+	},
+	newUnitType : Number
 	
 });
+
 
 var affectUnitToZone = function(u,z){
 	u.zone = z._id;
@@ -312,6 +322,7 @@ var processEndDisplacement = function(a){
 
 // Dummy process init
 var processInit = function(a){
+	console.log('Processing init action');
 	var zoneIdList = [];
 	var neutralZones = [];
 
@@ -354,7 +365,7 @@ var processInit = function(a){
 					u.save();
 				}
 				console.log(i);
-				console.log(players[i]);
+				//console.log(players[i]);
 				players[i].money = initMoney;
 				players[i].save();
 			}	
@@ -369,11 +380,12 @@ var processInit = function(a){
 };
 
 var processBuy = function(a){
+	console.log('Processing buy action');
 	console.log(a);
-	var price = 42;
+	var price = matrixes.UnitData.content[a.newUnitType].price;
 	a.player.money -= price;
 	// TODO create unit according to real stuff
-	var u = new Unit();
+	var u = new Unit(matrixes.UnitData.content[a.newUnitType]);
 	affectUnitToZone(u,a.zone);
 	a.player.units.push(u._id);
 	u.save();
@@ -382,7 +394,7 @@ var processBuy = function(a){
 };
 
 var processSell = function(a){
-	console.log(a);
+	console.log('Processing sell action');
 	var price = 21;
 	a.player.money += price;
 	Unit.remove({'_id':a.units[0]}, function(){});
@@ -508,14 +520,23 @@ var db = mongoose.connect(dbAddress, function(err) {
 		db.model('Game', GameSchema);
 		db.model('Player', PlayerSchema);
 		db.model('ZoneDescription', ZoneDescriptionSchema);
+		db.model('Matrix', MatrixSchema);
 		
 		Action = db.model('Action');
 		Zone = db.model('Zone');
 		Unit = db.model('Unit');
 		Game = db.model('Game');
 		Player = db.model('Player');
+		Matrix = db.model('Matrix');
 		ZoneDescription = db.model('ZoneDescription');
 
+
+		Matrix.find({'name':{$in:['UnitData']}},function(err,mat){
+			matrixes = {};
+			for(var i=0;i<mat.length;i++){
+				matrixes[mat[i].name] = mat[i];
+			}
+		});
 		//var zdDummy = new ZoneDescription({type:'neutral'});
 		//zdDummy.save();
 

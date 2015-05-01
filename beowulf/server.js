@@ -227,59 +227,82 @@ var ActionSchema = new Schema({
 
 var affectUnitToZone = function(u,z){
 	u.zone = z._id;
-	u.x = z.x;
-	u.y = z.y;
-	u.xt = z.x;
-	u.yt = z.y;
+	u.x = z.zoneDesc.x;
+	u.y = z.zoneDesc.y;
+	u.xt = z.zoneDesc.x;
+	u.yt = z.zoneDesc.y;
 	u.game = z.game;
 	z.units.push(u._id);
 };
 
 var processDisplacement = function(a){
-	var duration = 30000;
- 	console.log('Processing displacement action');
- 	//console.log(a);
- 	for (var i=0 ; i < a.units.length ; ++i) {
- 		var u = a.units[i];
- 		u.available=false;
- 		u.ts=a.date.getTime();
- 		u.te=u.ts+duration;
- 		u.xt=a.zoneB.x;
- 		u.yt=a.zoneB.y;
- 		u.x=a.zoneA.x;
- 		u.y=a.zoneA.y;
- 		console.log(a.zoneA.units);
-		a.zoneA.units.splice(a.zoneA.units.indexOf(u._id), 1);
-		console.log(a.zoneA.units);
-		// TODO
-		u.save();
- 	}
 
- 	var b = new Action({
-		type :1,
-		date: new Date(a.date.getTime() + duration),
-		status :0,
-		units:a.units,
-		zone:a.zoneB,
-	});
-	//console.log(b.date);
-	console.log('Saving end displacement action');
-	b.save();
+	var syncFunction=function(){
+		var duration = 30000;
+		for (var i=0 ; i < a.units.length ; ++i) {
+	 		var u = a.units[i];
+	 		u.available=false;
+	 		u.ts=a.date.getTime();
+	 		u.te=u.ts+duration;
+	 		u.xt=a.zoneB.zoneDesc.x;
+	 		u.yt=a.zoneB.zoneDesc.y;
+	 		u.x=a.zoneA.zoneDesc.x;
+	 		u.y=a.zoneA.zoneDesc.y;
+	 		console.log(a.zoneA.units);
+			a.zoneA.units.splice(a.zoneA.units.indexOf(u._id), 1);
+			console.log(a.zoneA.units);
+			// TODO
+			u.save();
+	 	}
+
+	 	var b = new Action({
+			type :1,
+			date: new Date(a.date.getTime() + duration),
+			status :0,
+			units:a.units,
+			zone:a.zoneB._id,
+			game:a.game
+		});
+		//console.log(b.date);
+		console.log('Saving end displacement action');
+		b.save();
+	};
+	
+	var syncCount = 2;
+ 	console.log('Processing displacement action');
+ 	Zone.findById(a.game.zoneA).populate('zoneDesc').exec(function(err,zo){
+ 		a.game.zoneA = zo;
+ 		if(--syncCount === 0){
+ 			syncFunction();
+ 		}
+ 	});
+ 	Zone.findById(a.game.zoneB).populate('zoneDesc').exec(function(err,zo){
+ 		a.game.zoneB = zo;
+ 		if(--syncCount === 0){
+ 			syncFunction();
+ 		}
+ 	});
+ 	//console.log(a);
+ 	
 };
 
 var processEndDisplacement = function(a){
 	console.log('Processing end displacement action');
 	//console.log(a);
-	for (var i=0 ; i < a.units.length ; ++i) {
- 		var u = a.units[i];
- 		u.available=true;
- 		u.ts=a.date.getTime();
- 		u.te=u.ts;
- 		affectUnitToZone(u,a.zone);
-		a.zone.save();
-		// TODO
-		u.save();
- 	}
+	Zone.findById(a.game.zone).populate('zoneDesc').exec(function(err,zo){
+		a.game.zone = zo;
+ 		for (var i=0 ; i < a.units.length ; ++i) {
+	 		var u = a.units[i];
+	 		u.available=true;
+	 		u.ts=a.date.getTime();
+	 		u.te=u.ts;
+	 		affectUnitToZone(u,a.zone);
+			a.zone.save();
+			// TODO
+			u.save();
+ 		}
+ 	});
+	
 };
 
 
@@ -295,7 +318,7 @@ var processInit = function(a){
 		for(var i=0;i<zdList.length;i++){
 			var zd = zdList[i];
 			var z = new Zone({
-				zoneDesc : zd._id,
+				zoneDesc : zd,
 				game : a.game._id
 			});
 			zoneIdList.push(z._id);
@@ -408,10 +431,10 @@ var execute = function(){
 
 				switch(doc.type){
 					case 0: // Displacement
-						Action.findOne({'_id':doc._id}).populate('units zoneA zoneB').populate('zoneA.zoneDesc zoneB.zoneDesc').exec(actionCallback);
+						Action.findOne({'_id':doc._id}).populate('units zoneA zoneB').exec(actionCallback);
 					break;
 					case 1: // End Displacement
-						Action.findOne({'_id':doc._id}).populate('zone units').populate('zone.zoneDesc').exec(actionCallback);
+						Action.findOne({'_id':doc._id}).populate('zone units').exec(actionCallback);
 					break;
 					case 2: // Init
 						Action.findOne({'_id':doc._id}).populate('game').populate('game.players').exec(actionCallback);

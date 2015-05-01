@@ -1,0 +1,8 @@
+dono@dono-VirtualBox:~/Documents/petulant-meme/utils$ mongoimport -d pldapp-dev -c zonedescriptions < map_lyon_20150501_1231.json 
+connected to: 127.0.0.1
+2015-05-01T18:40:49.896+0200 check 9 51
+2015-05-01T18:40:49.896+0200 imported 51 objects
+dono@dono-VirtualBox:~/Documents/petulant-meme/utils$ 
+dono@dono-VirtualBox:~/Documents/petulant-meme/utils$ mongoexport -d pldapp-dev -c zonedescriptions -o testtest.json
+connected to: 127.0.0.1
+exported 51 records

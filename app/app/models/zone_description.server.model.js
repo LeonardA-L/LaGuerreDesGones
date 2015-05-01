@@ -38,16 +38,14 @@ var ZoneDescriptionSchema = new Schema({
 		trim: true,
 		default: ''
 	},
-	nbUnitMax: {
-		type: Number,
-		default: DEFAULT_MAX_UNIT_NUMBER
-	},
 
 	border: Schema.Types.Mixed,
 
 	x : Number,
 
-	y : Number
+	y : Number,
+	
+	velov : Number
 
 });
 

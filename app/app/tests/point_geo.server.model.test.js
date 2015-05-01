@@ -15,7 +15,7 @@ var point1, point2;
 /**
  * Unit tests
  */
-describe('Zone Model Unit Tests:', function() {
+describe('Point Geo Model Unit Tests:', function() {
 	before(function(done) {
 		point1 = new PointGeo({
 			latitude: 10.5,

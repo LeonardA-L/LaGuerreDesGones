@@ -2,6 +2,10 @@
 
 import xml.etree.ElementTree as ET
 import json
+import os
+from bson.objectid import ObjectId
+
+
 
 ####
 # CONST
@@ -33,7 +37,7 @@ print("--- Lecture du fichier ---")
 mapTree = ET.parse('map_lyon_20150501_1231.kml')
 rootTree = mapTree.getroot()
 
-
+os.remove("map_lyon_20150501_1231.json")
 
 print("--- Parcours de l'arborescence ---")
 allzones=rootTree.findall(".//ns:Placemark", namespace)
@@ -60,7 +64,9 @@ for zoneElt in allzones:
 			zone["velov"] = int(name_split[2])
 		zone["type"] = map_type[int(name_split[3])]
 		zone["name"] = name_split[1]
-		zone["id"] = int(name_split[0])
+		zone["_id"] = {}
+		zone["_id"]["$oid"] = str(ObjectId())
+		zone["__v"] = 0
 	except ValueError:
 		continue
 	listeZone.append(zone)
@@ -80,8 +86,10 @@ for zone in listeZone:
 	
 
 print("--- Export en Json ---")
-with open('map_lyon_20150501_1231.json', 'w') as outfile:
-    json.dump(listeZone, outfile)
+with open('map_lyon_20150501_1231.json', 'a') as outfile:
+	for zone in listeZone:
+		json.dump(zone, outfile)
+		outfile.write('\n')
 
 print("--- Termine ---")
 

@@ -16,7 +16,6 @@ var SQUARE = 'square';
 var BANK = 'bank';
 var SHOPPING_CENTRE = 'shopping_centre';
 
-var DEFAULT_MAX_UNIT_NUMBER = 8;
 
 /**
  * Module dependencies.
@@ -39,13 +38,15 @@ var ZoneDescriptionSchema = new Schema({
 		trim: true,
 		default: ''
 	},
-	nbUnitMax: {
-		type: Number,
-		default: DEFAULT_MAX_UNIT_NUMBER
-	},
+
 	border: Schema.Types.Mixed,
+
 	x : Number,
-	y : Number
+
+	y : Number,
+	
+	velov : Number
+
 });
 
 mongoose.model('ZoneDescription', ZoneDescriptionSchema);

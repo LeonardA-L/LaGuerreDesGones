@@ -244,11 +244,12 @@ exports.startPlay = function(req,res){
 	var result = {
 		success:{}
 	};
-	var syncCallback = 4;
+	var syncCallback = 5;
 	var Game = mongoose.model('Game');
 	var Player = mongoose.model('Player');
 	var Zone = mongoose.model('Zone');
 	var Unit = mongoose.model('Unit');
+	var Action = mongoose.model('Action');
 
 	console.log(req.params.gameId);
 	Game.findOne({'_id':req.params.gameId}, function(err,game){
@@ -283,7 +284,14 @@ exports.startPlay = function(req,res){
 			res.json(result);
 		}
 	});
-	// TODO players
+	Action.find({'game':req.params.gameId}, function(err,actions){
+		if(err)
+			res.send(err);
+		result.success.actions = actions;
+		if(--syncCallback === 0){
+			res.json(result);
+		}
+	});
 };
 
 

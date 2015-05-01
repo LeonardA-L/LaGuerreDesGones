@@ -21,11 +21,11 @@ var UnitSchema = new Schema({
 	},
 	attack: {
 		type: Number,
-		default: 0
+		default: 1
 	},
 	defence: {
 		type: Number,
-		default: 0
+		default: 1
 	},
 	health: {
 		type: Number,

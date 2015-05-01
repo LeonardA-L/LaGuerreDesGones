@@ -15,6 +15,38 @@ var registerAction=function(newAction){
 	});
 };
 
+exports.cleanAll = function(req, res) {
+	var Game = mongoose.model('Game');
+	var Player = mongoose.model('Player');
+	var Zone = mongoose.model('Zone');
+	var Unit = mongoose.model('Unit');
+	var Action = mongoose.model('Action');
+	var ZoneDescription = mongoose.model('ZoneDescription');
+
+	Game.remove({},function(){});
+	Player.remove({},function(){});
+	Zone.remove({},function(){});
+	Unit.remove({},function(){});
+	Action.remove({},function(){});
+	ZoneDescription.remove({},function(){});
+	var ret = {
+		result:'ok'
+	};
+	res.json(ret);
+};
+
+exports.getAllZoneDescs = function(req, res) {
+	var ZoneDescription = mongoose.model('ZoneDescription');
+
+    ZoneDescription.find({}, function (err, docs) {
+	  if (err)
+            res.send(err);
+
+        console.log(docs);
+        res.json({'success':docs}); // return all nerds in JSON format
+    });
+};
+
 exports.testapi = function(req, res) {
 	var ret = {
 		result:'ok'
@@ -244,11 +276,12 @@ exports.startPlay = function(req,res){
 	var result = {
 		success:{}
 	};
-	var syncCallback = 4;
+	var syncCallback = 5;
 	var Game = mongoose.model('Game');
 	var Player = mongoose.model('Player');
 	var Zone = mongoose.model('Zone');
 	var Unit = mongoose.model('Unit');
+	var Action = mongoose.model('Action');
 
 	console.log(req.params.gameId);
 	Game.findOne({'_id':req.params.gameId}, function(err,game){
@@ -267,7 +300,7 @@ exports.startPlay = function(req,res){
 			res.json(result);
 		}
 	});
-	Zone.find({'game':req.params.gameId}, function(err,zones){
+	Zone.find({'game':req.params.gameId}).populate('zoneDesc').populate('zoneDesc.center').populate('zoneDesc.border').exec(function(err,zones){
 		if(err)
 			res.send(err);
 		result.success.zones = zones;
@@ -283,7 +316,14 @@ exports.startPlay = function(req,res){
 			res.json(result);
 		}
 	});
-	// TODO players
+	Action.find({'game':req.params.gameId}, function(err,actions){
+		if(err)
+			res.send(err);
+		result.success.actions = actions;
+		if(--syncCallback === 0){
+			res.json(result);
+		}
+	});
 };
 
 

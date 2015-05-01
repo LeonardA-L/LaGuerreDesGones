@@ -20,6 +20,8 @@ module.exports = function(app) {
 	app.route('/services/api/actions').get(webservices.getAllActions);
 	app.route('/services/api/units').get(webservices.getAllUnits);
 	app.route('/services/api/zones').get(webservices.getAllZones);
+	app.route('/services/api/zoneDescs').get(webservices.getAllZoneDescs);
+	app.route('/services/api/cleanAll').get(webservices.cleanAll);
 
 	app.route('/services/play/:gameId/start').get(webservices.startPlay);	
 };

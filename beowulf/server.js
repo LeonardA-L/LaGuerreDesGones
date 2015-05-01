@@ -508,8 +508,8 @@ var db = mongoose.connect(dbAddress, function(err) {
 		Player = db.model('Player');
 		ZoneDescription = db.model('ZoneDescription');
 
-		var zdDummy = new ZoneDescription({type:'neutral'});
-		zdDummy.save();
+		//var zdDummy = new ZoneDescription({type:'neutral'});
+		//zdDummy.save();
 
 		//Action.collection.remove({},function(){});
 

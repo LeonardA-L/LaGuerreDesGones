@@ -312,6 +312,7 @@ var processInit = function(a){
 	var neutralZones = [];
 
 	var initPlayers = 8;
+	var initMoney = 1000;
 
 	ZoneDescription.find({},function(err,zdList){
 
@@ -349,6 +350,7 @@ var processInit = function(a){
 				}
 				console.log(i);
 				console.log(players[i]);
+				players[i].money = initMoney;
 				players[i].save();
 			}	
 		});

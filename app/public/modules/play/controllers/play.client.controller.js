@@ -24,8 +24,8 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 				$scope.game.players[$scope.game.players[i]._id] = $scope.game.players[i];
 			}
 			// Connection between zone and hash
-			for(var i=0;i<$scope.game.zones.length;i++){
-				$scope.game.zones[$scope.game.zones[i]._id] = $scope.game.zones[i];
+			for(var j=0;j<$scope.game.zones.length;j++){
+				$scope.game.zones[$scope.game.zones[j]._id] = $scope.game.zones[j];
 			}
 			console.log($scope.game);
 		  }).

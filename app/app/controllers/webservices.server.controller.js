@@ -288,13 +288,14 @@ exports.startPlay = function(req,res){
 	var result = {
 		success:{}
 	};
-	var syncCallback = 6;
+	var syncCallback = 7;
 	var Game = mongoose.model('Game');
 	var Player = mongoose.model('Player');
 	var Zone = mongoose.model('Zone');
 	var Unit = mongoose.model('Unit');
 	var Action = mongoose.model('Action');
 	var Matrix = mongoose.model('Matrix');
+	var ZoneDesc = mongoose.model('ZoneDescription');
 
 	console.log(req.params.gameId);
 	Game.findOne({'_id':req.params.gameId}, function(err,game){
@@ -313,10 +314,21 @@ exports.startPlay = function(req,res){
 			res.json(result);
 		}
 	});
-	Zone.find({'game':req.params.gameId}).populate('zoneDesc').populate('zoneDesc.center').populate('zoneDesc.border').exec(function(err,zones){
+	Zone.find({'game':req.params.gameId}).exec(function(err,zones){
 		if(err)
 			res.send(err);
 		result.success.zones = zones;
+		if(--syncCallback === 0){
+			res.json(result);
+		}
+	});
+	ZoneDesc.find({}).exec(function(err,zonesDesc){
+		if(err)
+			res.send(err);
+		result.success.zonesDesc = {};
+		for(var i=0;i<zonesDesc.length;i++){
+			result.success.zonesDesc[zonesDesc[i]._id] = zonesDesc[i];
+		}
 		if(--syncCallback === 0){
 			res.json(result);
 		}

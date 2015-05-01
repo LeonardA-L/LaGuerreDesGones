@@ -8,7 +8,7 @@
 	<label>Zones (pour ceux qui se demandent, Charpennes != Charles Hernu)</label>
 	<div ng-repeat="zone in game.zones" class="zoneBox">
 		<div class="zoneBox">
-			{{zone.zoneDesc.name}}
+			{{game.zonesDesc[zone.zoneDesc].name}}
 		</div>
 	</div>
 	<label>Grosses unités</label>

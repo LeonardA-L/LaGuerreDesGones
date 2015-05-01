@@ -125,10 +125,6 @@ var UnitSchema = new Schema({
 		type: Number,
 		default: 0
 	},
-	health: {
-		type: Number,
-		default: 0
-	},
 	point: {
 		type: Number,
 		default: 0

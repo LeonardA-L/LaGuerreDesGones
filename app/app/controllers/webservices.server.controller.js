@@ -288,12 +288,13 @@ exports.startPlay = function(req,res){
 	var result = {
 		success:{}
 	};
-	var syncCallback = 5;
+	var syncCallback = 6;
 	var Game = mongoose.model('Game');
 	var Player = mongoose.model('Player');
 	var Zone = mongoose.model('Zone');
 	var Unit = mongoose.model('Unit');
 	var Action = mongoose.model('Action');
+	var Matrix = mongoose.model('Matrix');
 
 	console.log(req.params.gameId);
 	Game.findOne({'_id':req.params.gameId}, function(err,game){
@@ -332,6 +333,18 @@ exports.startPlay = function(req,res){
 		if(err)
 			res.send(err);
 		result.success.actions = actions;
+		if(--syncCallback === 0){
+			res.json(result);
+		}
+	});
+
+	Matrix.find({'name':{$in:['UnitData']}},function(err,matrixes){
+		if(err)
+			res.send(err);
+		result.success.matrixes = {};
+		for(var i=0;i<matrixes.length;i++){
+			result.success.matrixes[matrixes[i].name] = matrixes[i];
+		}
 		if(--syncCallback === 0){
 			res.json(result);
 		}
@@ -398,4 +411,81 @@ exports.buyAction = function(req, res) {
 	console.log('registering buy');
 	console.log(a);
 	registerAction(a);
+};
+
+exports.firstUseFillBDD = function(req,res){
+/*
+// First use : fill BDD
+*/
+var Matrix = mongoose.model('Matrix');
+Matrix.remove({'name':{$in:['UnitData']}},function(err,data){
+	var unitData = new Matrix({
+		name:'UnitData',
+		content :[{
+			type:0,
+			attack:1,
+			defense:1,
+			point:1,
+			price:10,
+			name:'Lyonnais'
+		},
+		{
+			type:1,
+			attack:1,
+			defense:2,
+			point:2,
+			price:20,
+			name:'Cycliste'
+		},
+		{
+			type:2,
+			attack:4,
+			defense:1,
+			point:3,
+			price:40,
+			name:'Etudiant'
+		},
+		{
+			type:3,
+			attack:1,
+			defense:2,
+			point:2,
+			price:20,
+			name:'Hippie'
+		},
+		{
+			type:4,
+			attack:2,
+			defense:1,
+			point:2,
+			price:20,
+			name:'Joggeur'
+		},
+		{
+			type:5,
+			attack:1,
+			defense:4,
+			point:3,
+			price:40,
+			name:'Médecin'
+		},
+		{
+			type:6,
+			attack:1,
+			defense:1,
+			point:2,
+			price:30,
+			name:'Prête'
+		},
+		{
+			type:7,
+			attack:3,
+			defense:2,
+			point:3,
+			price:45,
+			name:'Scientifique'
+		}]
+	});
+	unitData.save();
+});
 };

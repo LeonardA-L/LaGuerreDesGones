@@ -268,7 +268,7 @@ exports.startPlay = function(req,res){
 			res.json(result);
 		}
 	});
-	Zone.find({'game':req.params.gameId}).populate('zoneDesc').exec(function(err,zones){
+	Zone.find({'game':req.params.gameId}).populate('zoneDesc').populate('zoneDesc.center').populate('zoneDesc.border').exec(function(err,zones){
 		if(err)
 			res.send(err);
 		result.success.zones = zones;

@@ -221,6 +221,10 @@ var ActionSchema = new Schema({
 	game:{
 		type: Schema.Types.ObjectId,
 		ref: 'Game'
+	},
+	player: {
+		type: Schema.Types.ObjectId,
+		ref: 'Player'
 	}
 	
 });
@@ -329,6 +333,7 @@ var processInit = function(a){
 			z.save();
 		}
 
+		console.log(a.game);
 		Player.find({'_id':{$in:a.game.players}}, function(err,players){
 			for(var i=0;i<players.length;i++){
 				var nz = neutralZones[Math.floor(Math.random() * neutralZones.length)];
@@ -361,35 +366,25 @@ var processInit = function(a){
 		a.game.isInit = true;
 		a.game.save();
 	});
-/*
-	console.log('Processing init action');
-	// DUMMY
-	var zdA = new Zone({
-		name:'Charpennes',
-		point:42,
-		x:10,
-		y:15,
-		game:a.game._id,
-		units:[]
-	});
-	var zdB = new Zone({
-		name:'Charles Hernu',
-		point:42,
-		x:20,
-		y:25,
-		game:a.game._id,
-		units:[]
-	});
-	var ud = new Unit();
-	affectUnitToZone(ud,zdA);
-	zdA.save();
-	zdB.save();
-	ud.save();
-	a.game.zones = [zdA._id,zdB._id];
-	a.game.startTime = a.date;
-	a.game.isInit = true;
-	a.game.save();
-*/
+};
+
+var processBuy = function(a){
+	var price = 42;
+	a.player.money -= price;
+	// TODO create unit according to real stuff
+	var u = new Unit();
+	affectUnitToZone(u,a.zone);
+	a.player.units.push(u._id);
+	u.save();
+	a.player.save();
+};
+
+var processSell = function(a){
+	var price = 21;
+	a.player.money += price;
+	Unit.remove({'_id':a.units[0]}, function(){});
+	a.zone.units.splice(a.zone.units.indexOf(a.units[0]),1);
+	a.player.units.splice(a.player.units.indexOf(a.units[0]),1);
 };
 
 var actionHandlers = [];
@@ -439,7 +434,11 @@ var execute = function(){
 						Action.findOne({'_id':doc._id}).populate('zone units').exec(actionCallback);
 					break;
 					case 2: // Init
-						Action.findOne({'_id':doc._id}).populate('game').populate('game.players').exec(actionCallback);
+						Action.findOne({'_id':doc._id}).populate('game').exec(actionCallback);
+					break;
+					case 3: // Buy
+					case 4: // Sell
+						Action.findOne({'_id':doc._id}).populate('player zone').exec(actionCallback);
 					break;
 				}
 	    	}

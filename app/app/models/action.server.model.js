@@ -48,7 +48,12 @@ var ActionSchema = new Schema({
 	game:{
 		type: Schema.Types.ObjectId,
 		ref: 'Game'
-	}
+	},
+	player: {
+		type: Schema.Types.ObjectId,
+		ref: 'Player'
+	},
+	unitDescription:Schema.Types.Mixed
 	
 });
 

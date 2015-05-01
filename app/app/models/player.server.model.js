@@ -38,7 +38,7 @@ var PlayerSchema = new Schema({
 	point: {
 		type: Number,
 		default: 0
-	}	
+	}
 });
 
 mongoose.model('Player', PlayerSchema);

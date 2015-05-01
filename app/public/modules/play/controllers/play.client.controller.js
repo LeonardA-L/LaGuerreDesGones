@@ -33,12 +33,12 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		    console.log('error');
 		});
 
-  		$scope.testDisp = function(){
+  		$scope.move = function(zoneAId,zoneBId,listUnits){
   			var dto = {
   				'gameId':gameId,
-  				'zoneAId':$scope.game.zones[0]._id,
-  				'zoneBId':$scope.game.zones[1]._id,
-  				'unitIds':[$scope.game.units[0]._id]
+  				'zoneAId':zoneAId,
+  				'zoneBId':zoneBId,
+  				'unitIds':listUnits
   			};
 			$http.post('/services/action/disp',dto).
 			//success(function(data, status, headers, config) {
@@ -50,7 +50,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			});
 		};
 
-		$scope.testSell = function(){
+		$scope.sell = function(zoneId,unitId,playerId){
   			var dto = {
   				'zone':$scope.game.units[0].zone,
   				'unit':$scope.game.units[0]._id,
@@ -66,12 +66,12 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			});
 		};
 
-
-		$scope.testBuy = function(){
-  			var dto = {
-  				'zone':$scope.game.units[0].zone,
-  				'player':$scope.game.units[0].player,
-  				'newUnitType':7
+		$scope.buy = function(zoneId, playerId, newUnitTypeN){
+			console.log('Buying');
+			var dto = {
+  				'zone':zoneId,
+  				'player':playerId,
+  				'newUnitType':newUnitTypeN
   			};
 			$http.post('/services/action/buy',dto).
 			//success(function(data, status, headers, config) {

@@ -398,7 +398,10 @@ var processSell = function(a){
 	console.log('Processing sell action');
 	var price = 21;
 	a.player.money += price;
-	Unit.remove({'_id':a.units[0]}, function(){});
+	Unit.remove({'_id':a.units[0]}, function(err){
+		if(err)
+			console.log(err);
+	});
 	a.zone.units.splice(a.zone.units.indexOf(a.units[0]),1);
 	a.player.units.splice(a.player.units.indexOf(a.units[0]),1);
 	a.player.save();

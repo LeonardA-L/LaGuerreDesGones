@@ -82,5 +82,10 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		    	console.log('error');
 			});
 		};
+
+		$(".game-panel").css({'height':(($(window).height())-$('header').height())+'px'});
+		$(window).resize(function() {
+			$(".game-panel").css({'height':(($(window).height())-$('header').height())+'px'});
+		});
 	}
 ]);

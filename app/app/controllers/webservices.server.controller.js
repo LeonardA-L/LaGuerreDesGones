@@ -47,6 +47,20 @@ exports.getAllZoneDescs = function(req, res) {
     });
 };
 
+exports.generateHop = function(req, res) {
+	var ret = {
+		result:'ok'
+	};
+	var Action = mongoose.model('Action');
+	var b = new Action({
+			type:5,
+			game:req.params.gameId,
+			date:new Date()
+		});
+		b.save();
+	res.json(ret);
+};
+
 exports.testapi = function(req, res) {
 	var ret = {
 		result:'ok'

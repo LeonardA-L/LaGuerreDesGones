@@ -38,7 +38,7 @@ var SQUARE = 'square';
 var BANK = 'bank';
 var SHOPPING_CENTRE = 'shopping_centre';
 
-var updateInterval = 60000;
+var updateInterval = 30000;
 var updateMoney = 0;
 
 // dirty pasted model
@@ -406,7 +406,7 @@ var processInit = function(a){
 		var b = new Action({
 			type:5,
 			game:a.game._id,
-			date:a.date+updateInterval
+			date:new Date(a.date.getTime()+updateInterval)
 		});
 		b.save();
 	});
@@ -468,6 +468,14 @@ var processHop = function(a){
 			}
 		});
 	});
+
+	console.log('Generate next hop');
+		var b = new Action({
+			type:5,
+			game:a.game,
+			date:new Date(a.date.getTime()+updateInterval)
+		});
+		b.save();
 };
 
 var actionHandlers = [];
@@ -490,8 +498,8 @@ var execute = function(){
 	setTimeout(function(){
 
 		// Find an Action needing processing, tag it as assigned
-		//Action.collection.findAndModify({'status':0, 'date':{$lte:new Date()}},[['_id','asc']],{$set: {status: 1}},{}, function (err, doc) {
-		Action.collection.findAndModify({'status':0},[['_id','asc']],{$set: {status: 1}},{}, function (err, doc) {
+		Action.collection.findAndModify({'status':0, 'date':{$lte:new Date()}},[['_id','asc']],{$set: {status: 1}},{}, function (err, doc) {
+		//Action.collection.findAndModify({'status':0},[['_id','asc']],{$set: {status: 1}},{}, function (err, doc) {
 			if (err){
 				console.log(err);
 				return;

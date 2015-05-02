@@ -28,6 +28,7 @@
 
 	#game-left-panel {
 		background-color: #ecf0f1;
+		overflow-y: scroll;
 	}
 
 	#game-left-panel hr {
@@ -35,7 +36,7 @@
 	}
 
 	.nopadding {
-   		padding: 0 !important;
-   		margin: 0 !important;
+   		padding: 0;// !important;
+   		margin: 0;// !important;
 	}
 }

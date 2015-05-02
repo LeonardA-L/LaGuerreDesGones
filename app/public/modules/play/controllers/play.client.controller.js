@@ -20,21 +20,48 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		  success(function(data) {
 			
 			$scope.game = data.success;
-
+			
+			var i=0;
+			var j=0;
 			// Connection between player and hash
-			for(var i=0;i<$scope.game.players.length;i++){
+			for(i=0;i<$scope.game.players.length;i++){
 				$scope.game.players[$scope.game.players[i]._id] = $scope.game.players[i];
 			}
 			// Connection between zone and hash
-			for(var j=0;j<$scope.game.zones.length;j++){
+			for(j=0;j<$scope.game.zones.length;j++){
 				$scope.game.zones[$scope.game.zones[j]._id] = $scope.game.zones[j];
 			}
+
+			for(i=0;i<$scope.game.zones.length;i++){
+    			for(j=0;j<$scope.game.zones[i].units.length;j++){
+    				$scope.game.zones[i].units[j] = $scope.game.units[$scope.game.zones[i].units[j]];
+				}
+			}
+
 			console.log($scope.game);
 			drawZoneMap($scope.game);
+			$scope.listUnitsByType($scope.game.units);
+
+			console.log($scope);
 		  }).
 		  error(function(data) {
 		    console.log('error');
 		});
+
+		$scope.listUnitsByType = function(us){
+			$scope.listUnitType = false;
+
+			$scope.unitsByType = [];
+			for(var j=0;j<$scope.game.matrixes.UnitData.content.length;j++){
+			    $scope.unitsByType.push([]);
+			}
+
+			for(var i=0;i<us.length;i++){
+			    $scope.unitsByType[us[i].type].push(us[i]);
+			}
+
+			$scope.listUnitType = true;
+		};
 
   		$scope.move = function(zoneAId,zoneBId,listUnits){
   			var dto = {

@@ -135,9 +135,9 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			console.log($scope.game);
 		}
 
-		$(".game-panel").css({'height':(($(window).height())-$('header').height())+'px'});
+		$("#game-wrap-panels").css({'height':(($(window).height())-$('header').height())+'px'});
 		$(window).resize(function() {
-			$(".game-panel").css({'height':(($(window).height())-$('header').height())+'px'});
+			$("#game-wrap-panels").css({'height':(($(window).height())-$('header').height())+'px'});
 		});
 
 		$( document ).ready(function() {

@@ -4,26 +4,80 @@
 			<div id="game-wrap-panels" class="row">
 				<div id="game-left-panel" class="col-md-3 game-panel">
 
-					<!--temporaire-->
+					
 					<h1>{{game.title}}</h1>
 
 					<hr />
-	
-					<span ng-click="move(game.zones[0]._id,game.zones[1]._id,[game.units[0]._id])">CLICK ME To Move</span>| <span ng-click="buy(game.units[0].zone,game.units[0].player,7)">CLICK ME To buy scientist</span>
 
-					<br/>
-					<label>Zones (pour ceux qui se demandent, Charpennes != Charles Hernu)</label>
-					<div>
-						<div ng-repeat="zone in game.zones" class="zoneBox">
-								{{game.zonesDesc[zone.zoneDesc].name}}
+					<h2>Unités</h2>
+
+					<div ng-repeat="unit in game.units">
+						{{unit.type}}
+						<br />
+					</div>
+
+					<div class="row">
+						<div class="col-md-12" style="height:80px; background-color: rgba(41, 128, 185, 0.1);">
+							<div class="col-md-3 nopadding">
+								<img src="http://liris.cnrs.fr/vasile-marian.scuturici/files/marian.jpg" height=74 width=74 style="margin-top:3px;" />
+							</div>
+							<div class="col-md-3" style="margin-top: 27px; text-align:center;">
+								<span>Lyonnais</span>
+							</div>
+							<div class="col-md-3" style="height:100%">
+								<div style="height:50%; margin-top: 13px; text-align:center;">
+									<span>Nombre</span>
+								</div>
+								<div style="height:50%; text-align:center;">
+									<span>0</span>
+								</div>
+							</div>
+							<div class="col-md-3" style="margin-top: 27px;  text-align:center;">
+								<button class="btn btn-primary btn-success">+</button>
+							</div>
+						</div>
+						<div class="col-md-12" style="height:2px; background-color:#3C3C3C;">
+						</div>
+							<div class="col-md-12" style="height:80px; background-color: rgba(41, 128, 185, 0.1);">
+							<div class="col-md-3 nopadding">
+								<img src="http://liris.cnrs.fr/vasile-marian.scuturici/files/marian.jpg" height=74 width=74 style="margin-top:3px;" />
+							</div>
+							<div class="col-md-3" style="margin-top: 27px; text-align:center;">
+								<span>Lyonnais</span>
+							</div>
+							<div class="col-md-3" style="height:100%">
+								<div style="height:50%; margin-top: 13px; text-align:center;">
+									<span>Nombre</span>
+								</div>
+								<div style="height:50%; text-align:center;">
+									<span>0</span>
+								</div>
+							</div>
+							<div class="col-md-3" style="margin-top: 27px;  text-align:center;">
+								<button class="btn btn-primary btn-success">+</button>
+							</div>
 						</div>
 					</div>
-					<label>Grosses unités</label>
-					<p ng-repeat="unit in game.units">{{game.matrixes.UnitData.content[unit.type].name}} - belongs to {{game.players[unit.player].name}} - is at {{game.zonesDesc[game.zones[unit.zone].zoneDesc].name}} ({{unit.x}},{{unit.y}}) <button ng-click="sell(unit.zone,unit._id,unit.player)">Sell</button></p>
-					<lavel>Players</label>
-					<p ng-repeat="p in game.players">{{p._id}} - {{p.name}} - {{p.money}}$</p>
-					<!--/temporaire-->
+					
+					<div style="background-color:red;">
+						A supprimer :
+						<br />
+						<!--temporaire-->
+						<span ng-click="move(game.zones[0]._id,game.zones[1]._id,[game.units[0]._id])">CLICK ME To Move</span>| <span ng-click="buy(game.units[0].zone,game.units[0].player,7)">CLICK ME To buy scientist</span>
 
+						<br/>
+						<label>Zones (pour ceux qui se demandent, Charpennes != Charles Hernu)</label>
+						<div>
+							<div ng-repeat="zone in game.zones" class="zoneBox">
+									{{game.zonesDesc[zone.zoneDesc].name}}
+							</div>
+						</div>
+						<label>Grosses unités</label>
+						<p ng-repeat="unit in game.units">{{game.matrixes.UnitData.content[unit.type].name}} - belongs to {{game.players[unit.player].name}} - is at {{game.zonesDesc[game.zones[unit.zone].zoneDesc].name}} ({{unit.x}},{{unit.y}}) <button ng-click="sell(unit.zone,unit._id,unit.player)">Sell</button></p>
+						<lavel>Players</label>
+						<p ng-repeat="p in game.players">{{p._id}} - {{p.name}} - {{p.money}}$</p>
+						<!--/temporaire-->
+					</div>
 				</div>
 				<div id="game-main-panel" class="col-md-9 game-panel">
 

@@ -2,10 +2,12 @@
 	<div class="playSection">
 		<div class="container-fluid">
 			<div id="game-wrap-panels" class="row">
-				<div id="game-left-panel" class="col-md-3 game-panel" style="background-color: #ecf0f1;">
+				<div id="game-left-panel" class="col-md-3 game-panel">
 
 					<!--temporaire-->
 					<h1>{{game.title}}</h1>
+
+					<hr />
 	
 					<span ng-click="move(game.zones[0]._id,game.zones[1]._id,[game.units[0]._id])">CLICK ME To Move</span>| <span ng-click="buy(game.units[0].zone,game.units[0].player,7)">CLICK ME To buy scientist</span>
 

@@ -1,6 +1,5 @@
 'use strict';
 
-
 angular.module('createGame').controller('CreateGameController', ['$scope','Authentication','$http','$filter',
 	function($scope, Authentication, $http, $filter) {
 		console.log($scope);
@@ -26,8 +25,6 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 			'nMinPlayer' : 2,
 			'nMaxPlayer' : 8			
 		};
-
-		console.log($('#newGameTitle'));
 
 		$scope.today = function() {
 			$scope.startDay = new Date();

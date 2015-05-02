@@ -2,8 +2,9 @@
 
 module.exports = {
 	dbname: 'pldapp-dev',
-	pollingInterval:50,
+	pollingInterval:4,
 	defaultPort:27017,
-	defaultHost:'localhost'
+	defaultHost:'localhost',
+	autoWakeupInterval:10000
 
 };

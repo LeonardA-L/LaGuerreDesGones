@@ -2,7 +2,8 @@
 
 module.exports = {
 	dbname: 'mongodb://remote:27017/pldapp-dev',
-	pollingInterval:5,
+	pollingInterval:2,
 	defaultPort:27017,
-	defaultHost:'localhost'
+	defaultHost:'localhost',
+	autoWakeupInterval:5000
 };

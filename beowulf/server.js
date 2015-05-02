@@ -41,7 +41,7 @@ var SQUARE = 'square';
 var BANK = 'bank';
 var SHOPPING_CENTRE = 'shopping_centre';
 
-var updateInterval = 30000;
+var updateInterval = 120000;
 var updateMoney = 0;
 
 // dirty pasted model
@@ -634,7 +634,8 @@ var db = mongoose.connect(dbAddress, function(err) {
 		//Action.collection.remove({},function(){});
 
 		// Start processing routine
-		execute();
+		//execute();
+		autoWakeUp();
 
 		// For debug purpose
 		displayDB();
@@ -658,3 +659,11 @@ app.listen(7878);
 // Logging initialization
 console.log('Action processor started');
 
+var autoWakeUp = function(){
+	console.log('Auto wakeup');
+	state=true;
+	execute();
+	setTimeout(function(){
+		autoWakeUp();
+	},config.autoWakeupInterval);
+};

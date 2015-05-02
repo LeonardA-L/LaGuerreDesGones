@@ -6,11 +6,12 @@
 	}
 
 	.zoneBox{
-		height:300px;
-		width:300px;
+		height:100px;
+		width:100px;
 		background-color:#FEE;
 		border: solid;
 		border-color: green;
 		display:inline-block;
+		vertical-align:top;
 	}
 }

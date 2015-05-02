@@ -27,6 +27,7 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 			'nMaxPlayer' : 8			
 		};
 
+		console.log($('#newGameTitle'));
 
 		$scope.today = function() {
 			$scope.startDay = new Date();

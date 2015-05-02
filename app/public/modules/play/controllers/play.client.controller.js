@@ -143,10 +143,10 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 				// Create the polygon
 				var borderPolygon = new google.maps.Polygon({
 					paths: borderCoords,
-					strokeColor: '#FF0000',
-					strokeOpacity: 0.8,
+					strokeColor: '#333333',
+					strokeOpacity: 0.65,
 					strokeWeight: 2,
-					fillColor: '#FF0000',
+					fillColor: '#333333',
 					fillOpacity: 0.35
 				});
 				borderPolygon.zoneId = game.zones[i]._id;
@@ -161,10 +161,26 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			// Center the map
 			map.setCenter(zoomBordr.getCenter());
 			map.fitBounds(zoomBordr); 
+
+			colorMap();
+		}
+
+		function colorMap(){	// TODO Creation color => Grey / color
+			for (var i = 0; i < $scope.game.zones.length; i++) { 
+				var zone = $scope.game.zones[i];
+				var polygon = $scope.game.zonesPolygons[zone._id];
+				var color = 16711680/*zone.owner.color*/.toString(16);	//TODO Color
+				polygon.setOptions({
+					strokeColor: '#'+color,
+					fillColor: '#'+color
+				});
+				console.log(color);
+				console.log(polygon);
+			}
 		}
 
 		function onZoneClicked(event){
-			$scope.game.selectedZone = $scope.game.zones[this.zoneId];
+			$scope.game.selectedZone = $scope.game.zones[this.zoneId];	// TODO Fix this
 			console.log($scope.game);
 		}
 

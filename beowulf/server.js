@@ -7,6 +7,7 @@ var init = require('./config/init')(),
 	mongoose = require('mongoose'),
 	chalk = require('chalk'),
 	Schema = mongoose.Schema;
+var express = require('express');
 
 //mongoose.set('debug', true);
 //var ActionSchema=require('../app/app/models/action.server.model').ActionSchema;
@@ -641,6 +642,18 @@ var db = mongoose.connect(dbAddress, function(err) {
 	}
 });
 
+
+var app = express();
+
+app.get('/', function(req, res){
+	if(!state){
+		res.send('Going to work');
+		state=true;
+		execute();
+	}
+});
+
+app.listen(7878);
 
 // Logging initialization
 console.log('Action processor started');

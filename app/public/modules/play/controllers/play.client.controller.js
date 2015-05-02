@@ -90,24 +90,28 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			if (typeof map === 'undefined') {
 				console.log('Init Map');
 				var mapOptions = {
-				zoom: 8,
+					zoom: 8,
 					center: new google.maps.LatLng(45.753516, 4.909520)
 				};
-				map = new google.maps.Map($('#game-main-panel'), mapOptions);
+				map = new google.maps.Map(document.getElementById('game-main-panel'), mapOptions);
+				console.log(map);
 			}
 		}
 
 		function drawZoneMap(game) {
 			initMap();
 			console.log('Draw Zone');
+			var allBorders = [];
+			var allPolygons = [];
 			for (var i = 0; i < game.zones.length; i++) { 
 				var border = game.zonesDesc[game.zones[i].zoneDesc].border;
 				var borderCoords = [ ];
 				for (var j = 0; j < border.length; j++) { 
 					borderCoords.push(new google.maps.LatLng(border[j][1], border[j][0]));
 				}
+				allBorders.push(borderCoords);
 				borderCoords.push(borderCoords[0]);
-				var borderPolygon = new google.maps.Polygon({	// TODO CSS ???
+				var borderPolygon = new google.maps.Polygon({
 					paths: borderCoords,
 					strokeColor: '#FF0000',
 					strokeOpacity: 0.8,
@@ -115,13 +119,25 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 					fillColor: '#FF0000',
 					fillOpacity: 0.35
 				});
+				allPolygons[game.zones[i].zoneDesc] = borderPolygon;
 				borderPolygon.setMap(map);
 			}
+			game["zonesPolygons"] = allPolygons;
+			var zoomBordr = new google.maps.LatLngBounds();
+			for (var i = 0; i < allBorders.length; i++) {
+				for (var j = 0; j < allBorders[i].length; j++) {
+					zoomBordr.extend(allBorders[i][j]);
+				}
+			}
+			map.setCenter(zoomBordr.getCenter());
+			map.fitBounds(zoomBordr); 
+
+			console.log($scope.game);
 		}
 
-		$('.game-panel').css({'height':(($(window).height())-$('header').height())+'px'});
+		$(".game-panel").css({'height':(($(window).height())-$('header').height())+'px'});
 		$(window).resize(function() {
-			$('.game-panel').css({'height':(($(window).height())-$('header').height())+'px'});
+			$(".game-panel").css({'height':(($(window).height())-$('header').height())+'px'});
 		});
 
 		$( document ).ready(function() {

@@ -11,6 +11,8 @@ var init = require('./config/init')(),
 //mongoose.set('debug', true);
 //var ActionSchema=require('../app/app/models/action.server.model').ActionSchema;
 
+var state=true;
+
 // Action model
 var Action = undefined;
 var Zone = undefined;
@@ -494,7 +496,7 @@ actionHandlers.push(processHop);
 
 // Main work
 var execute = function(){
-
+	console.log('Starting');
 	setTimeout(function(){
 
 		// Find an Action needing processing, tag it as assigned
@@ -540,8 +542,18 @@ var execute = function(){
 				}
 	    	}
 
-	    	// Re launch
-	        execute();
+	    	Action.count({'status':0, 'date':{$lte:new Date()}},function(err,count){
+	    		console.log(count);
+	    		if(count > 0){
+	    			// Re launch
+	        		execute();
+	    		}
+	    		else{
+	    			console.log('Stopping');
+	    			state = false;
+	    		}
+	    	});
+	    	
 	    });
 	},config.pollingInterval);
 };

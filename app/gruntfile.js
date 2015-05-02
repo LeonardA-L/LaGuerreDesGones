@@ -52,15 +52,8 @@ module.exports = function(grunt) {
 				}
 			},
 			sass: {
-			    files: watchFiles.css,
-			    tasks: ['sass:dev'],
-			    options: {
-					livereload: true
-				}
-			},
-			concat: {
 			    files: watchFiles.sass,
-			    tasks: ['concat'],
+			    tasks: ['concat','sass:dev'],
 			    options: {
 					livereload: true
 				}

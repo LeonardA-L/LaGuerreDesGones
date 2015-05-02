@@ -1,6 +1,6 @@
 .playSection{
 	background: #FEE;
-
+	
 	.nestedClass{
 		background:#F00;
 	}
@@ -13,5 +13,13 @@
 		border-color: green;
 		display:inline-block;
 		vertical-align:top;
+	}
+
+	.game-panel {
+		height:100%;
+	}
+
+	#game-left-panel {
+		background-color: #ecf0f1;
 	}
 }

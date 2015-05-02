@@ -1,21 +1,32 @@
-<section>
-	<div  class="playSection">
-		<h1>{{game.title}}</h1>
-	
-		<span ng-click="move(game.zones[0]._id,game.zones[1]._id,[game.units[0]._id])">CLICK ME To Move</span>| <span ng-click="buy(game.units[0].zone,game.units[0].player,7)">CLICK ME To buy scientist</span>
+<section style="background-color:yellow;">
+	<div class="playSection">
+		<div class="container-fluid">
+			<div id="game-wrap-panels" class="row">
+				<div id="game-left-panel" class="col-md-3 game-panel" style="background-color: #ecf0f1;">
 
-		<br/>
-		<label>Zones (pour ceux qui se demandent, Charpennes != Charles Hernu)</label>
-		<div>
-			<div ng-repeat="zone in game.zones" class="zoneBox">
-					{{game.zonesDesc[zone.zoneDesc].name}}
+					<!--temporaire-->
+					<h1>{{game.title}}</h1>
+	
+					<span ng-click="move(game.zones[0]._id,game.zones[1]._id,[game.units[0]._id])">CLICK ME To Move</span>| <span ng-click="buy(game.units[0].zone,game.units[0].player,7)">CLICK ME To buy scientist</span>
+
+					<br/>
+					<label>Zones (pour ceux qui se demandent, Charpennes != Charles Hernu)</label>
+					<div>
+						<div ng-repeat="zone in game.zones" class="zoneBox">
+								{{game.zonesDesc[zone.zoneDesc].name}}
+						</div>
+					</div>
+					<label>Grosses unités</label>
+					<p ng-repeat="unit in game.units">{{game.matrixes.UnitData.content[unit.type].name}} - belongs to {{game.players[unit.player].name}} - is at {{game.zonesDesc[game.zones[unit.zone].zoneDesc].name}} ({{unit.x}},{{unit.y}}) <button ng-click="sell(unit.zone,unit._id,unit.player)">Sell</button></p>
+					<lavel>Players</label>
+					<p ng-repeat="p in game.players">{{p._id}} - {{p.name}} - {{p.money}}$</p>
+					<!--/temporaire-->
+
+				</div>
+				<div id="game-main-panel" class="col-md-9 game-panel">
+
+				</div>
 			</div>
 		</div>
-		<div id="map-canvas" style="width: 300px;height: 300px;"></div>
-		<label>Grosses unités</label>
-		<p ng-repeat="unit in game.units">{{game.matrixes.UnitData.content[unit.type].name}} - belongs to {{game.players[unit.player].name}} - is at {{game.zonesDesc[game.zones[unit.zone].zoneDesc].name}} ({{unit.x}},{{unit.y}}) <button ng-click="sell(unit.zone,unit._id,unit.player)">Sell</button></p>
-		<lavel>Players</label>
-		<p ng-repeat="p in game.players">{{p._id}} - {{p.name}} - {{p.money}}$</p>
 	</div>
-
 </section>

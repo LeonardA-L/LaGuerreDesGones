@@ -15,10 +15,6 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		var map;
 		console.log($stateParams);
 
-		$( document ).ready(function() {
-			initMap();
-		});
-
 		$http.get('/services/play/'+gameId+'/start').
 		  //success(function(data, status, headers, config) {
 		  success(function(data) {
@@ -97,7 +93,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 				zoom: 8,
 					center: new google.maps.LatLng(45.753516, 4.909520)
 				};
-				map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+				map = new google.maps.Map($('#game-main-panel'), mapOptions);
 			}
 		}
 
@@ -122,5 +118,15 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 				borderPolygon.setMap(map);
 			}
 		}
+
+		$('.game-panel').css({'height':(($(window).height())-$('header').height())+'px'});
+		$(window).resize(function() {
+			$('.game-panel').css({'height':(($(window).height())-$('header').height())+'px'});
+		});
+
+		$( document ).ready(function() {
+			initMap();
+		});
+
 	}
 ]);

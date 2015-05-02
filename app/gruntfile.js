@@ -10,7 +10,8 @@ module.exports = function(grunt) {
 		clientCSS: ['public/modules/**/*.css'],
 		//clientCSS: ['public/css/style.css'],
 		mochaTests: ['app/tests/**/*.js'],
-		sass: 'public/modules/**/css/*.{scss,sass}'
+		sass: 'public/modules/**/css/*.{scss,sass}',
+		css: 'public/css/style.scss'
 	};
 
 	// Project Configuration
@@ -51,8 +52,15 @@ module.exports = function(grunt) {
 				}
 			},
 			sass: {
-			    files: watchFiles.sass,
+			    files: watchFiles.css,
 			    tasks: ['sass:dev'],
+			    options: {
+					livereload: true
+				}
+			},
+			concat: {
+			    files: watchFiles.sass,
+			    tasks: ['concat'],
 			    options: {
 					livereload: true
 				}

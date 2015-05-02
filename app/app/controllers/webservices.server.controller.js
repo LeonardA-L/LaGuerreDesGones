@@ -431,7 +431,7 @@ exports.firstUseFillBDD = function(req,res){
 // First use : fill BDD
 */
 var Matrix = mongoose.model('Matrix');
-Matrix.remove({'name':{$in:['UnitData']}},function(err,data){
+Matrix.remove({'name':{$in:['UnitData','ZoneTypeToUnitType']}},function(err,data){
 	var unitData = new Matrix({
 		name:'UnitData',
 		content :[{
@@ -500,5 +500,36 @@ Matrix.remove({'name':{$in:['UnitData']}},function(err,data){
 		}]
 	});
 	unitData.save();
+
+	var NEUTRAL = 'neutral';
+	var HOSPITAL = 'hospital';
+	var PARK = 'park';
+	var UNIVERSITY = 'university';
+	var CHURCH = 'church';
+	var WOODSTOCK = 'woodstock';
+	var STATION = 'station';
+	var AIRPORT = 'airport';
+	var CITY_HALL = 'city_hall';
+	var SQUARE = 'square';
+	var BANK = 'bank';
+	var SHOPPING_CENTRE = 'shopping_centre';
+
+	var zoneTypeToUnitType = new Matrix({
+	name:'ZoneTypeToUnitType',
+	content :{
+		neutral : 0,
+		hospital : 5,
+		park : 3,
+		university : 2,
+		curch : 6,
+		woodstock : 3,
+		station : 1,
+		airport : 1,
+		city_hall:0,
+		square:4,
+		shopping_centre:0,
+		bank:7
+	}});
+	zoneTypeToUnitType.save();
 });
 };

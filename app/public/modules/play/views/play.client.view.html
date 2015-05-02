@@ -12,7 +12,7 @@
 		</div>
 	</div>
 	<label>Grosses unités</label>
-	<p ng-repeat="unit in game.units">{{game.matrixes.UnitData.content[unit.type].name}} - belongs to {{game.players[unit.player].name}} - is at {{game.zones[unit.zone].zoneDesc.name}} ({{unit.x}},{{unit.y}}) <button ng-click="sell(unit.zone,unit._id,unit.player)">Sell</button></p>
+	<p ng-repeat="unit in game.units">{{game.matrixes.UnitData.content[unit.type].name}} - belongs to {{game.players[unit.player].name}} - is at {{game.zonesDesc[game.zones[unit.zone].zoneDesc].name}} ({{unit.x}},{{unit.y}}) <button ng-click="sell(unit.zone,unit._id,unit.player)">Sell</button></p>
 	<lavel>Players</label>
 	<p ng-repeat="p in game.players">{{p._id}} - {{p.name}} - {{p.money}}$</p>
 </section>

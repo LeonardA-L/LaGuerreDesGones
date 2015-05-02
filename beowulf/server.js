@@ -22,6 +22,25 @@ var Matrix = undefined;
 
 var matrixes = undefined;
 
+var initPlayers = 8;
+var initMoney = 1000;
+
+var NEUTRAL = 'neutral';
+var HOSPITAL = 'hospital';
+var PARK = 'park';
+var UNIVERSITY = 'university';
+var CHURCH = 'church';
+var WOODSTOCK = 'woodstock';
+var STATION = 'station';
+var AIRPORT = 'airport';
+var CITY_HALL = 'city_hall';
+var SQUARE = 'square';
+var BANK = 'bank';
+var SHOPPING_CENTRE = 'shopping_centre';
+
+var updateInterval = 60000;
+var updateMoney = 0;
+
 // dirty pasted model
 
 var MatrixSchema = new Schema({
@@ -67,19 +86,24 @@ var PlayerSchema = new Schema({
 
 var ZoneDescriptionSchema = new Schema({
 	type: {
-		type: String
+		type: String,
+		enum: [NEUTRAL, HOSPITAL, PARK, UNIVERSITY, CHURCH, WOODSTOCK, STATION, AIRPORT, CITY_HALL, SQUARE, BANK, SHOPPING_CENTRE],
+		default: NEUTRAL
 	},
 	name: {
 		type: String,
 		trim: true,
 		default: ''
 	},
-	nbUnitMax: {
-		type: Number
-	},
+
 	border: Schema.Types.Mixed,
+
 	x : Number,
-	y : Number
+
+	y : Number,
+	
+	velov : Number
+
 });
 
 var GameSchema = new Schema({
@@ -326,9 +350,6 @@ var processInit = function(a){
 	var zoneIdList = [];
 	var neutralZones = [];
 
-	var initPlayers = 8;
-	var initMoney = 1000;
-
 	ZoneDescription.find({},function(err,zdList){
 
 		for(var i=0;i<zdList.length;i++){
@@ -338,7 +359,7 @@ var processInit = function(a){
 				game : a.game._id
 			});
 			zoneIdList.push(z._id);
-			if(zd.type === 'neutral'){
+			if(zd.type === NEUTRAL){
 				neutralZones.push(z);
 			}
 			z.save();
@@ -376,6 +397,15 @@ var processInit = function(a){
 		a.game.startTime = a.date;
 		a.game.isInit = true;
 		a.game.save();
+
+		// generate next hop
+		console.log('Generate next hop');
+		var b = new Action({
+			type:5,
+			game:a.game._id,
+			date:a.date+updateInterval
+		});
+		b.save();
 	});
 };
 
@@ -408,12 +438,35 @@ var processSell = function(a){
 	a.zone.save();
 };
 
+var processHop = function(a){
+	console.log('Processing Hop action');
+	Player.find({'_id':{$in:a.game.players}}, function(err,players){
+		for(var j=0;j<players.length;j++){
+			players[players[j]._id] = players[i];
+		}
+
+		Zone.find({'_id':{$in:a.game.zones}}).populate('zoneDesc').exec(function(err,zones){
+			for(var i=0;i<zones.length;i++){
+				// Generate Unit
+				var u = new Unit(matrixes.UnitData.content[matrixes.ZoneTypeToUnitType.content[zones[i].zoneDesc.type]]);
+				affectUnitToZone(u,zones[i]);
+				// affect to player
+
+				zones[i].save();
+				u.save();
+				//p.save();
+			}
+		});
+	});
+};
+
 var actionHandlers = [];
 actionHandlers.push(processDisplacement);
 actionHandlers.push(processEndDisplacement);
 actionHandlers.push(processInit);
 actionHandlers.push(processBuy);
 actionHandlers.push(processSell);
+actionHandlers.push(processHop);
 
 // TODO
  var processAction = function(a){
@@ -462,6 +515,9 @@ var execute = function(){
 					case 3: // Buy
 					case 4: // Sell
 						Action.findOne({'_id':doc._id}).populate('player zone').exec(actionCallback);
+					break;
+					case 5: // Hop
+						Action.findOne({'_id':doc._id}).populate('game').exec(actionCallback);
 					break;
 				}
 	    	}
@@ -535,7 +591,7 @@ var db = mongoose.connect(dbAddress, function(err) {
 		ZoneDescription = db.model('ZoneDescription');
 
 
-		Matrix.find({'name':{$in:['UnitData']}},function(err,mat){
+		Matrix.find({'name':{$in:['UnitData','ZoneTypeToUnitType']}},function(err,mat){
 			matrixes = {};
 			for(var i=0;i<mat.length;i++){
 				matrixes[mat[i].name] = mat[i];

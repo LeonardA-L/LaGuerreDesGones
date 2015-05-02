@@ -5,5 +5,6 @@ module.exports = {
 	pollingInterval:2,
 	defaultPort:27017,
 	defaultHost:'localhost',
-	autoWakeupInterval:5000
+	autoWakeupInterval:5000,
+	debug:false
 };

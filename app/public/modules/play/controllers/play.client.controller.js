@@ -12,7 +12,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		};
 
 	    var gameId = $stateParams.gameId;
-		var map, selectedZone;
+		var map;
 		console.log($stateParams);
 
 		$http.get('/services/play/'+gameId+'/start').
@@ -149,12 +149,11 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 					fillColor: '#FF0000',
 					fillOpacity: 0.35
 				});
-				borderPolygon.id = game.zones[i].zoneDesc;
-				allPolygons[borderPolygon.id] = borderPolygon;
+				borderPolygon.zoneId = game.zones[i]._id;
+				borderPolygon.zoneDescId = game.zones[i].zoneDesc;
+				allPolygons[borderPolygon.zoneId] = borderPolygon;
 				// Listener on click
-				google.maps.event.addListener(borderPolygon, 'click', function (event) {
-				  selectedZone = this;
-				}); 
+				google.maps.event.addListener(borderPolygon, 'click', onZoneClicked);
 				borderPolygon.setMap(map);
 			}
 			// Add zones Polygons to Game variable
@@ -162,7 +161,10 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			// Center the map
 			map.setCenter(zoomBordr.getCenter());
 			map.fitBounds(zoomBordr); 
+		}
 
+		function onZoneClicked(event){
+			$scope.game.selectedZone = $scope.game.zones[this.zoneId];
 			console.log($scope.game);
 		}
 

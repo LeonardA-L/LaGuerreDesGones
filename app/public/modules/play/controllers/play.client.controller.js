@@ -12,7 +12,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		};
 
 	    var gameId = $stateParams.gameId;
-		var map;
+		var map, selectedZone;
 		console.log($stateParams);
 
 		$http.get('/services/play/'+gameId+'/start').
@@ -128,17 +128,19 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		function drawZoneMap(game) {
 			initMap();
 			console.log('Draw Zone');
-			var allBorders = [];
 			var allPolygons = [];
-			var i,j;
-			for (i = 0; i < game.zones.length; i++) { 
+			var zoomBordr = new google.maps.LatLngBounds();
+			for (var i = 0; i < game.zones.length; i++) { 
 				var border = game.zonesDesc[game.zones[i].zoneDesc].border;
 				var borderCoords = [ ];
-				for (j = 0; j < border.length; j++) { 
-					borderCoords.push(new google.maps.LatLng(border[j][1], border[j][0]));
+				for (var j = 0; j < border.length; j++) { 
+					var point = new google.maps.LatLng(border[j][1], border[j][0]);
+					borderCoords.push(point);
+					zoomBordr.extend(point);
 				}
-				allBorders.push(borderCoords);
+				// Close border
 				borderCoords.push(borderCoords[0]);
+				// Create the polygon
 				var borderPolygon = new google.maps.Polygon({
 					paths: borderCoords,
 					strokeColor: '#FF0000',
@@ -147,16 +149,17 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 					fillColor: '#FF0000',
 					fillOpacity: 0.35
 				});
-				allPolygons[game.zones[i].zoneDesc] = borderPolygon;
+				borderPolygon.id = game.zones[i].zoneDesc;
+				allPolygons[borderPolygon.id] = borderPolygon;
+				// Listener on click
+				google.maps.event.addListener(borderPolygon, 'click', function (event) {
+				  selectedZone = this;
+				}); 
 				borderPolygon.setMap(map);
 			}
+			// Add zones Polygons to Game variable
 			game.zonesPolygons = allPolygons;
-			var zoomBordr = new google.maps.LatLngBounds();
-			for (i = 0; i < allBorders.length; i++) {
-				for (j = 0; j < allBorders[i].length; j++) {
-					zoomBordr.extend(allBorders[i][j]);
-				}
-			}
+			// Center the map
 			map.setCenter(zoomBordr.getCenter());
 			map.fitBounds(zoomBordr); 
 

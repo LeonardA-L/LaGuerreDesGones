@@ -545,5 +545,10 @@ Matrix.remove({'name':{$in:['UnitData','ZoneTypeToUnitType']}},function(err,data
 		bank:7
 	}});
 	zoneTypeToUnitType.save();
+
+	var ret = {
+		result:'ok'
+	};
+	res.json(ret);
 });
 };

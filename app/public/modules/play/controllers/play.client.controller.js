@@ -1,5 +1,5 @@
 'use strict';
-/* global Google */
+/* global google */
 /* global $ */
 
 angular.module('play').controller('PlayController', ['$scope', 'Authentication', '$http', '$stateParams',
@@ -130,10 +130,11 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			console.log('Draw Zone');
 			var allBorders = [];
 			var allPolygons = [];
-			for (var i = 0; i < game.zones.length; i++) { 
+			var i,j;
+			for (i = 0; i < game.zones.length; i++) { 
 				var border = game.zonesDesc[game.zones[i].zoneDesc].border;
 				var borderCoords = [ ];
-				for (var j = 0; j < border.length; j++) { 
+				for (j = 0; j < border.length; j++) { 
 					borderCoords.push(new google.maps.LatLng(border[j][1], border[j][0]));
 				}
 				allBorders.push(borderCoords);
@@ -149,10 +150,10 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 				allPolygons[game.zones[i].zoneDesc] = borderPolygon;
 				borderPolygon.setMap(map);
 			}
-			game["zonesPolygons"] = allPolygons;
+			game.zonesPolygons = allPolygons;
 			var zoomBordr = new google.maps.LatLngBounds();
-			for (var i = 0; i < allBorders.length; i++) {
-				for (var j = 0; j < allBorders[i].length; j++) {
+			for (i = 0; i < allBorders.length; i++) {
+				for (j = 0; j < allBorders[i].length; j++) {
 					zoomBordr.extend(allBorders[i][j]);
 				}
 			}
@@ -162,9 +163,9 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			console.log($scope.game);
 		}
 
-		$("#game-wrap-panels").css({'height':(($(window).height())-$('header').height())+'px'});
+		$('#game-wrap-panels').css({'height':(($(window).height())-$('header').height())+'px'});
 		$(window).resize(function() {
-			$("#game-wrap-panels").css({'height':(($(window).height())-$('header').height())+'px'});
+			$('#game-wrap-panels').css({'height':(($(window).height())-$('header').height())+'px'});
 		});
 
 		$( document ).ready(function() {

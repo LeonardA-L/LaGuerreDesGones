@@ -151,9 +151,9 @@ exports.createGame = function(req, res) {
 		'isInit':false,
 		'startTime':new Date(req.body.startTime)
 	});
-	console.log(g);
+	console.log(req.user);
 	var player = new Player({
-			name: req.user.nickname || 'Anonymous',
+			name: req.user.username || 'Anonymous',
 			isAdmin: true,
 			user: req.user._id,
 			game: g._id 
@@ -187,7 +187,7 @@ exports.getWaiting = function(req, res) {
 	
 	var Game = mongoose.model('Game');
 
-    Game.find({'isInit':false, 'creator._id':{$ne:req.user._id}}).populate('players').exec(function (err, docs) {
+    Game.find({'isInit':false, 'creator._id':{$ne:req.user._id}}).populate('players creator', 'username avatarUrl').exec(function (err, docs) {
 	  if (err)
             res.send(err);
         for(var i=0;i<docs.length;i++){
@@ -210,7 +210,7 @@ exports.getWaiting = function(req, res) {
 exports.getSubscribed = function(req,res){
 	var Game = mongoose.model('Game');
 
-    Game.find({}).populate('players').exec(function (err, docs) {
+    Game.find({}).populate('players').populate('creator', 'username').exec(function (err, docs) {
 	  if (err)
             res.send(err);
         var accurate = [];

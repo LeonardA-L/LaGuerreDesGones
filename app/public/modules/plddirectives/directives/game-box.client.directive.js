@@ -11,6 +11,7 @@ angular.module('plddirectives').directive('gameBox', ['$http',
 			},
 			restrict: 'E',
 			link: function postLink(scope) {
+				console.log(scope.data);
 				// Game box directive logic
 				scope.load = false;
 				scope.joinok = scope.join;

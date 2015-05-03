@@ -29,6 +29,7 @@ module.exports = function(app) {
 	app.route('/services/action/sell').post(webservices.sellAction);
 	app.route('/services/action/buy').post(webservices.buyAction);
 
+	app.route('/services/play/callback').post(webservices.actionCallback);	
 
 	app.route('/services/firstUse').get(webservices.firstUseFillBDD);
 };

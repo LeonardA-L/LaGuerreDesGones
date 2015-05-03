@@ -553,3 +553,10 @@ Matrix.remove({'name':{$in:['UnitData','ZoneTypeToUnitType']}},function(err,data
 	res.json(ret);
 });
 };
+
+exports.actionCallback = function(req,res){
+	var ret = {
+		result:'ok'
+	};
+	res.json(ret);
+};

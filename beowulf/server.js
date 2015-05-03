@@ -517,6 +517,20 @@ var execute = function(){
 					processAction(action);
 
 					action.save();
+
+					var http = require('http');
+					var options = {
+					  host: (process.argv[2]||config.defaultHost),
+					  path: '/'+config.callback,
+					  port: (process.argv[5]||config.defaultCallbackPort),
+					  method: 'GET'
+					};
+					
+					var req = http.request(options);
+					req.on('error', function(error) {
+				  		if(debug) console.log('Server unreachable');
+					});
+					req.end();
 				};
 
 				switch(doc.type){

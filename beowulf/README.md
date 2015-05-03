@@ -1,2 +1,2 @@
 Connexion to MongoDB parameters
-node server.js [host [port]]
+node server.js [host [port [forcedWakeUpPort [mainServerPort]]]]

@@ -72,11 +72,5 @@ var GameSchema = new Schema({
 	}
 });
 
-GameSchema.post('save', function () {
-
-  console.log('Game Post save hook');
-  
-  return true;
-});
 
 mongoose.model('Game', GameSchema);

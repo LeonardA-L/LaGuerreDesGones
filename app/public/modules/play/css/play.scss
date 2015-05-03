@@ -1,0 +1,17 @@
+.playSection{
+	background: #FEE;
+
+	.nestedClass{
+		background:#F00;
+	}
+
+	.zoneBox{
+		height:100px;
+		width:100px;
+		background-color:#FEE;
+		border: solid;
+		border-color: green;
+		display:inline-block;
+		vertical-align:top;
+	}
+}

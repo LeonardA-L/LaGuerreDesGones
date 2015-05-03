@@ -8,11 +8,11 @@ angular.module(ApplicationConfiguration.applicationModuleName, ApplicationConfig
 // Setting HTML5 Location Mode
 angular.module(ApplicationConfiguration.applicationModuleName)
 	.config(['$locationProvider',
-		function($locationProvider) {
+		function($locationProvider) {/*
 			$locationProvider.html5Mode({
 			  enabled: true,
 			  requireBase: false
-			});
+			});*/
 			$locationProvider.hashPrefix('!');
 		}
 	]);

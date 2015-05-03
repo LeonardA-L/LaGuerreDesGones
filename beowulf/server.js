@@ -523,13 +523,19 @@ var execute = function(){
 					  host: (process.argv[2]||config.defaultHost),
 					  path: '/'+config.callback,
 					  port: (process.argv[5]||config.defaultCallbackPort),
-					  method: 'GET'
+					  method: 'POST',
+					  json: true,
+					  headers: {
+					      "content-type": "application/json",
+					    }
+					    ///body: JSON.stringify({game:action.game})
 					};
 					
 					var req = http.request(options);
 					req.on('error', function(error) {
 				  		if(debug) console.log('Server unreachable');
 					});
+					req.write(JSON.stringify({game:action.game._id || action.game}));
 					req.end();
 				};
 

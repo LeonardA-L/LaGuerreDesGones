@@ -54,7 +54,8 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
   			var dto = {
   				'zone':$scope.game.units[0].zone,
   				'unit':$scope.game.units[0]._id,
-  				'player':$scope.game.units[0].player
+  				'player':$scope.game.units[0].player,
+  				'game':gameId
   			};
 			$http.post('/services/action/sell',dto).
 			//success(function(data, status, headers, config) {
@@ -71,7 +72,8 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			var dto = {
   				'zone':zoneId,
   				'player':playerId,
-  				'newUnitType':newUnitTypeN
+  				'newUnitType':newUnitTypeN,
+  				'game':gameId
   			};
 			$http.post('/services/action/buy',dto).
 			//success(function(data, status, headers, config) {

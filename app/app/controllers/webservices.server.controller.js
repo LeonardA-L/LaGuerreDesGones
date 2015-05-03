@@ -414,7 +414,8 @@ exports.sellAction = function(req, res) {
 		status:0,
 		zone:req.body.zone,
 		units:[req.body.unit],
-		player:req.body.player
+		player:req.body.player,
+		game:req.body.game
 	});
 	console.log('registering sell');
 	console.log(a);
@@ -434,7 +435,8 @@ exports.buyAction = function(req, res) {
 		status:0,
 		zone:req.body.zone,
 		player:req.body.player,
-		newUnitType : req.body.newUnitType
+		newUnitType : req.body.newUnitType,
+		game:req.body.game
 	});
 	console.log('registering buy');
 	console.log(a);
@@ -555,6 +557,8 @@ Matrix.remove({'name':{$in:['UnitData','ZoneTypeToUnitType']}},function(err,data
 };
 
 exports.actionCallback = function(req,res){
+	console.log('A game was saved');
+	console.log(req.body);
 	var ret = {
 		result:'ok'
 	};

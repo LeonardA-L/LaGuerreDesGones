@@ -1,5 +1,5 @@
 'use strict';
-/* global Google */
+/* global google */
 /* global $ */
 
 angular.module('play').controller('PlayController', ['$scope', 'Authentication', '$http', '$stateParams',
@@ -130,43 +130,65 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		function drawZoneMap(game) {
 			initMap();
 			console.log('Draw Zone');
-			var allBorders = [];
 			var allPolygons = [];
+			var zoomBordr = new google.maps.LatLngBounds();
 			for (var i = 0; i < game.zones.length; i++) { 
 				var border = game.zonesDesc[game.zones[i].zoneDesc].border;
 				var borderCoords = [ ];
 				for (var j = 0; j < border.length; j++) { 
-					borderCoords.push(new google.maps.LatLng(border[j][1], border[j][0]));
+					var point = new google.maps.LatLng(border[j][1], border[j][0]);
+					borderCoords.push(point);
+					zoomBordr.extend(point);
 				}
-				allBorders.push(borderCoords);
+				// Close border
 				borderCoords.push(borderCoords[0]);
+				// Create the polygon
 				var borderPolygon = new google.maps.Polygon({
 					paths: borderCoords,
-					strokeColor: '#FF0000',
-					strokeOpacity: 0.8,
+					strokeColor: '#333333',
+					strokeOpacity: 0.65,
 					strokeWeight: 2,
-					fillColor: '#FF0000',
+					fillColor: '#333333',
 					fillOpacity: 0.35
 				});
-				allPolygons[game.zones[i].zoneDesc] = borderPolygon;
+				borderPolygon.zoneId = game.zones[i]._id;
+				borderPolygon.zoneDescId = game.zones[i].zoneDesc;
+				allPolygons[borderPolygon.zoneId] = borderPolygon;
+				// Listener on click
+				google.maps.event.addListener(borderPolygon, 'click', onZoneClicked);
 				borderPolygon.setMap(map);
 			}
-			game["zonesPolygons"] = allPolygons;
-			var zoomBordr = new google.maps.LatLngBounds();
-			for (var i = 0; i < allBorders.length; i++) {
-				for (var j = 0; j < allBorders[i].length; j++) {
-					zoomBordr.extend(allBorders[i][j]);
-				}
-			}
+			// Add zones Polygons to Game variable
+			game.zonesPolygons = allPolygons;
+			// Center the map
 			map.setCenter(zoomBordr.getCenter());
 			map.fitBounds(zoomBordr); 
 
+			colorMap();
+		}
+
+		function colorMap(){	// TODO Creation color => Grey / color
+			for (var i = 0; i < $scope.game.zones.length; i++) { 
+				var zone = $scope.game.zones[i];
+				var polygon = $scope.game.zonesPolygons[zone._id];
+				var color = 16711680/*zone.owner.color*/.toString(16);	//TODO Color
+				polygon.setOptions({
+					strokeColor: '#'+color,
+					fillColor: '#'+color
+				});
+				console.log(color);
+				console.log(polygon);
+			}
+		}
+
+		function onZoneClicked(event){
+			$scope.game.selectedZone = $scope.game.zones[this.zoneId];	// TODO Fix this
 			console.log($scope.game);
 		}
 
-		$("#game-wrap-panels").css({'height':(($(window).height())-$('header').height())+'px'});
+		$('#game-wrap-panels').css({'height':(($(window).height())-$('header').height())+'px'});
 		$(window).resize(function() {
-			$("#game-wrap-panels").css({'height':(($(window).height())-$('header').height())+'px'});
+			$('#game-wrap-panels').css({'height':(($(window).height())-$('header').height())+'px'});
 		});
 
 		$( document ).ready(function() {

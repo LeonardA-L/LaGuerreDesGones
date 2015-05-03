@@ -11,8 +11,28 @@ var init = require('./config/init')(),
 
 function velovProcess(data)
 {
-	
+	var velovStationID = [11001, 4002, 1301, 2030, 2002, 2004, 2007, 5045, 5044, 5040, 9004, 12001, 10119, 10102, 6036,
+							10072, 10031, 6007, 6044, 10117, 3082, 3099, 10113, 3090, 8002, 7062, 7061, 7007, 7020, 8051, 8061];
+	var stationsToKeep = [];
+	for(var i = 0; i<data.length; i++){
+		if(velovStationID.indexOf(data[i].number) > -1){
+			stationsToKeep.push([data[i].number, data[i].available_bike_stands, data[i].available_bikes]);
+		}
+	}
+	console.log(stationsToKeep);
+	return stationsToKeep;
 }
+
+function travelTime(latitudeDep, longitudeDep, latitudeArr, longitudeArr, mode)
+{
+	var xmlHttp = new XMLHttpRequest();	
+	xmlHttp.open( 'GET', 'https://maps.googleapis.com/maps/api/distancematrix/json?origins='+latitudeDep+','+longitudeDep+
+					'&destinations='+latitudeArr+','+longitudeArr+'&mode='+mode+'&key=AIzaSyAHDzUFLgSp1qwdZZPnQpYtkRxF9r1gk0A', false );
+	xmlHttp.send();
+	var data = JSON.parse(xmlHttp.responseText);
+
+}
+
 
 /**
 * Recupererer service
@@ -26,9 +46,8 @@ function registerCronJob(serviceAddress, resultTreatment, cronMinutesInterval)
 		xmlHttp.open( 'GET', serviceAddress, false );
 		xmlHttp.send();
 		var data = JSON.parse(xmlHttp.responseText);
-		console.log(data);
-		//var result = resultTreatment(data);
-		//On persiste les infos dans la base
+		var result = resultTreatment(data);
+		//On persiste dans la base
 		});
 }
 
@@ -60,5 +79,5 @@ exports = module.exports = app;
 // Logging initialization
 console.log('MEAN.JS application started on port ' + config.port);
 
-registerCronJob('https://api.jcdecaux.com/vls/v1/stations?contract=Lyon&apiKey=d7f8e02837f368139f58a1efda258d77b8366bfe', null, '*');
+registerCronJob('https://api.jcdecaux.com/vls/v1/stations?contract=Lyon&apiKey=d7f8e02837f368139f58a1efda258d77b8366bfe', velovProcess, '*');
 

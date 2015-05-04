@@ -2,8 +2,9 @@
 /* global google */
 /* global $ */
 
-angular.module('play').controller('PlayController', ['$scope', 'Authentication', '$http', '$stateParams', '$document',
-	function($scope, Authentication, $http, $stateParams, $document) {
+angular.module('play').controller('PlayController', ['$scope', 'Authentication', '$http', '$stateParams', '$document', 'Socket', '$location',
+	function($scope, Authentication, $http, $stateParams, $document, Socket, $location) {
+		console.log($location);
 		// This provides Authentication context.
 		$scope.authentication = Authentication;
 
@@ -15,11 +16,9 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		var map;
 		console.log($stateParams);
 
-		$http.get('/services/play/'+gameId+'/start').
-		  //success(function(data, status, headers, config) {
-		  success(function(data) {
-			
-			$scope.game = data.success;
+
+		var processGameState = function(game){
+			$scope.game = game;
 			
 			var i=0;
 			var j=0;
@@ -40,11 +39,21 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
     				$scope.game.zones[i].units[j] = $scope.game.units[$scope.game.zones[i].units[j]];
 				}
 			}
-
+			console.log('New diff');
 			console.log($scope.game);
-			drawZoneMap($scope.game);
 			$scope.listUnitsByType($scope.game.units);
+		};
 
+
+		Socket.on(gameId+'.diff', function(diff) {
+		    processGameState(diff.success);
+		});
+
+		$http.get('/services/play/'+gameId+'/start').
+		  //success(function(data, status, headers, config) {
+		  success(function(data) {
+		  	processGameState(data.success);
+			drawZoneMap($scope.game);
 			console.log($scope);
 		  }).
 		  error(function(data) {
@@ -85,7 +94,8 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
   			var dto = {
   				'zone':$scope.game.units[0].zone,
   				'unit':$scope.game.units[0]._id,
-  				'player':$scope.game.units[0].player
+  				'player':$scope.game.units[0].player,
+  				'game':gameId
   			};
 			$http.post('/services/action/sell',dto).
 			//success(function(data, status, headers, config) {
@@ -102,7 +112,8 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			var dto = {
   				'zone':zoneId,
   				'player':playerId,
-  				'newUnitType':newUnitTypeN
+  				'newUnitType':newUnitTypeN,
+  				'game':gameId
   			};
 			$http.post('/services/action/buy',dto).
 			//success(function(data, status, headers, config) {

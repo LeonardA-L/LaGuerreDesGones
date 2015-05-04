@@ -7,9 +7,12 @@ var init = require('./config/init')(),
 	mongoose = require('mongoose'),
 	chalk = require('chalk'),
 	Schema = mongoose.Schema;
+var express = require('express');
 
 //mongoose.set('debug', true);
 //var ActionSchema=require('../app/app/models/action.server.model').ActionSchema;
+var debug=config.debug;
+var state=true;
 
 // Action model
 var Action = undefined;
@@ -24,6 +27,7 @@ var matrixes = undefined;
 
 var initPlayers = 8;
 var initMoney = 1000;
+var sellRatio = 0.4;
 
 var NEUTRAL = 'neutral';
 var HOSPITAL = 'hospital';
@@ -38,7 +42,7 @@ var SQUARE = 'square';
 var BANK = 'bank';
 var SHOPPING_CENTRE = 'shopping_centre';
 
-var updateInterval = 30000;
+var updateInterval = 120000;
 var updateMoney = 0;
 
 // dirty pasted model
@@ -262,6 +266,29 @@ var ActionSchema = new Schema({
 	
 });
 
+var syncEndProcess = function(action){
+	action.save();
+
+	var http = require('http');
+	var options = {
+	  host: (process.argv[2]||config.defaultHost),
+	  path: '/'+config.callback,
+	  port: (process.argv[5]||config.defaultCallbackPort),
+	  method: 'POST',
+	  json: true,
+	  headers: {
+	      "content-type": "application/json",
+	    }
+	    ///body: JSON.stringify({game:action.game})
+	};
+	
+	var req = http.request(options);
+	req.on('error', function(error) {
+  		if(debug) console.log('Server unreachable');
+	});
+	req.write(JSON.stringify({game:action.game._id || action.game}));
+	req.end();
+};
 
 var affectUnitToZone = function(u,z,zd){
 	u.zone = z._id;
@@ -286,9 +313,7 @@ var processDisplacement = function(a){
 	 		u.yt=a.zoneB.zoneDesc.y;
 	 		u.x=a.zoneA.zoneDesc.x;
 	 		u.y=a.zoneA.zoneDesc.y;
-	 		console.log(a.zoneA.units);
 			a.zoneA.units.splice(a.zoneA.units.indexOf(u._id), 1);
-			console.log(a.zoneA.units);
 			// TODO
 			u.save();
 	 	}
@@ -302,12 +327,15 @@ var processDisplacement = function(a){
 			game:a.game
 		});
 		//console.log(b.date);
-		console.log('Saving end displacement action');
-		b.save();
+		if(debug) console.log('Saving end displacement action');
+		b.save(function(err){
+			if(debug && err) console.log(err);
+			syncEndProcess(a);
+		});
 	};
 	
 	var syncCount = 2;
- 	console.log('Processing displacement action');
+ 	if(debug) console.log('Processing displacement action');
  	Zone.findById(a.game.zoneA).populate('zoneDesc').exec(function(err,zo){
  		a.game.zoneA = zo;
  		if(--syncCount === 0){
@@ -325,7 +353,7 @@ var processDisplacement = function(a){
 };
 
 var processEndDisplacement = function(a){
-	console.log('Processing end displacement action');
+	if(debug) console.log('Processing end displacement action');
 	//console.log(a);
 	Zone.findById(a.game.zone).populate('zoneDesc').exec(function(err,zo){
 		a.game.zone = zo;
@@ -339,6 +367,9 @@ var processEndDisplacement = function(a){
 			// TODO
 			u.save();
  		}
+		// Zone Owner
+
+		syncEndProcess(a);
  	});
 	
 };
@@ -346,7 +377,7 @@ var processEndDisplacement = function(a){
 
 // Dummy process init
 var processInit = function(a){
-	console.log('Processing init action');
+	if(debug) console.log('Processing init action');
 	var zoneIdList = [];
 	var neutralZones = [];
 	var neutralZonesDesc = [];
@@ -402,19 +433,20 @@ var processInit = function(a){
 		a.game.save();
 
 		// generate next hop
-		console.log('Generate next hop');
+		if(debug) console.log('Generate next hop');
 		var b = new Action({
 			type:5,
 			game:a.game._id,
 			date:new Date(a.date.getTime()+updateInterval)
 		});
-		b.save();
+		b.save(function(err){
+			syncEndProcess(a);
+		});
 	});
 };
 
 var processBuy = function(a){
-	console.log('Processing buy action');
-	console.log(a);
+	if(debug) console.log('Processing buy action');
 	var price = matrixes.UnitData.content[a.newUnitType].price;
 	a.player.money -= price;
 	// TODO create unit according to real stuff
@@ -426,25 +458,35 @@ var processBuy = function(a){
 		u.save();
 		a.zone.save();
 		a.player.save();
+
+		syncEndProcess(a);
 	});
 };
 
 var processSell = function(a){
-	console.log('Processing sell action');
-	var price = 21;
-	a.player.money += price;
-	Unit.remove({'_id':a.units[0]}, function(err){
+	if(debug) console.log('Processing sell action');
+	
+	Unit.findById(a.units[0], function(err, data){
 		if(err)
-			console.log(err);
+			if(debug) console.log(err);
+		//console.log(data);
+		Unit.remove({'_id':a.units[0]}, function(err){
+			if(err)
+				if(debug) console.log(err);
+		});
+		var price = sellRatio*matrixes.UnitData.content[data.type].price;
+		a.player.money += price;
+		a.zone.units.splice(a.zone.units.indexOf(a.units[0]),1);
+		a.player.units.splice(a.player.units.indexOf(a.units[0]),1);
+		a.player.save();
+		a.zone.save();
+
+		syncEndProcess(a);
 	});
-	a.zone.units.splice(a.zone.units.indexOf(a.units[0]),1);
-	a.player.units.splice(a.player.units.indexOf(a.units[0]),1);
-	a.player.save();
-	a.zone.save();
 };
 
 var processHop = function(a){
-	console.log('Processing Hop action');
+	if(debug) console.log('Processing Hop action');
 	Player.find({'_id':{$in:a.game.players}}, function(err,players){
 		for(var j=0;j<players.length;j++){
 			players[players[j]._id] = players[j];
@@ -466,10 +508,12 @@ var processHop = function(a){
 					p.save();
 				}
 			}
+
+			syncEndProcess(a);
 		});
 	});
 
-	console.log('Generate next hop');
+	if(debug) console.log('Generate next hop');
 		var b = new Action({
 			type:5,
 			game:a.game,
@@ -494,14 +538,13 @@ actionHandlers.push(processHop);
 
 // Main work
 var execute = function(){
-
 	setTimeout(function(){
 
 		// Find an Action needing processing, tag it as assigned
 		Action.collection.findAndModify({'status':0, 'date':{$lte:new Date()}},[['_id','asc']],{$set: {status: 1}},{}, function (err, doc) {
 		//Action.collection.findAndModify({'status':0},[['_id','asc']],{$set: {status: 1}},{}, function (err, doc) {
 			if (err){
-				console.log(err);
+				if(debug) console.log(err);
 				return;
 			}
 
@@ -510,14 +553,12 @@ var execute = function(){
 				// There's probably a better way
 				var actionCallback = function (err, action) {
 						if (err){
-							console.log(err);
+							if(debug) console.log(err);
 						}
 					
 						//console.log(action);
 
 					processAction(action);
-
-					action.save();
 				};
 
 				switch(doc.type){
@@ -540,8 +581,19 @@ var execute = function(){
 				}
 	    	}
 
-	    	// Re launch
-	        execute();
+	    	Action.count({'status':0, 'date':{$lte:new Date()}},function(err,count){
+				if(debug) console.log(count);
+	    		if(count > 0){
+	    			// Re launch
+	        		execute();
+	    		}
+	    		else{
+	    			// Stopping since not needed
+	    			console.log('Stopping');
+	    			state = false;
+	    		}
+	    	});
+	    	
 	    });
 	},config.pollingInterval);
 };
@@ -551,33 +603,13 @@ var displayDB = function(){
 	setTimeout(function(){
 		Action.find({'status':0}).exec(function (err, docs) {
 			if (err){
-				console.log(err);
+				if(debug) console.log(err);
 			}
 	        //console.log(docs);
 	        console.log(docs.length + ' unprocessed actions');
 	    });
 		displayDB();
 	},5000);
-};
-
-// Dummy inject actions
-// For debug purpose, injects dummy Action objects into collection
-var i=1;
-var dummyInject = function(){
-	setTimeout(function(){
-		var a = new Action({
-		'type' : i,
-		'date':new Date(),
-		'status' :0
-		});
-		a.save(function(err,data){
-			if (err)
-	            console.log('Error saving variable');
-	        //console.log(data);
-		});
-		i++;
-		dummyInject();
-	},3000);
 };
 
 // Bootstrap db connection
@@ -621,15 +653,36 @@ var db = mongoose.connect(dbAddress, function(err) {
 		//Action.collection.remove({},function(){});
 
 		// Start processing routine
-		execute();
+		//execute();
+		autoWakeUp();
 
 		// For debug purpose
-		displayDB();
-		//dummyInject();
+		if(debug) displayDB();
 	}
 });
 
 
+var app = express();
+
+app.get('/', function(req, res){
+	if(!state){
+		res.send('Going to work');
+		console.log('Forced wake up');
+		state=true;
+		execute();
+	}
+});
+
+app.listen(process.argv[4]||7878);
+
 // Logging initialization
 console.log('Action processor started');
 
+var autoWakeUp = function(){
+	console.log('Auto wakeup');
+	state=true;
+	execute();
+	setTimeout(function(){
+		autoWakeUp();
+	},config.autoWakeupInterval);
+};

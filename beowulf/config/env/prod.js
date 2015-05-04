@@ -1,8 +1,12 @@
 'use strict';
 
 module.exports = {
-	dbname: 'mongodb://remote:27017/pldapp-dev',
-	pollingInterval:5,
+	dbname: 'pldapp-dev',
+	pollingInterval:4,
 	defaultPort:27017,
-	defaultHost:'localhost'
+	defaultHost:'localhost',
+	autoWakeupInterval:20000,
+	callback:'services/play/callback',
+	defaultCallbackPort:3000,
+	debug:true
 };

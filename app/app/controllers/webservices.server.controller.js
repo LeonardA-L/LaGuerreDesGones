@@ -143,17 +143,18 @@ exports.createGame = function(req, res) {
 	var Game = mongoose.model('Game');
 	var Player = mongoose.model('Player');
 	var Action = mongoose.model('Action');
+	console.log(req.body);
 	var g = new Game({
 		'title':req.body.title,
 		'nMaxPlayerUnit':40,
-		'nMinPlayer':2,
-		'nMaxPlayer':8,
+		'nMinPlayer':req.body.nMinPlayer,
+		'nMaxPlayer':req.body.nMaxPlayer,
 		'isInit':false,
 		'startTime':new Date(req.body.startTime)
 	});
-	console.log(g);
+	console.log(req.user);
 	var player = new Player({
-			name: req.user.nickname || 'Anonymous',
+			name: req.user.username || 'Anonymous',
 			isAdmin: true,
 			user: req.user._id,
 			game: g._id 
@@ -187,7 +188,7 @@ exports.getWaiting = function(req, res) {
 	
 	var Game = mongoose.model('Game');
 
-    Game.find({'isInit':false, 'creator._id':{$ne:req.user._id}}).populate('players').exec(function (err, docs) {
+    Game.find({'isInit':false, 'creator._id':{$ne:req.user._id}}).populate('players creator', 'username avatarUrl').exec(function (err, docs) {
 	  if (err)
             res.send(err);
         for(var i=0;i<docs.length;i++){
@@ -210,7 +211,7 @@ exports.getWaiting = function(req, res) {
 exports.getSubscribed = function(req,res){
 	var Game = mongoose.model('Game');
 
-    Game.find({}).populate('players').exec(function (err, docs) {
+    Game.find({}).populate('players').populate('creator', 'username').exec(function (err, docs) {
 	  if (err)
             res.send(err);
         var accurate = [];
@@ -298,7 +299,7 @@ exports.unjoinGame = function(req, res) {
 	res.json(result);
 };
 
-exports.startPlay = function(req,res){
+var getPlay = function(gameId, callback, res){
 	var result = {
 		success:{}
 	};
@@ -311,72 +312,84 @@ exports.startPlay = function(req,res){
 	var Matrix = mongoose.model('Matrix');
 	var ZoneDesc = mongoose.model('ZoneDescription');
 
-	console.log(req.params.gameId);
-	Game.findOne({'_id':req.params.gameId}, function(err,game){
+	console.log(gameId);
+	Game.findOne({'_id':gameId}, function(err,game){
 		if(err)
+			console.log(err);
+		if(res && err)
 			res.send(err);
 		result.success.title = game.title;
 		if(--syncCallback === 0){
-			res.json(result);
+			callback(result);
 		}
 	});
-	Unit.find({'game':req.params.gameId}, function(err,units){
-		if(err)
+	Unit.find({'game':gameId}, function(err,units){
+		if(res && err)
 			res.send(err);
 		result.success.units = units;
 		if(--syncCallback === 0){
-			res.json(result);
+			callback(result);
 		}
 	});
-	Zone.find({'game':req.params.gameId}).exec(function(err,zones){
-		if(err)
+	Zone.find({'game':gameId}).exec(function(err,zones){
+		if(res && err)
 			res.send(err);
 		result.success.zones = zones;
 		if(--syncCallback === 0){
-			res.json(result);
+			callback(result);
 		}
 	});
 	ZoneDesc.find({}).exec(function(err,zonesDesc){
-		if(err)
+		if(res && err)
 			res.send(err);
 		result.success.zonesDesc = {};
 		for(var i=0;i<zonesDesc.length;i++){
 			result.success.zonesDesc[zonesDesc[i]._id] = zonesDesc[i];
 		}
 		if(--syncCallback === 0){
-			res.json(result);
+			callback(result);
 		}
 	});
-	Player.find({'game':req.params.gameId}, function(err,players){
-		if(err)
+	Player.find({'game':gameId}, function(err,players){
+		if(res && err)
 			res.send(err);
 		result.success.players = players;
 		if(--syncCallback === 0){
-			res.json(result);
+			callback(result);
 		}
 	});
-	Action.find({'game':req.params.gameId}, function(err,actions){
-		if(err)
+	Action.find({'game':gameId}, function(err,actions){
+		if(res && err)
 			res.send(err);
 		result.success.actions = actions;
 		if(--syncCallback === 0){
-			res.json(result);
+			callback(result);
 		}
 	});
 
 	Matrix.find({'name':{$in:['UnitData']}},function(err,matrixes){
-		if(err)
+		if(res && err)
 			res.send(err);
 		result.success.matrixes = {};
 		for(var i=0;i<matrixes.length;i++){
 			result.success.matrixes[matrixes[i].name] = matrixes[i];
 		}
 		if(--syncCallback === 0){
-			res.json(result);
+			callback(result);
 		}
 	});
 };
 
+exports.startPlay = function(req,res){
+	var handleReq = function(result){
+		res.json(result);
+	};
+	getPlay(req.params.gameId,handleReq, res);
+};
+
+var diffPlay = function(){
+	
+};
 
 exports.displacementAction = function(req, res) {
 
@@ -413,11 +426,17 @@ exports.sellAction = function(req, res) {
 		status:0,
 		zone:req.body.zone,
 		units:[req.body.unit],
-		player:req.body.player
+		player:req.body.player,
+		game:req.body.game
 	});
 	console.log('registering sell');
 	console.log(a);
 	registerAction(a);
+
+	var ret = {
+		result:'ok'
+	};
+	res.json(ret);
 };
 
 exports.buyAction = function(req, res) {
@@ -433,11 +452,17 @@ exports.buyAction = function(req, res) {
 		status:0,
 		zone:req.body.zone,
 		player:req.body.player,
-		newUnitType : req.body.newUnitType
+		newUnitType : req.body.newUnitType,
+		game:req.body.game
 	});
 	console.log('registering buy');
 	console.log(a);
 	registerAction(a);
+
+	var ret = {
+		result:'ok'
+	};
+	res.json(ret);
 };
 
 exports.firstUseFillBDD = function(req,res){
@@ -551,4 +576,20 @@ Matrix.remove({'name':{$in:['UnitData','ZoneTypeToUnitType']}},function(err,data
 	};
 	res.json(ret);
 });
+};
+
+exports.actionCallback = function(req,res){
+	console.log('A game was saved');
+	console.log(req.body);
+	var handleDiff = function(diff){
+		console.log('New diff');
+		// TODO socketio
+		var socketio = req.app.get('socketio'); // take out socket instance from the app container
+		socketio.sockets.emit(req.body.game+'.diff', diff); // emit an event for all connected clients
+	};
+	getPlay(req.body.game,handleDiff);
+	var ret = {
+		result:'ok'
+	};
+	res.json(ret);
 };

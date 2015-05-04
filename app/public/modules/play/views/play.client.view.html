@@ -35,6 +35,7 @@
 					<div ng-if="mode==='displacement'">
 						<h2>Displacement</h2>
 							<h3>Add units</h3>
+							<p>Units on this zone are</p>
 							<p ng-repeat="i in game.selectedZone.units">{{i._id}} <button class="btn btn-primary" ng-click="addUnitToDisp(i._id)">Add2Disp</button></p>
 						<div ng-if="disp.step>0">
 							<h3>Choose a zone</h3>

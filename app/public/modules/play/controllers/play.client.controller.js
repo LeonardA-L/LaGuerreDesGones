@@ -2,9 +2,8 @@
 /* global google */
 /* global $ */
 
-angular.module('play').controller('PlayController', ['$scope', 'Authentication', '$http', '$stateParams', '$document', 'Socket', '$location',
-	function($scope, Authentication, $http, $stateParams, $document, Socket, $location) {
-		console.log($location);
+angular.module('play').controller('PlayController', ['$scope', 'Authentication', '$http', '$stateParams', '$document', 'Socket',
+	function($scope, Authentication, $http, $stateParams, $document, Socket) {
 		// This provides Authentication context.
 		$scope.authentication = Authentication;
 
@@ -25,6 +24,9 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			// Connection between player and hash
 			for(i=0;i<$scope.game.players.length;i++){
 				$scope.game.players[$scope.game.players[i]._id] = $scope.game.players[i];
+				if($scope.game.players[i].user === $scope.authentication.user._id){
+					$scope.player = $scope.game.players[i];
+				}
 			}
 			// Connection between zone and hash
 			for(j=0;j<$scope.game.zones.length;j++){
@@ -187,12 +189,44 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			}
 		}
 
+		$scope.resetMode=function(){
+			$scope.mode = '';
+			$scope.disp = {};
+		};
+
+		$scope.prepareDisp = function(){
+			$scope.resetMode();
+			$scope.mode='displacement';
+			$scope.disp = {
+				'zoneAId':$scope.game.selectedZone._id,
+				'unitIds':[],
+				'step':0
+			};
+		};
+
+		$scope.addUnitToDisp = function(unitId){
+			$scope.disp.unitIds.push(unitId);
+			$scope.disp.step = 1;
+		};
+
+		$scope.validateDisp = function(){
+			$scope.move($scope.disp.zoneAId,$scope.disp.zoneBId,$scope.disp.unitIds);
+			$scope.resetMode();
+		};
+
 		function onZoneClicked(event){
 			var that = this;
 			$scope.$apply(function(){
-				$scope.game.selectedZone = $scope.game.zones[that.zoneId];	// TODO Fix this
-				console.log($scope.game);
-				$scope.listUnitsByType($scope.game.zones[that.zoneId].units);
+				if($scope.mode === 'displacement' && $scope.disp.step>=1){
+					$scope.disp.zoneBId = that.zoneId;
+					$scope.disp.step=2;
+				}
+				else{
+					$scope.resetMode();
+					$scope.game.selectedZone = $scope.game.zones[that.zoneId];	// TODO Fix this
+					//console.log($scope.game);
+					$scope.listUnitsByType($scope.game.zones[that.zoneId].units);
+				}
 			});
 		}
 
@@ -211,6 +245,6 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
   		$scope.list2 = {};
 		
 
-		$scope.mode = '';
+		$scope.resetMode();
 	}
 ]);

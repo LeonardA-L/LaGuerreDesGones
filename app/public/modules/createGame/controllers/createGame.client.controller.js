@@ -69,7 +69,11 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 				
 		}
 		
+		$scope.lastTitleGame = "";
+		$scope.b_lastGameHasSameName = false;
+
 		$scope.createGame = function(){
+			$scope.b_lastGameHasSameName = false;
 			$scope.errDate=false;
 			var _time=$scope.startTime.split(':');
 			$scope.startDay.setHours(_time[0]);
@@ -86,6 +90,11 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 			//success(function(data, status, headers, config) {
 			success(function(data) {
 				$scope.partyHost = true;
+				if ($scope.lastTitleGame == $scope.newGame.title){
+					$scope.b_lastGameHasSameName = true;			
+				}
+				$scope.lastTitleGame = $scope.newGame.title;
+				
 				// console.log('returned success '+data.success);
 				console.log('------ New Game ---------');
 				console.log('PartyHost ?? ' + $scope.partyHost);	

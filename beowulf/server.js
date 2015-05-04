@@ -27,6 +27,7 @@ var matrixes = undefined;
 
 var initPlayers = 8;
 var initMoney = 1000;
+var sellRatio = 0.4;
 
 var NEUTRAL = 'neutral';
 var HOSPITAL = 'hospital';
@@ -265,6 +266,29 @@ var ActionSchema = new Schema({
 	
 });
 
+var syncEndProcess = function(action){
+	action.save();
+
+	var http = require('http');
+	var options = {
+	  host: (process.argv[2]||config.defaultHost),
+	  path: '/'+config.callback,
+	  port: (process.argv[5]||config.defaultCallbackPort),
+	  method: 'POST',
+	  json: true,
+	  headers: {
+	      "content-type": "application/json",
+	    }
+	    ///body: JSON.stringify({game:action.game})
+	};
+	
+	var req = http.request(options);
+	req.on('error', function(error) {
+  		if(debug) console.log('Server unreachable');
+	});
+	req.write(JSON.stringify({game:action.game._id || action.game}));
+	req.end();
+};
 
 var affectUnitToZone = function(u,z,zd){
 	u.zone = z._id;
@@ -304,7 +328,10 @@ var processDisplacement = function(a){
 		});
 		//console.log(b.date);
 		if(debug) console.log('Saving end displacement action');
-		b.save();
+		b.save(function(err){
+			if(debug && err) console.log(err);
+			syncEndProcess(a);
+		});
 	};
 	
 	var syncCount = 2;
@@ -340,6 +367,9 @@ var processEndDisplacement = function(a){
 			// TODO
 			u.save();
  		}
+		// Zone Owner
+
+		syncEndProcess(a);
  	});
 	
 };
@@ -409,7 +439,9 @@ var processInit = function(a){
 			game:a.game._id,
 			date:new Date(a.date.getTime()+updateInterval)
 		});
-		b.save();
+		b.save(function(err){
+			syncEndProcess(a);
+		});
 	});
 };
 
@@ -426,21 +458,31 @@ var processBuy = function(a){
 		u.save();
 		a.zone.save();
 		a.player.save();
+
+		syncEndProcess(a);
 	});
 };
 
 var processSell = function(a){
 	if(debug) console.log('Processing sell action');
-	var price = 21;
-	a.player.money += price;
-	Unit.remove({'_id':a.units[0]}, function(err){
+	
+	Unit.findById(a.units[0], function(err, data){
 		if(err)
 			if(debug) console.log(err);
+		//console.log(data);
+		Unit.remove({'_id':a.units[0]}, function(err){
+			if(err)
+				if(debug) console.log(err);
+		});
+		var price = sellRatio*matrixes.UnitData.content[data.type].price;
+		a.player.money += price;
+		a.zone.units.splice(a.zone.units.indexOf(a.units[0]),1);
+		a.player.units.splice(a.player.units.indexOf(a.units[0]),1);
+		a.player.save();
+		a.zone.save();
+
+		syncEndProcess(a);
 	});
-	a.zone.units.splice(a.zone.units.indexOf(a.units[0]),1);
-	a.player.units.splice(a.player.units.indexOf(a.units[0]),1);
-	a.player.save();
-	a.zone.save();
 };
 
 var processHop = function(a){
@@ -466,6 +508,8 @@ var processHop = function(a){
 					p.save();
 				}
 			}
+
+			syncEndProcess(a);
 		});
 	});
 
@@ -515,28 +559,6 @@ var execute = function(){
 						//console.log(action);
 
 					processAction(action);
-
-					action.save();
-
-					var http = require('http');
-					var options = {
-					  host: (process.argv[2]||config.defaultHost),
-					  path: '/'+config.callback,
-					  port: (process.argv[5]||config.defaultCallbackPort),
-					  method: 'POST',
-					  json: true,
-					  headers: {
-					      "content-type": "application/json",
-					    }
-					    ///body: JSON.stringify({game:action.game})
-					};
-					
-					var req = http.request(options);
-					req.on('error', function(error) {
-				  		if(debug) console.log('Server unreachable');
-					});
-					req.write(JSON.stringify({game:action.game._id || action.game}));
-					req.end();
 				};
 
 				switch(doc.type){

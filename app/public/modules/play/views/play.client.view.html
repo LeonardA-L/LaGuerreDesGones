@@ -9,15 +9,31 @@
 
 					<hr />
 
-					<div ng-if="game.selectedZone">
-						<h2>Zone Sélectionnée</h2>
-
-						<div class="row">
-							
+					<div class="row">
+						<div class="col-md-6" style="text-align: center; ">
+							<button class="btn btn-primary" style="width:100%;">Déplacement</button>
+						</div>
+						<div class="col-md-6" style="text-align: center; ">
+							<button class="btn btn-primary" style="width:100%;">Attaque</button>
+						</div>
+						<div class="col-md-12 separator"></div>
+						<div class="col-md-12" style="text-align: center; ">
+							<label ng-repeat="p in game.players">{{p.money}} gaunettes</label>
+						</div>
+						<div class="col-md-12 separator"></div>
+						<div class="col-md-12" style="text-align: center; ">
+							<label>Ici le countdown avant les nouvelles unités</label>
 						</div>
 					</div>
 
-					<h2>Unités</h2>
+					<hr />
+
+					<div ng-if="game.selectedZone" style="text-align:center; ">
+						<h2>{{game.zonesDesc[game.zones[game.selectedZone._id].zoneDesc].name}}</h2>
+
+						<div class="row">
+						</div>
+					</div>
 
 					<div class="row">
 						<div ng-repeat="i in game.matrixes.UnitData.content">
@@ -33,7 +49,7 @@
 										<span>Nombre</span>
 									</div>
 									<div style="height:50%; text-align:center;">
-										<span>{{unitsByType[i.type].length}}</span>
+										<span>{{unitsByTypeForZone[i.type].length}}</span>
 									</div>
 								</div>
 								<div class="col-md-3 nopadding" style="margin-top: 27px;  text-align:center;">

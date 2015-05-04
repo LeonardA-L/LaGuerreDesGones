@@ -15,6 +15,10 @@ var PlayerSchema = new Schema({
 		trim: true,
 		required: true
 	},
+	color: {
+		type: Number,
+		default: 16711680
+	},
 	dateCreated: {
 		type: Date,
 		default: Date.now

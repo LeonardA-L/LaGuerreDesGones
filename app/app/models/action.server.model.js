@@ -70,7 +70,11 @@ ActionSchema.post('save', function () {
 	  port: '7878',
 	  method: 'GET'
 	};
+	
 	var req = http.request(options);
+	req.on('error', function(error) {
+  		console.log('No main beowulf worker');
+	});
 	req.end();
 
   }

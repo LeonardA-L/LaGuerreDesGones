@@ -26,7 +26,7 @@
 		<label class="col-md-3">Starting time :</label> 
 			<div class="col-md-3">
 				<select ng-model="startTime" class="form-control">
-					<option ng-repeat="hour in ::hours">{{::hour.num}}</option>
+					<option ng-repeat="hour in hours">{{hour.num}}</option>
 				</select><br />
 			</div>
 			<span ng-show="errDate">Starting hour is too early</span>
@@ -39,7 +39,7 @@
 	<div class="col-md-3">
 		<select ng-model="newGame.nMinPlayer" class="form-control">
 			<option value="2"> 2 </option>
-			<option ng-repeat="i in [3,4,5,6,7,8]" ng-show="newGame.nMaxPlayer >= i" value="{{::i}}"> {{::i}} </option>
+			<option ng-repeat="i in [3,4,5,6,7,8]" ng-show="newGame.nMaxPlayer >= i" value="{{i}}"> {{i}} </option>
 		</select><br />
 	</div>
 	</div>
@@ -48,7 +48,7 @@
 		<label class="col-md-3"> Maximum number of players :</label> 
 		<div class="col-md-3">
 			<select ng-model="newGame.nMaxPlayer" class="form-control">
-				<option ng-repeat="i in [2,3,4,5,6,7]" ng-show="newGame.nMinPlayer <= i" value="{{::i}}"> {{::i}} </option>
+				<option ng-repeat="i in [2,3,4,5,6,7]" ng-show="newGame.nMinPlayer <= i" value="{{i}}"> {{i}} </option>
 				<option value="8"> 8 </option>
 			</select><br />
 		</div>

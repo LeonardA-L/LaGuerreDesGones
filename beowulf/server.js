@@ -217,8 +217,15 @@ var ZoneSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: 'ZoneDescription',
 // TODO		required: true
+	},
+	nbUnitMax: {
+		type: Number,
+		default: DEFAULT_MAX_UNIT_NUMBER
+	},
+	owner: {
+		type: Schema.Types.ObjectId,
+		ref: 'Player'
 	}
-}); 
 
 var ActionSchema = new Schema({
 
@@ -298,6 +305,7 @@ var affectUnitToZone = function(u,z,zd){
 	u.yt = zd.y;
 	u.game = z.game;
 	z.units.push(u._id);
+	z.owner = u.player;
 };
 
 var processDisplacement = function(a){
@@ -367,7 +375,7 @@ var processEndDisplacement = function(a){
 			// TODO
 			u.save();
  		}
-		// Zone Owner
+		// TODO Zone Owner
 
 		syncEndProcess(a);
  	});

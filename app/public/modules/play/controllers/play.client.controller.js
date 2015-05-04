@@ -210,5 +210,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		 $scope.list1 = {title: 'AngularJS - Drag Me'};
   		$scope.list2 = {};
 		
+
+		$scope.mode = '';
 	}
 ]);

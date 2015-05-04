@@ -2,24 +2,23 @@
 /* global google */
 /* global $ */
 
-angular.module('play').controller('PlayController', ['$scope', 'Authentication', '$http', '$stateParams',
-	function($scope, Authentication, $http, $stateParams) {
+angular.module('play').controller('PlayController', ['$scope', 'Authentication', '$http', '$stateParams', '$document', 'Socket', '$location',
+	function($scope, Authentication, $http, $stateParams, $document, Socket, $location) {
+		console.log($location);
 		// This provides Authentication context.
 		$scope.authentication = Authentication;
 
 		$scope.game = {
 			'title':'Loading...'
 		};
-
+		$scope.listUnitType = false;
 	    var gameId = $stateParams.gameId;
 		var map;
 		console.log($stateParams);
 
-		$http.get('/services/play/'+gameId+'/start').
-		  //success(function(data, status, headers, config) {
-		  success(function(data) {
-			
-			$scope.game = data.success;
+
+		var processGameState = function(game){
+			$scope.game = game;
 			
 			var i=0;
 			var j=0;
@@ -31,17 +30,30 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			for(j=0;j<$scope.game.zones.length;j++){
 				$scope.game.zones[$scope.game.zones[j]._id] = $scope.game.zones[j];
 			}
+			for(j=0;j<$scope.game.units.length;j++){
+				$scope.game.units[$scope.game.units[j]._id] = $scope.game.units[j];
+			}
 
 			for(i=0;i<$scope.game.zones.length;i++){
     			for(j=0;j<$scope.game.zones[i].units.length;j++){
     				$scope.game.zones[i].units[j] = $scope.game.units[$scope.game.zones[i].units[j]];
 				}
 			}
-
+			console.log('New diff');
 			console.log($scope.game);
-			drawZoneMap($scope.game);
 			$scope.listUnitsByType($scope.game.units);
+		};
 
+
+		Socket.on(gameId+'.diff', function(diff) {
+		    processGameState(diff.success);
+		});
+
+		$http.get('/services/play/'+gameId+'/start').
+		  //success(function(data, status, headers, config) {
+		  success(function(data) {
+		  	processGameState(data.success);
+			drawZoneMap($scope.game);
 			console.log($scope);
 		  }).
 		  error(function(data) {
@@ -49,15 +61,13 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		});
 
 		$scope.listUnitsByType = function(us){
-			$scope.listUnitType = false;
-
-			$scope.unitsByType = [];
+			$scope.unitsByTypeForZone = [];
 			for(var j=0;j<$scope.game.matrixes.UnitData.content.length;j++){
-			    $scope.unitsByType.push([]);
+			    $scope.unitsByTypeForZone.push([]);
 			}
 
 			for(var i=0;i<us.length;i++){
-			    $scope.unitsByType[us[i].type].push(us[i]);
+		    	$scope.unitsByTypeForZone[us[i].type].push(us[i]);
 			}
 
 			$scope.listUnitType = true;
@@ -123,13 +133,11 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 					center: new google.maps.LatLng(45.753516, 4.909520)
 				};
 				map = new google.maps.Map(document.getElementById('game-main-panel'), mapOptions);
-				console.log(map);
 			}
 		}
 
 		function drawZoneMap(game) {
 			initMap();
-			console.log('Draw Zone');
 			var allPolygons = [];
 			var zoomBordr = new google.maps.LatLngBounds();
 			for (var i = 0; i < game.zones.length; i++) { 
@@ -176,14 +184,16 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 					strokeColor: '#'+color,
 					fillColor: '#'+color
 				});
-				console.log(color);
-				console.log(polygon);
 			}
 		}
 
 		function onZoneClicked(event){
-			$scope.game.selectedZone = $scope.game.zones[this.zoneId];	// TODO Fix this
-			console.log($scope.game);
+			var that = this;
+			$scope.$apply(function(){
+				$scope.game.selectedZone = $scope.game.zones[that.zoneId];	// TODO Fix this
+				console.log($scope.game);
+				$scope.listUnitsByType($scope.game.zones[that.zoneId].units);
+			});
 		}
 
 		$('#game-wrap-panels').css({'height':(($(window).height())-$('header').height())+'px'});
@@ -191,7 +201,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			$('#game-wrap-panels').css({'height':(($(window).height())-$('header').height())+'px'});
 		});
 
-		$( document ).ready(function() {
+		$document.ready(function() {
 			initMap();
 		});
 

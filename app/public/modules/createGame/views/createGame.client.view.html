@@ -56,8 +56,7 @@
 	
 	<input type="submit" ng-disabled="myForm.$invalid" ng-click="createGame()" value="Host your party !" class="col-md-offset-2 col-md-2" />
 	<br/>
-	<div class="confirmationOfHosting" ng-if="partyHost" class="col-md-offset-2 col-md-2"> Your game has been succesfully hosted !</div>
-	<div class="confirmationOfHosting" ng-if="partyNotHost" class="col-md-offset-2 col-md-2"> We fail to host your game !</div>
-
+	<div id="confirmationOfHosting" ng-if="partyHost" class="col-md-6"> Your game has been succesfully hosted ! You can now <a class="internsLinks" href="/#!/perso">join your games</a> or <a class="internsLinks" href="/#!/join"> join other games</a>. </div>
+	<div id="confirmationOfHosting" ng-if="partyNotHost" class="col-md-6"> We fail to host your game !</div>
 </form>
 </section>

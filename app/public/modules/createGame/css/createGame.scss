@@ -6,6 +6,15 @@
 	}
 }
 
-.confirmationOfHosting{
+#confirmationOfHosting{
 	color: red;
+}
+
+.internsLinks{
+	color : red;
+	font-weight: bold;
+}
+
+.internsLinks:hover, .internsLinks:focus {
+  	text-decoration: none;
 }

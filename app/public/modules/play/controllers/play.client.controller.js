@@ -2,8 +2,8 @@
 /* global google */
 /* global $ */
 
-angular.module('play').controller('PlayController', ['$scope', 'Authentication', '$http', '$stateParams', '$document',
-	function($scope, Authentication, $http, $stateParams, $document) {
+angular.module('play').controller('PlayController', ['$scope', 'Authentication', '$http', '$stateParams', '$document', 'Socket',
+	function($scope, Authentication, $http, $stateParams, $document, Socket) {
 		// This provides Authentication context.
 		$scope.authentication = Authentication;
 
@@ -14,6 +14,10 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 	    var gameId = $stateParams.gameId;
 		var map;
 		console.log($stateParams);
+
+		Socket.on(gameId+'.diff', function(diff) {
+		    console.log(diff);
+		});
 
 		$http.get('/services/play/'+gameId+'/start').
 		  //success(function(data, status, headers, config) {

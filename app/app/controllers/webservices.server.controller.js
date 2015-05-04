@@ -572,6 +572,8 @@ exports.actionCallback = function(req,res){
 	var handleDiff = function(diff){
 		console.log('New diff');
 		// TODO socketio
+		var socketio = req.app.get('socketio'); // take out socket instance from the app container
+		socketio.sockets.emit(req.body.game+'.diff', diff); // emit an event for all connected clients
 	};
 	getPlay(req.body.game,handleDiff);
 	var ret = {

@@ -2,8 +2,9 @@
 /* global google */
 /* global $ */
 
-angular.module('play').controller('PlayController', ['$scope', 'Authentication', '$http', '$stateParams', '$document', 'Socket',
-	function($scope, Authentication, $http, $stateParams, $document, Socket) {
+angular.module('play').controller('PlayController', ['$scope', 'Authentication', '$http', '$stateParams', '$document', 'Socket', '$location',
+	function($scope, Authentication, $http, $stateParams, $document, Socket, $location) {
+		console.log($location);
 		// This provides Authentication context.
 		$scope.authentication = Authentication;
 
@@ -38,7 +39,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
     				$scope.game.zones[i].units[j] = $scope.game.units[$scope.game.zones[i].units[j]];
 				}
 			}
-
+			console.log('New diff');
 			console.log($scope.game);
 			$scope.listUnitsByType($scope.game.units);
 		};

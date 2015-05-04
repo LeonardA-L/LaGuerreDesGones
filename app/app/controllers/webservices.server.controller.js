@@ -314,6 +314,8 @@ var getPlay = function(gameId, callback, res){
 
 	console.log(gameId);
 	Game.findOne({'_id':gameId}, function(err,game){
+		if(err)
+			console.log(err);
 		if(res && err)
 			res.send(err);
 		result.success.title = game.title;
@@ -430,6 +432,11 @@ exports.sellAction = function(req, res) {
 	console.log('registering sell');
 	console.log(a);
 	registerAction(a);
+
+	var ret = {
+		result:'ok'
+	};
+	res.json(ret);
 };
 
 exports.buyAction = function(req, res) {
@@ -451,6 +458,11 @@ exports.buyAction = function(req, res) {
 	console.log('registering buy');
 	console.log(a);
 	registerAction(a);
+
+	var ret = {
+		result:'ok'
+	};
+	res.json(ret);
 };
 
 exports.firstUseFillBDD = function(req,res){

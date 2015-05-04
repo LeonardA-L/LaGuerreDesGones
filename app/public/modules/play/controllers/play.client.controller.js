@@ -2,8 +2,8 @@
 /* global google */
 /* global $ */
 
-angular.module('play').controller('PlayController', ['$scope', 'Authentication', '$http', '$stateParams', '$document', 'Socket',
-	function($scope, Authentication, $http, $stateParams, $document, Socket) {
+angular.module('play').controller('PlayController', ['$scope', 'Authentication', '$http', '$stateParams', '$document', 'Socket', '$timeout',
+	function($scope, Authentication, $http, $stateParams, $document, Socket, $timeout) {
 		// This provides Authentication context.
 		$scope.authentication = Authentication;
 
@@ -15,10 +15,35 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		var map;
 		console.log($stateParams);
 
+		var generationInterval = 120000;
+
+
+		var countdownForGenerationDestroy = undefined;
+		var countdownForGeneration = function(){
+			return $timeout(function(){
+				var remainingS = Math.floor(($scope.game.nextRefresh - (new Date().getTime()))/1000);
+				var secs = remainingS%60;
+				if(secs < 10 && secs >= 0)
+					secs = '0'+secs;
+				var mins = (remainingS - secs)/60;
+				if(mins < 10)
+					mins = '0'+mins;
+				if(secs < 0){
+					$scope.remaining = '00:00';
+				}
+				else{
+					$scope.remaining = ''+mins+':'+secs;
+				}
+				
+				countdownForGenerationDestroy = countdownForGeneration();
+			},500);
+		};
+
 
 		var processGameState = function(game){
+			var selectedZone = $scope.game.selectedZone;
 			$scope.game = game;
-			
+			$scope.game.selectedZone = selectedZone;
 			var i=0;
 			var j=0;
 			// Connection between player and hash
@@ -41,9 +66,24 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
     				$scope.game.zones[i].units[j] = $scope.game.units[$scope.game.zones[i].units[j]];
 				}
 			}
+
+			for(i=0;i<$scope.game.actions.length;i++){
+				if($scope.game.actions[i].type === 5){
+					$scope.game.nextRefresh = (new Date($scope.game.actions[i].date).getTime());
+					if(countdownForGenerationDestroy)
+						$timeout.cancel(countdownForGenerationDestroy);
+					countdownForGeneration();
+					break;
+				}
+			}
+
 			console.log('New diff');
 			console.log($scope.game);
-			$scope.listUnitsByType($scope.game.units);
+
+			console.log($scope.game.selectedZone);
+			if($scope.game.selectedZone !== undefined){
+				$scope.listUnitsByType($scope.game.zones[$scope.game.selectedZone._id].units);
+			}
 		};
 
 

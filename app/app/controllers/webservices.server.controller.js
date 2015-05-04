@@ -358,7 +358,7 @@ var getPlay = function(gameId, callback, res){
 			callback(result);
 		}
 	});
-	Action.find({'game':gameId}, function(err,actions){
+	Action.find({'game':gameId}).sort('-date').exec(function(err,actions){
 		if(res && err)
 			res.send(err);
 		result.success.actions = actions;

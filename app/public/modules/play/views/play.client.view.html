@@ -7,7 +7,7 @@
 					<hr />
 					<div class="row">
 						<div class="col-md-6 center-content">
-							<button class="btn btn-primary full-width" ng-click="prepareDisp()">Déplacement</button>
+							<button class="btn btn-primary full-width" ng-click="mode==='displacement' ? resetMode() : prepareDisp()">Déplacement</button>
 						</div>
 						<div class="col-md-6 center-content">
 							<button class="btn btn-primary full-width">Attaque</button>
@@ -18,7 +18,7 @@
 						</div>
 						<div class="col-md-12 separator"></div>
 						<div class="col-md-12 center-content">
-							<label>Ici le countdown avant les nouvelles unités</label>
+							<label>Nouvelles unités dans {{remaining}}</label>
 						</div>
 					</div>
 
@@ -47,7 +47,7 @@
 						</div>
 					</div>
 
-					<div class="row">
+					<div class="row" ng-if="listUnitType">
 						<div ng-repeat="i in game.matrixes.UnitData.content">
 							<div class="col-md-12 row-unit">
 								<div class="col-md-3 nopadding">
@@ -66,7 +66,7 @@
 								</div>
 								<div id="row-unit-actions" class="col-md-3 nopadding center-content">
 									<button class="btn btn-primary btn-success">+</button>
-									<button class="btn btn-primary btn-danger" ng-click="sell(unitsByType[i][0].zone,unitsByType[i][0]._id,unitsByType[i][0].player)">-</button>
+									<button ng-if="unitsByTypeForZone[i.type].length > 0" class="btn btn-primary btn-danger" ng-click="sell(unitsByType[i][0].zone,unitsByType[i][0]._id,unitsByType[i][0].player)">-</button>
 								</div>
 							</div>
 							<div class="col-md-12 row-unit-separator">

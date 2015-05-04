@@ -18,12 +18,14 @@ module.exports = {
 				'public/lib/angular-material/angular-material.css'
 			],
 			js: [
+				'public/lib/jquery/dist/jquery.js',
+				'public/lib/jquery-ui/jquery-ui.min.js',
 				'public/lib/angular/angular.js',
 				'public/lib/angular-resource/angular-resource.js', 
 				'public/lib/angular-ui-router/release/angular-ui-router.js',
 				'public/lib/angular-ui-utils/ui-utils.js',
 				'public/lib/angular-bootstrap/ui-bootstrap-tpls.js',
-				'public/lib/jquery/dist/jquery.js',
+				'public/lib/angular-dragdrop/src/angular-dragdrop.js',
 				'public/lib/angular-animate/angular-animate.min.js',
 				'public/lib/angular-aria/agular-aria.min.js',
 				'public/lib/angular-material/angular-material.js',

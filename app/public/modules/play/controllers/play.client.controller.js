@@ -2,9 +2,8 @@
 /* global google */
 /* global $ */
 
-angular.module('play').controller('PlayController', ['$scope', 'Authentication', '$http', '$stateParams', '$document', 'Socket', '$location',
-	function($scope, Authentication, $http, $stateParams, $document, Socket, $location) {
-		console.log($location);
+angular.module('play').controller('PlayController', ['$scope', 'Authentication', '$http', '$stateParams', '$document', 'Socket', '$timeout',
+	function($scope, Authentication, $http, $stateParams, $document, Socket, $timeout) {
 		// This provides Authentication context.
 		$scope.authentication = Authentication;
 
@@ -16,15 +15,43 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		var map;
 		console.log($stateParams);
 
+		var generationInterval = 120000;
+
+
+		var countdownForGenerationDestroy = undefined;
+		var countdownForGeneration = function(){
+			return $timeout(function(){
+				var remainingS = Math.floor(($scope.game.nextRefresh - (new Date().getTime()))/1000);
+				var secs = remainingS%60;
+				if(secs < 10 && secs >= 0)
+					secs = '0'+secs;
+				var mins = (remainingS - secs)/60;
+				if(mins < 10)
+					mins = '0'+mins;
+				if(secs < 0){
+					$scope.remaining = '00:00';
+				}
+				else{
+					$scope.remaining = ''+mins+':'+secs;
+				}
+				
+				countdownForGenerationDestroy = countdownForGeneration();
+			},500);
+		};
+
 
 		var processGameState = function(game){
+			var selectedZone = $scope.game.selectedZone;
 			$scope.game = game;
-			
+			$scope.game.selectedZone = selectedZone;
 			var i=0;
 			var j=0;
 			// Connection between player and hash
 			for(i=0;i<$scope.game.players.length;i++){
 				$scope.game.players[$scope.game.players[i]._id] = $scope.game.players[i];
+				if($scope.game.players[i].user === $scope.authentication.user._id){
+					$scope.player = $scope.game.players[i];
+				}
 			}
 			// Connection between zone and hash
 			for(j=0;j<$scope.game.zones.length;j++){
@@ -39,9 +66,24 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
     				$scope.game.zones[i].units[j] = $scope.game.units[$scope.game.zones[i].units[j]];
 				}
 			}
+
+			for(i=0;i<$scope.game.actions.length;i++){
+				if($scope.game.actions[i].type === 5){
+					$scope.game.nextRefresh = (new Date($scope.game.actions[i].date).getTime());
+					if(countdownForGenerationDestroy)
+						$timeout.cancel(countdownForGenerationDestroy);
+					countdownForGeneration();
+					break;
+				}
+			}
+
 			console.log('New diff');
 			console.log($scope.game);
-			$scope.listUnitsByType($scope.game.units);
+
+			console.log($scope.game.selectedZone);
+			if($scope.game.selectedZone !== undefined){
+				$scope.listUnitsByType($scope.game.zones[$scope.game.selectedZone._id].units);
+			}
 		};
 
 
@@ -187,12 +229,44 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			}
 		}
 
+		$scope.resetMode=function(){
+			$scope.mode = '';
+			$scope.disp = {};
+		};
+
+		$scope.prepareDisp = function(){
+			$scope.resetMode();
+			$scope.mode='displacement';
+			$scope.disp = {
+				'zoneAId':$scope.game.selectedZone._id,
+				'unitIds':[],
+				'step':0
+			};
+		};
+
+		$scope.addUnitToDisp = function(unitId){
+			$scope.disp.unitIds.push(unitId);
+			$scope.disp.step = 1;
+		};
+
+		$scope.validateDisp = function(){
+			$scope.move($scope.disp.zoneAId,$scope.disp.zoneBId,$scope.disp.unitIds);
+			$scope.resetMode();
+		};
+
 		function onZoneClicked(event){
 			var that = this;
 			$scope.$apply(function(){
-				$scope.game.selectedZone = $scope.game.zones[that.zoneId];	// TODO Fix this
-				console.log($scope.game);
-				$scope.listUnitsByType($scope.game.zones[that.zoneId].units);
+				if($scope.mode === 'displacement' && $scope.disp.step>=1){
+					$scope.disp.zoneBId = that.zoneId;
+					$scope.disp.step=2;
+				}
+				else{
+					$scope.resetMode();
+					$scope.game.selectedZone = $scope.game.zones[that.zoneId];	// TODO Fix this
+					//console.log($scope.game);
+					$scope.listUnitsByType($scope.game.zones[that.zoneId].units);
+				}
 			});
 		}
 
@@ -202,8 +276,15 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		});
 
 		$document.ready(function() {
+			//window.jQuery = jQuery;
 			initMap();
 		});
 
+		// Mathou stuff
+		 $scope.list1 = {title: 'AngularJS - Drag Me'};
+  		$scope.list2 = {};
+		
+
+		$scope.resetMode();
 	}
 ]);

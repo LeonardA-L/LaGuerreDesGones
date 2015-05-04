@@ -98,6 +98,11 @@ var ZoneDescriptionSchema = new Schema({
 		trim: true,
 		default: ''
 	},
+	tclID: {
+		type: String,
+		trim: true,
+		default: ''
+	},
 
 	border: Schema.Types.Mixed,
 
@@ -105,7 +110,12 @@ var ZoneDescriptionSchema = new Schema({
 
 	y : Number,
 	
-	velov : Number
+	velov : Number,
+
+	adjacentZones : [{
+		type: Schema.Types.ObjectId,
+		ref: 'ZoneDescription'
+	}]
 
 });
 

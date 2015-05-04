@@ -21,14 +21,15 @@ exports.cleanAll = function(req, res) {
 	var Zone = mongoose.model('Zone');
 	var Unit = mongoose.model('Unit');
 	var Action = mongoose.model('Action');
-	//var ZoneDescription = mongoose.model('ZoneDescription');
+	var TravelTime = mongoose.model('TravelTime');
 
 	Game.remove({},function(){});
 	Player.remove({},function(){});
 	Zone.remove({},function(){});
 	Unit.remove({},function(){});
 	Action.remove({},function(){});
-	//ZoneDescription.remove({},function(){});
+	TravelTime.remove({}, function(){});
+
 	var ret = {
 		result:'ok'
 	};
@@ -49,6 +50,18 @@ exports.getAllZoneDescs = function(req, res) {
 	var ZoneDescription = mongoose.model('ZoneDescription');
 
     ZoneDescription.find({}, function (err, docs) {
+	  if (err)
+            res.send(err);
+
+        console.log(docs);
+        res.json({'success':docs}); // return all nerds in JSON format
+    });
+};
+
+exports.getAllTravelTime = function(req, res) {
+	var TravelTime = mongoose.model('TravelTime');
+
+    TravelTime.find({}, function (err, docs) {
 	  if (err)
             res.send(err);
 

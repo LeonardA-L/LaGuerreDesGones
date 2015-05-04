@@ -27,6 +27,7 @@ var matrixes = undefined;
 
 var initPlayers = 8;
 var initMoney = 1000;
+var sellRatio = 0.4;
 
 var NEUTRAL = 'neutral';
 var HOSPITAL = 'hospital';
@@ -431,16 +432,22 @@ var processBuy = function(a){
 
 var processSell = function(a){
 	if(debug) console.log('Processing sell action');
-	var price = 21;
-	a.player.money += price;
-	Unit.remove({'_id':a.units[0]}, function(err){
+	
+	Unit.findById(a.units[0], function(err, data){
 		if(err)
 			if(debug) console.log(err);
+		//console.log(data);
+		Unit.remove({'_id':a.units[0]}, function(err){
+			if(err)
+				if(debug) console.log(err);
+		});
+		var price = sellRatio*matrixes.UnitData.content[data.type].price;
+		a.player.money += price;
+		a.zone.units.splice(a.zone.units.indexOf(a.units[0]),1);
+		a.player.units.splice(a.player.units.indexOf(a.units[0]),1);
+		a.player.save();
+		a.zone.save();
 	});
-	a.zone.units.splice(a.zone.units.indexOf(a.units[0]),1);
-	a.player.units.splice(a.player.units.indexOf(a.units[0]),1);
-	a.player.save();
-	a.zone.save();
 };
 
 var processHop = function(a){

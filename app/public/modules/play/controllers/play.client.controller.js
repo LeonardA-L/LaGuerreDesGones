@@ -15,15 +15,9 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		var map;
 		console.log($stateParams);
 
-		Socket.on(gameId+'.diff', function(diff) {
-		    console.log(diff);
-		});
 
-		$http.get('/services/play/'+gameId+'/start').
-		  //success(function(data, status, headers, config) {
-		  success(function(data) {
-			
-			$scope.game = data.success;
+		var processGameState = function(game){
+			$scope.game = game;
 			
 			var i=0;
 			var j=0;
@@ -46,9 +40,19 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			}
 
 			console.log($scope.game);
-			drawZoneMap($scope.game);
 			$scope.listUnitsByType($scope.game.units);
+		};
 
+
+		Socket.on(gameId+'.diff', function(diff) {
+		    processGameState(diff.success);
+		});
+
+		$http.get('/services/play/'+gameId+'/start').
+		  //success(function(data, status, headers, config) {
+		  success(function(data) {
+		  	processGameState(data.success);
+			drawZoneMap($scope.game);
 			console.log($scope);
 		  }).
 		  error(function(data) {

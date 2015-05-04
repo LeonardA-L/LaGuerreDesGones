@@ -45,7 +45,12 @@ var ZoneDescriptionSchema = new Schema({
 
 	y : Number,
 	
-	velov : Number
+	velov : Number,
+
+	adjacentZones : [{
+		type: Schema.Types.ObjectId,
+		ref: 'ZoneDescription'
+	}]
 
 });
 

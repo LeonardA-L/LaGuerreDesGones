@@ -205,5 +205,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			initMap();
 		});
 
+		// Mathou stuff
+		
 	}
 ]);

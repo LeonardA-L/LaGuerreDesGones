@@ -6,7 +6,7 @@
 
 					
 					<h1>{{game.title}}</h1>
-
+<span data-drag="true" jqyoui-draggable>So you think you can drag</span>
 					<hr />
 
 					<div class="row">
@@ -37,9 +37,9 @@
 
 					<div class="row">
 						<div ng-repeat="i in game.matrixes.UnitData.content">
-							<div class="col-md-12" style="/*height:80px;*/ background-color: rgba(41, 128, 185, 0.1);">
+							<div class="col-md-12 row-unit" style="/*height:80px;*/ background-color: rgba(41, 128, 185, 0.1);">
 								<div class="col-md-3 nopadding">
-									<img src="http://liris.cnrs.fr/vasile-marian.scuturici/files/marian.jpg" height=74 width=74 style="margin-top:3px; margin-bottom:3px;" />
+									<img class="unit-icon" src="http://liris.cnrs.fr/vasile-marian.scuturici/files/marian.jpg" height=74 width=74 style="margin-top:3px; margin-bottom:3px;" />
 								</div>
 								<div class="col-md-3 nopadding" style="margin-top: 27px; text-align:center;">
 									<span>{{i.name}}</span>

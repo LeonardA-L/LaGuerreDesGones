@@ -14,7 +14,7 @@ module.exports = {
 		lib: {
 			css: [
 				'public/lib/bootstrap/dist/css/bootstrap.css',
-				'public/lib/bootstrap/dist/css/bootstrap-theme.css',
+				'public/lib/bootstrap/dist/css/bootstrap-theme.css'
 			],
 			js: [
 				'public/lib/angular/angular.js',
@@ -23,6 +23,8 @@ module.exports = {
 				'public/lib/angular-ui-utils/ui-utils.js',
 				'public/lib/angular-bootstrap/ui-bootstrap-tpls.js',
 				'public/lib/jquery/dist/jquery.js',
+				'public/lib/jquery-ui/jquery-ui.min.js',
+				'public/lib/angular-dragdrop/src/angular-dragdrop.min.js',
 				'public/lib/angular-socket-io/socket.js'
 			]
 		},

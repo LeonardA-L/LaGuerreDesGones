@@ -1,33 +1,23 @@
-<section style="background-color:yellow;">
+<section>
 	<div class="playSection">
 		<div class="container-fluid">
 			<div id="game-wrap-panels" class="row">
 				<div id="game-left-panel" class="col-md-3 game-panel">
-
-					
 					<h1>{{game.title}}</h1>
-						<span data-drag="true" jqyoui-draggable="{animate:true}" data-jqyoui-options="{revert: 'invalid'}">So you think you can drag</span>
-
-						<div class="btn btn-primary" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" ng-model="list1" jqyoui-draggable="{animate:true}" ng-hide="!list1.title">{{list1.title}}</div>
-						<div class="thumbnail" data-drop="true" data-jqyoui-options ng-model="list2" jqyoui-droppable style='height:50px;'>
-						  <div class="btn btn-success" data-drag="false" data-jqyoui-options ng-model="list2" jqyoui-draggable ng-hide="!list2.title">{{list2.title}}</div>
-						</div>
-						<div>{{list2}}</div>
 					<hr />
-
 					<div class="row">
-						<div class="col-md-6" style="text-align: center; ">
-							<button class="btn btn-primary" style="width:100%;" ng-click="prepareDisp()">Déplacement</button>
+						<div class="col-md-6 center-content">
+							<button class="btn btn-primary full-width" ng-click="prepareDisp()">Déplacement</button>
 						</div>
-						<div class="col-md-6" style="text-align: center; ">
-							<button class="btn btn-primary" style="width:100%;">Attaque</button>
+						<div class="col-md-6 center-content">
+							<button class="btn btn-primary full-width">Attaque</button>
 						</div>
 						<div class="col-md-12 separator"></div>
-						<div class="col-md-12" style="text-align: center; ">
+						<div class="col-md-12 center-content">
 							<label ng-repeat="p in game.players">{{p.money}} gaunettes</label>
 						</div>
 						<div class="col-md-12 separator"></div>
-						<div class="col-md-12" style="text-align: center; ">
+						<div class="col-md-12 center-content">
 							<label>Ici le countdown avant les nouvelles unités</label>
 						</div>
 					</div>
@@ -50,7 +40,7 @@
 
 					<hr />
 
-					<div ng-if="game.selectedZone" style="text-align:center; ">
+					<div ng-if="game.selectedZone center-content">
 						<h2>{{game.zonesDesc[game.zones[game.selectedZone._id].zoneDesc].name}}</h2>
 
 						<div class="row">
@@ -59,33 +49,30 @@
 
 					<div class="row">
 						<div ng-repeat="i in game.matrixes.UnitData.content">
-							<div class="col-md-12 row-unit" style="/*height:80px;*/ background-color: rgba(41, 128, 185, 0.1);">
+							<div class="col-md-12 row-unit">
 								<div class="col-md-3 nopadding">
-									<img class="unit-icon" src="http://liris.cnrs.fr/vasile-marian.scuturici/files/marian.jpg" height=74 width=74 style="margin-top:3px; margin-bottom:3px;" />
+									<img class="unit-icon" data-drag="true" data-jqyoui-options="{revert: 'invalid',appendTo: 'body', containment: 'window', scroll: false, helper: 'clone'}" jqyoui-draggable="{animate:true,onStop:'onUnitIconDrop'}" src="http://liris.cnrs.fr/vasile-marian.scuturici/files/marian.jpg"/>
 								</div>
-								<div class="col-md-3 nopadding" style="margin-top: 27px; text-align:center;">
+								<div id="row-unit-name" class="col-md-3 nopadding center-content">
 									<span>{{i.name}}</span>
 								</div>
-								<div class="col-md-3 nopadding" style="height:100%">
-									<div style="height:50%; margin-top: 13px; text-align:center;">
+								<div class="col-md-3 nopadding full-height">
+									<div id="row-unit-number-label">
 										<span>Nombre</span>
 									</div>
-									<div style="height:50%; text-align:center;">
+									<div id="row-unit-number">
 										<span>{{unitsByTypeForZone[i.type].length}}</span>
 									</div>
 								</div>
-								<div class="col-md-3 nopadding" style="margin-top: 27px;  text-align:center;">
+								<div id="row-unit-actions" class="col-md-3 nopadding center-content">
 									<button class="btn btn-primary btn-success">+</button>
 									<button class="btn btn-primary btn-danger" ng-click="sell(unitsByType[i][0].zone,unitsByType[i][0]._id,unitsByType[i][0].player)">-</button>
 								</div>
 							</div>
-							<div class="col-md-12" style="height:2px; background-color:#3C3C3C;">
+							<div class="col-md-12 row-unit-separator">
 							</div>
 						</div>
 					</div>
-
-					
-
 					
 					<div style="background-color:red;">
 						A supprimer :

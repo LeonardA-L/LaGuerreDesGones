@@ -32,7 +32,6 @@ angular.module('waitingRoom').controller('WaitingRoomController', ['$scope',
 			$http.get('/services/game/getWaiting').
 			  //success(function(data, status, headers, config) {
 			  success(function(data) {
-			  	
 				$scope.listAvailable = data.success;
 				$timeout(retrieveAvailable,refreshRate);
 			  }).

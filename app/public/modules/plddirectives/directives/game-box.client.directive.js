@@ -14,6 +14,7 @@ angular.module('plddirectives').directive('gameBox', ['$http',
 				// Game box directive logic
 				scope.load = false;
 				scope.joinok = scope.join;
+
 				scope.play = scope.playp && scope.data.isInit;
 				
 				scope.unsub = scope.playp && !scope.data.isInit && (scope.data.creator !== scope.user._id || scope.data.players.length===1);

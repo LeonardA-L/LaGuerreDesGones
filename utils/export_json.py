@@ -5,7 +5,8 @@ import json
 import os
 from bson.objectid import ObjectId
 
-
+kml_file = "map_lyon_20150503_1040.kml"
+json_file = "map_lyon_20150503_1040.json"
 
 ####
 # CONST
@@ -34,14 +35,19 @@ listeZone = [];
 # PROG
 ####
 print("--- Lecture du fichier ---")
-mapTree = ET.parse('map_lyon_20150501_1231.kml')
+mapTree = ET.parse(kml_file)
 rootTree = mapTree.getroot()
 
-os.remove("map_lyon_20150501_1231.json")
+if os.access(json_file, os.R_OK):
+	os.remove(json_file)
+
+allzones=rootTree.findall(".//ns:Placemark", namespace)
+print("--- Generation des HashId ---")
+zoneIdToHash = {}
+for num in range(1,len(allzones)):
+	zoneIdToHash[num] = str(ObjectId())
 
 print("--- Parcours de l'arborescence ---")
-allzones=rootTree.findall(".//ns:Placemark", namespace)
-
 for zoneElt in allzones:
 	zone = {}
 	try:
@@ -55,7 +61,13 @@ for zoneElt in allzones:
 			coord_unit = coord.split(',')
 			coord_list.append([float(coord_unit[0]), float(coord_unit[1])])
 		name_text = zoneElt.find("ns:name", namespace).text
+		desc_text = zoneElt.find("ns:description", namespace).text
 		name_split = name_text.split(';') # ['16', 'Confluence', '2007', '10']
+	
+		desc_split = desc_text.split(';') # ['1', '20']
+		zone["adjacentZones"] = []
+		for adjId in desc_split:
+			zone["adjacentZones"].append(zoneIdToHash[int(adjId)])
 
 		zone["border"] = coord_list
 		if name_split[2] == "":
@@ -65,7 +77,7 @@ for zoneElt in allzones:
 		zone["type"] = map_type[int(name_split[3])]
 		zone["name"] = name_split[1]
 		zone["_id"] = {}
-		zone["_id"]["$oid"] = str(ObjectId())
+		zone["_id"]["$oid"] = zoneIdToHash[int(name_split[0])]
 		zone["__v"] = 0
 	except ValueError:
 		continue
@@ -86,7 +98,7 @@ for zone in listeZone:
 	
 
 print("--- Export en Json ---")
-with open('map_lyon_20150501_1231.json', 'a') as outfile:
+with open(json_file, 'a') as outfile:
 	for zone in listeZone:
 		json.dump(zone, outfile)
 		outfile.write('\n')

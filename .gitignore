@@ -87,3 +87,8 @@ mongod
 *.swp
 logs/
 build/
+
+
+# Python
+# ======
+*.pyc

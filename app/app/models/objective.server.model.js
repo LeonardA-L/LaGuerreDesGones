@@ -19,7 +19,7 @@ var ObjectiveSchema = new Schema({
 		type: String,
 		trim: true,
 		required: true
-	}
+	},
 	money: {
 		type: Number,
 		default: 0

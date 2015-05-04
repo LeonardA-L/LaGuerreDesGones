@@ -6,7 +6,8 @@
 var should = require('should'),
 	mongoose = require('mongoose'),
 	Unit = mongoose.model('Unit'),
-	Zone = mongoose.model('Zone');
+	Zone = mongoose.model('Zone'),
+	ZoneDesc = mongoose.model('ZoneDescription');
 
 /**
  * Globals
@@ -20,11 +21,9 @@ var zone1, zone2;
 describe('Zone Model Unit Tests:', function() {
 	before(function(done) {
 		zone1 = new Zone({
-			type: 1,
-			name: 'Salle 208',
-			nbUnitMax: 10,
 			point: 5,
 			//unit: 'local',
+			//zoneDesc: ......
 		});
 /*
 		unit1 = new Unit({

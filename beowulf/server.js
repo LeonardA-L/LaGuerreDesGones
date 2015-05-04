@@ -7,17 +7,107 @@ var init = require('./config/init')(),
 	mongoose = require('mongoose'),
 	chalk = require('chalk'),
 	Schema = mongoose.Schema;
+var express = require('express');
 
 //mongoose.set('debug', true);
 //var ActionSchema=require('../app/app/models/action.server.model').ActionSchema;
+var debug=config.debug;
+var state=true;
 
 // Action model
 var Action = undefined;
 var Zone = undefined;
 var Unit = undefined;
 var Game = undefined;
+var ZoneDescription = undefined;
+var Player = undefined;
+var Matrix = undefined;
+
+var matrixes = undefined;
+
+var initPlayers = 8;
+var initMoney = 1000;
+
+var NEUTRAL = 'neutral';
+var HOSPITAL = 'hospital';
+var PARK = 'park';
+var UNIVERSITY = 'university';
+var CHURCH = 'church';
+var WOODSTOCK = 'woodstock';
+var STATION = 'station';
+var AIRPORT = 'airport';
+var CITY_HALL = 'city_hall';
+var SQUARE = 'square';
+var BANK = 'bank';
+var SHOPPING_CENTRE = 'shopping_centre';
+
+var updateInterval = 120000;
+var updateMoney = 0;
 
 // dirty pasted model
+
+var MatrixSchema = new Schema({
+	name : String,
+	content: Schema.Types.Mixed
+});
+
+var PlayerSchema = new Schema({
+	name: {
+		type: String,
+		trim: true,
+		required: true
+	},
+	dateCreated: {
+		type: Date,
+		default: Date.now
+	},
+	isAdmin:{
+		type: Boolean,
+		default: false
+	},
+	user: {
+		type: Schema.Types.ObjectId,
+		ref: 'User'
+	},
+	game: {
+		type: Schema.Types.ObjectId,
+		ref: 'Game'
+	},
+	money: {
+		type: Number,
+		default: 0
+	},
+	point: {
+		type: Number,
+		default: 0
+	},
+	units: [{
+		type: Schema.Types.ObjectId,
+		ref: 'Unit'
+	}]
+});
+
+var ZoneDescriptionSchema = new Schema({
+	type: {
+		type: String,
+		enum: [NEUTRAL, HOSPITAL, PARK, UNIVERSITY, CHURCH, WOODSTOCK, STATION, AIRPORT, CITY_HALL, SQUARE, BANK, SHOPPING_CENTRE],
+		default: NEUTRAL
+	},
+	name: {
+		type: String,
+		trim: true,
+		default: ''
+	},
+
+	border: Schema.Types.Mixed,
+
+	x : Number,
+
+	y : Number,
+	
+	velov : Number
+
+});
 
 var GameSchema = new Schema({
 	title: {
@@ -70,10 +160,6 @@ var UnitSchema = new Schema({
 		type: Number,
 		default: 0
 	},
-	health: {
-		type: Number,
-		default: 0
-	},
 	point: {
 		type: Number,
 		default: 0
@@ -118,30 +204,6 @@ var UnitSchema = new Schema({
 
 
 var ZoneSchema = new Schema({
-	type: {
-		type: Number,
-		default: 0
-	},
-	name: {
-		type: String,
-		default: ''
-	},
-	nbUnitMax: {
-		type: Number,
-		default: 0
-	},
-	point: {
-		type: Number,
-		default: 0
-	},
-	x: {
-		type: Number,
-		default: 0
-	},
-	y: {
-		type: Number,
-		default: 0
-	},
 	units: [{
 		type: Schema.Types.ObjectId,
 		ref: 'Unit'
@@ -149,8 +211,13 @@ var ZoneSchema = new Schema({
 	game:{
 		type: Schema.Types.ObjectId,
 		ref: 'Game'
+	},
+	zoneDesc:{
+		type: Schema.Types.ObjectId,
+		ref: 'ZoneDescription',
+// TODO		required: true
 	}
-});
+}); 
 
 var ActionSchema = new Schema({
 
@@ -189,104 +256,235 @@ var ActionSchema = new Schema({
 	game:{
 		type: Schema.Types.ObjectId,
 		ref: 'Game'
-	}
+	},
+	player: {
+		type: Schema.Types.ObjectId,
+		ref: 'Player'
+	},
+	newUnitType : Number
 	
 });
 
-var affectUnitToZone = function(u,z){
+
+var affectUnitToZone = function(u,z,zd){
 	u.zone = z._id;
-	u.x = z.x;
-	u.y = z.y;
-	u.xt = z.x;
-	u.yt = z.y;
+	u.x = zd.x;
+	u.y = zd.y;
+	u.xt = zd.x;
+	u.yt = zd.y;
 	u.game = z.game;
 	z.units.push(u._id);
 };
 
 var processDisplacement = function(a){
-	var duration = 30000;
- 	console.log('Processing displacement action');
- 	//console.log(a);
- 	for (var i=0 ; i < a.units.length ; ++i) {
- 		var u = a.units[i];
- 		u.available=false;
- 		u.ts=a.date.getTime();
- 		u.te=u.ts+duration;
- 		u.xt=a.zoneB.x;
- 		u.yt=a.zoneB.y;
- 		u.x=a.zoneA.x;
- 		u.y=a.zoneA.y;
-		
-		// TODO
-		u.save();
- 	}
 
- 	var b = new Action({
-		type :1,
-		date: new Date(a.date.getTime() + duration),
-		status :0,
-		units:a.units,
-		zone:a.zoneB,
-	});
-	//console.log(b.date);
-	console.log('Saving end displacement action');
-	b.save();
+	var syncFunction=function(){
+		var duration = 30000;
+		for (var i=0 ; i < a.units.length ; ++i) {
+	 		var u = a.units[i];
+	 		u.available=false;
+	 		u.ts=a.date.getTime();
+	 		u.te=u.ts+duration;
+	 		u.xt=a.zoneB.zoneDesc.x;
+	 		u.yt=a.zoneB.zoneDesc.y;
+	 		u.x=a.zoneA.zoneDesc.x;
+	 		u.y=a.zoneA.zoneDesc.y;
+			a.zoneA.units.splice(a.zoneA.units.indexOf(u._id), 1);
+			// TODO
+			u.save();
+	 	}
+
+	 	var b = new Action({
+			type :1,
+			date: new Date(a.date.getTime() + duration),
+			status :0,
+			units:a.units,
+			zone:a.zoneB._id,
+			game:a.game
+		});
+		//console.log(b.date);
+		if(debug) console.log('Saving end displacement action');
+		b.save();
+	};
+	
+	var syncCount = 2;
+ 	if(debug) console.log('Processing displacement action');
+ 	Zone.findById(a.game.zoneA).populate('zoneDesc').exec(function(err,zo){
+ 		a.game.zoneA = zo;
+ 		if(--syncCount === 0){
+ 			syncFunction();
+ 		}
+ 	});
+ 	Zone.findById(a.game.zoneB).populate('zoneDesc').exec(function(err,zo){
+ 		a.game.zoneB = zo;
+ 		if(--syncCount === 0){
+ 			syncFunction();
+ 		}
+ 	});
+ 	//console.log(a);
+ 	
 };
 
 var processEndDisplacement = function(a){
-	console.log('Processing end displacement action');
+	if(debug) console.log('Processing end displacement action');
 	//console.log(a);
-	for (var i=0 ; i < a.units.length ; ++i) {
- 		var u = a.units[i];
- 		u.available=true;
- 		u.ts=a.date.getTime();
- 		u.te=u.ts;
- 		u.xt=a.zone.x;
- 		u.yt=a.zone.y;
- 		u.x=a.zone.x;
- 		u.y=a.zone.y;
-		
-		// TODO
-		u.save();
- 	}
+	Zone.findById(a.game.zone).populate('zoneDesc').exec(function(err,zo){
+		a.game.zone = zo;
+ 		for (var i=0 ; i < a.units.length ; ++i) {
+	 		var u = a.units[i];
+	 		u.available=true;
+	 		u.ts=a.date.getTime();
+	 		u.te=u.ts;
+	 		affectUnitToZone(u,a.zone, a.zone.zoneDesc);
+			a.zone.save();
+			// TODO
+			u.save();
+ 		}
+ 	});
+	
 };
 
 
 // Dummy process init
 var processInit = function(a){
-	console.log('Processing init action');
-	// DUMMY
-	var zdA = new Zone({
-		name:'Charpennes',
-		point:42,
-		x:10,
-		y:15,
-		game:a.game._id,
-		units:[]
+	if(debug) console.log('Processing init action');
+	var zoneIdList = [];
+	var neutralZones = [];
+	var neutralZonesDesc = [];
+
+	ZoneDescription.find({},function(err,zdList){
+
+		for(var i=0;i<zdList.length;i++){
+			var zd = zdList[i];
+			var z = new Zone({
+				game : a.game._id,
+				zoneDesc : zd
+			});
+			
+			zoneIdList.push(z._id);
+			if(zd.type === NEUTRAL){
+				neutralZones.push(z);
+				neutralZonesDesc.push(zd);
+			}
+			z.save();
+		}
+
+		Player.find({'_id':{$in:a.game.players}}, function(err,players){
+			for(var i=0;i<players.length;i++){
+				var idx = Math.floor(Math.random() * neutralZones.length);
+				var nz = neutralZones[idx];
+				var nzd = neutralZonesDesc[idx];
+				for(var j=0;j<initPlayers;j++){
+					var u = new Unit({
+						game:a.game._id,
+						player:players[i]._id,
+						zone:nz._id
+					});
+					affectUnitToZone(u,nz,nzd);
+					if(players[i].units === undefined){
+						players[i].units = [u._id];
+					}
+					else{
+						players[i].units.push(u._id);
+					}
+					u.save();
+					nz.save();
+				}
+				//console.log(players[i]);
+				players[i].money = initMoney;
+				players[i].save();
+			}	
+		});
+
+
+		a.game.zones = zoneIdList;
+		a.game.startTime = a.date;
+		a.game.isInit = true;
+		a.game.save();
+
+		// generate next hop
+		if(debug) console.log('Generate next hop');
+		var b = new Action({
+			type:5,
+			game:a.game._id,
+			date:new Date(a.date.getTime()+updateInterval)
+		});
+		b.save();
 	});
-	var zdB = new Zone({
-		name:'Charles Hernu',
-		point:42,
-		x:20,
-		y:25,
-		game:a.game._id,
-		units:[]
+};
+
+var processBuy = function(a){
+	if(debug) console.log('Processing buy action');
+	var price = matrixes.UnitData.content[a.newUnitType].price;
+	a.player.money -= price;
+	// TODO create unit according to real stuff
+	var u = new Unit(matrixes.UnitData.content[a.newUnitType]);
+	ZoneDescription.findById(a.zone.zoneDesc,function(err, zd){
+		affectUnitToZone(u,a.zone,zd);
+		a.player.units.push(u._id);
+		u.player = a.player._id;
+		u.save();
+		a.zone.save();
+		a.player.save();
 	});
-	var ud = new Unit();
-	affectUnitToZone(ud,zdA);
-	zdA.save();
-	zdB.save();
-	ud.save();
-	a.game.zones = [zdA,zdB];
-	a.game.startTime = a.date;
-	a.game.isInit = true;
-	a.game.save();
+};
+
+var processSell = function(a){
+	if(debug) console.log('Processing sell action');
+	var price = 21;
+	a.player.money += price;
+	Unit.remove({'_id':a.units[0]}, function(err){
+		if(err)
+			if(debug) console.log(err);
+	});
+	a.zone.units.splice(a.zone.units.indexOf(a.units[0]),1);
+	a.player.units.splice(a.player.units.indexOf(a.units[0]),1);
+	a.player.save();
+	a.zone.save();
+};
+
+var processHop = function(a){
+	if(debug) console.log('Processing Hop action');
+	Player.find({'_id':{$in:a.game.players}}, function(err,players){
+		for(var j=0;j<players.length;j++){
+			players[players[j]._id] = players[j];
+		}
+
+		Zone.find({'_id':{$in:a.game.zones}}).populate('zoneDesc units').exec(function(err,zones){
+			for(var i=0;i<zones.length;i++){
+				if(zones[i].units.length > 0){
+					// Generate Unit
+					var u = new Unit(matrixes.UnitData.content[matrixes.ZoneTypeToUnitType.content[zones[i].zoneDesc.type]]);
+					affectUnitToZone(u,zones[i],zones[i].zoneDesc);
+					// affect to player
+					var p = players[zones[i].units[0].player];
+					u.player = p._id;
+					p.units.push(u._id);
+
+					zones[i].save();
+					u.save();
+					p.save();
+				}
+			}
+		});
+	});
+
+	if(debug) console.log('Generate next hop');
+		var b = new Action({
+			type:5,
+			game:a.game,
+			date:new Date(a.date.getTime()+updateInterval)
+		});
+		b.save();
 };
 
 var actionHandlers = [];
 actionHandlers.push(processDisplacement);
 actionHandlers.push(processEndDisplacement);
 actionHandlers.push(processInit);
+actionHandlers.push(processBuy);
+actionHandlers.push(processSell);
+actionHandlers.push(processHop);
 
 // TODO
  var processAction = function(a){
@@ -296,13 +494,13 @@ actionHandlers.push(processInit);
 
 // Main work
 var execute = function(){
-
 	setTimeout(function(){
 
 		// Find an Action needing processing, tag it as assigned
 		Action.collection.findAndModify({'status':0, 'date':{$lte:new Date()}},[['_id','asc']],{$set: {status: 1}},{}, function (err, doc) {
+		//Action.collection.findAndModify({'status':0},[['_id','asc']],{$set: {status: 1}},{}, function (err, doc) {
 			if (err){
-				console.log(err);
+				if(debug) console.log(err);
 				return;
 			}
 
@@ -311,7 +509,7 @@ var execute = function(){
 				// There's probably a better way
 				var actionCallback = function (err, action) {
 						if (err){
-							console.log(err);
+							if(debug) console.log(err);
 						}
 					
 						//console.log(action);
@@ -319,23 +517,61 @@ var execute = function(){
 					processAction(action);
 
 					action.save();
+
+					var http = require('http');
+					var options = {
+					  host: (process.argv[2]||config.defaultHost),
+					  path: '/'+config.callback,
+					  port: (process.argv[5]||config.defaultCallbackPort),
+					  method: 'POST',
+					  json: true,
+					  headers: {
+					      "content-type": "application/json",
+					    }
+					    ///body: JSON.stringify({game:action.game})
+					};
+					
+					var req = http.request(options);
+					req.on('error', function(error) {
+				  		if(debug) console.log('Server unreachable');
+					});
+					req.write(JSON.stringify({game:action.game._id || action.game}));
+					req.end();
 				};
 
 				switch(doc.type){
-					case 0:
-						Action.findOne({'_id':doc._id}).populate('units').populate('zoneA').populate('zoneB').exec(actionCallback);
+					case 0: // Displacement
+						Action.findOne({'_id':doc._id}).populate('units zoneA zoneB').exec(actionCallback);
 					break;
-					case 1:
-						Action.findOne({'_id':doc._id}).populate('zone').populate('units').exec(actionCallback);
+					case 1: // End Displacement
+						Action.findOne({'_id':doc._id}).populate('zone units').exec(actionCallback);
 					break;
-					case 2:
+					case 2: // Init
+						Action.findOne({'_id':doc._id}).populate('game').exec(actionCallback);
+					break;
+					case 3: // Buy
+					case 4: // Sell
+						Action.findOne({'_id':doc._id}).populate('player zone').exec(actionCallback);
+					break;
+					case 5: // Hop
 						Action.findOne({'_id':doc._id}).populate('game').exec(actionCallback);
 					break;
 				}
 	    	}
 
-	    	// Re launch
-	        execute();
+	    	Action.count({'status':0, 'date':{$lte:new Date()}},function(err,count){
+				if(debug) console.log(count);
+	    		if(count > 0){
+	    			// Re launch
+	        		execute();
+	    		}
+	    		else{
+	    			// Stopping since not needed
+	    			console.log('Stopping');
+	    			state = false;
+	    		}
+	    	});
+	    	
 	    });
 	},config.pollingInterval);
 };
@@ -345,33 +581,13 @@ var displayDB = function(){
 	setTimeout(function(){
 		Action.find({'status':0}).exec(function (err, docs) {
 			if (err){
-				console.log(err);
+				if(debug) console.log(err);
 			}
 	        //console.log(docs);
 	        console.log(docs.length + ' unprocessed actions');
 	    });
 		displayDB();
 	},5000);
-};
-
-// Dummy inject actions
-// For debug purpose, injects dummy Action objects into collection
-var i=1;
-var dummyInject = function(){
-	setTimeout(function(){
-		var a = new Action({
-		'type' : i,
-		'date':new Date(),
-		'status' :0
-		});
-		a.save(function(err,data){
-			if (err)
-	            console.log('Error saving variable');
-	        //console.log(data);
-		});
-		i++;
-		dummyInject();
-	},3000);
 };
 
 // Bootstrap db connection
@@ -390,25 +606,61 @@ var db = mongoose.connect(dbAddress, function(err) {
 		db.model('Zone', ZoneSchema);
 		db.model('Action', ActionSchema);
 		db.model('Game', GameSchema);
+		db.model('Player', PlayerSchema);
+		db.model('ZoneDescription', ZoneDescriptionSchema);
+		db.model('Matrix', MatrixSchema);
 		
 		Action = db.model('Action');
 		Zone = db.model('Zone');
 		Unit = db.model('Unit');
 		Game = db.model('Game');
+		Player = db.model('Player');
+		Matrix = db.model('Matrix');
+		ZoneDescription = db.model('ZoneDescription');
 
+
+		Matrix.find({'name':{$in:['UnitData','ZoneTypeToUnitType']}},function(err,mat){
+			matrixes = {};
+			for(var i=0;i<mat.length;i++){
+				matrixes[mat[i].name] = mat[i];
+			}
+		});
+		//var zdDummy = new ZoneDescription({type:'neutral'});
+		//zdDummy.save();
 
 		//Action.collection.remove({},function(){});
 
 		// Start processing routine
-		execute();
+		//execute();
+		autoWakeUp();
 
 		// For debug purpose
-		displayDB();
-		//dummyInject();
+		if(debug) displayDB();
 	}
 });
 
 
+var app = express();
+
+app.get('/', function(req, res){
+	if(!state){
+		res.send('Going to work');
+		console.log('Forced wake up');
+		state=true;
+		execute();
+	}
+});
+
+app.listen(process.argv[4]||7878);
+
 // Logging initialization
 console.log('Action processor started');
 
+var autoWakeUp = function(){
+	console.log('Auto wakeup');
+	state=true;
+	execute();
+	setTimeout(function(){
+		autoWakeUp();
+	},config.autoWakeupInterval);
+};

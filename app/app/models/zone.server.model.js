@@ -1,6 +1,11 @@
 'use strict';
 
 /**
+ * Const
+ */
+var DEFAULT_MAX_UNIT_NUMBER = 8;
+
+/**
  * Module dependencies.
  */
 var mongoose = require('mongoose'),
@@ -11,30 +16,6 @@ var mongoose = require('mongoose'),
  */
 
 var ZoneSchema = new Schema({
-	type: {
-		type: Number,
-		default: 0
-	},
-	name: {
-		type: String,
-		default: ''
-	},
-	nbUnitMax: {
-		type: Number,
-		default: 0
-	},
-	point: {
-		type: Number,
-		default: 0
-	},
-	x: {
-		type: Number,
-		default: 0
-	},
-	y: {
-		type: Number,
-		default: 0
-	},
 	units: [{
 		type: Schema.Types.ObjectId,
 		ref: 'Unit'
@@ -42,6 +23,15 @@ var ZoneSchema = new Schema({
 	game:{
 		type: Schema.Types.ObjectId,
 		ref: 'Game'
+	},
+	zoneDesc:{
+		type: Schema.Types.ObjectId,
+		ref: 'ZoneDescription',
+// TODO		required: true
+	},
+	nbUnitMax: {
+		type: Number,
+		default: DEFAULT_MAX_UNIT_NUMBER
 	}
 });
 

@@ -8,7 +8,11 @@ angular.module(ApplicationConfiguration.applicationModuleName, ApplicationConfig
 // Setting HTML5 Location Mode
 angular.module(ApplicationConfiguration.applicationModuleName)
 	.config(['$locationProvider',
-		function($locationProvider) {
+		function($locationProvider) {/*
+			$locationProvider.html5Mode({
+			  enabled: true,
+			  requireBase: false
+			});*/
 			$locationProvider.hashPrefix('!');
 		}
 	]);
@@ -17,19 +21,12 @@ angular.module(ApplicationConfiguration.applicationModuleName)
 angular.module(ApplicationConfiguration.applicationModuleName)
 	.run(['$rootScope', '$location', 'Authorisation', 'UserConst',
 		function ($rootScope, $location, Authorisation, UserConst) {
-			var routeChangeRequiredAfterLogin = false,
-				loginRedirectUrl;
 			$rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
 				var authorised;
-				if (routeChangeRequiredAfterLogin && toState.url !== '/signin') {
-					routeChangeRequiredAfterLogin = false;
-					$location.path(loginRedirectUrl).replace();
-				} else if (toState.access !== undefined) {
+				if (toState.access !== undefined) {
 					authorised = Authorisation.authorise(toState.access.loginRequired, toState.access.permissions, toState.access.permissionCheckType);
 					if (authorised === UserConst.authorisation.loginRequired) {
-						routeChangeRequiredAfterLogin = true;
-						loginRedirectUrl = toState.url;
-						$location.path('signin');
+						$location.path('signin').replace();
 					} else if (authorised === UserConst.authorisation.notAuthorised) {
 						$location.path('').replace();
 					}
@@ -40,7 +37,8 @@ angular.module(ApplicationConfiguration.applicationModuleName)
 //Then define the init function for starting up the application
 angular.element(document).ready(function() {
 	//Fixing facebook bug with redirect
-	if (window.location.hash === '#_=_') window.location.hash = '#!';
+	//if (window.location.hash === '#_=_') window.location.hash = '#!';
+	//window.location.hash = '';
 
 	//Then init the app
 	angular.bootstrap(document, [ApplicationConfiguration.applicationModuleName]);

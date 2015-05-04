@@ -6,7 +6,7 @@ Here's the list of games you have suscribed :
 <p ng-if="!listAvailable">The list is loading. Please wait...</p>
 
 <game-box ng-if="listAvailable.length == 0">You have not suscribe to any games. You can <a href="#!/host">host one</a> and wait for other players to come!</game-box>
-<game-box ng-repeat="data in listAvailable" data="data" join="false" play="true"></game-box>
+<game-box ng-repeat="data in listAvailable" data="data" join="false" playp="true" user="authentication.user"></game-box>
 </div>
 
 

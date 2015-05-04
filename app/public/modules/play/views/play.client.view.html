@@ -1,15 +1,71 @@
-<section>
-	<div  class="playSection">
-		<h1>{{game.title}}</h1>
-	</div>
-	<span ng-click="testDisp()">CLICK ME</span>
-	<br/>
-	<label>Zones (pour ceux qui se demandent, Charpennes != Charles Hernu)</label>
-	<div ng-repeat="zone in game.zones">
-		<div style="height:300px; width:300px;background-color:#FEE; border: solid; border-color: green;">
-			{{zone.name}}
+<section style="background-color:yellow;">
+	<div class="playSection">
+		<div class="container-fluid">
+			<div id="game-wrap-panels" class="row">
+				<div id="game-left-panel" class="col-md-3 game-panel">
+
+					
+					<h1>{{game.title}}</h1>
+
+					<hr />
+
+					<div ng-if="game.selectedZone">
+						<h2>Zone Sélectionnée</h2>
+
+						<div class="row">
+							
+						</div>
+					</div>
+
+					<h2>Unités</h2>
+
+					<div class="row">
+						<div ng-repeat="i in game.matrixes.UnitData.content">
+							<div class="col-md-12" style="/*height:80px;*/ background-color: rgba(41, 128, 185, 0.1);">
+								<div class="col-md-3 nopadding">
+									<img src="http://liris.cnrs.fr/vasile-marian.scuturici/files/marian.jpg" height=74 width=74 style="margin-top:3px; margin-bottom:3px;" />
+								</div>
+								<div class="col-md-3 nopadding" style="margin-top: 27px; text-align:center;">
+									<span>{{i.name}}</span>
+								</div>
+								<div class="col-md-3 nopadding" style="height:100%">
+									<div style="height:50%; margin-top: 13px; text-align:center;">
+										<span>Nombre</span>
+									</div>
+									<div style="height:50%; text-align:center;">
+										<span>{{unitsByType[i.type].length}}</span>
+									</div>
+								</div>
+								<div class="col-md-3 nopadding" style="margin-top: 27px;  text-align:center;">
+									<button class="btn btn-primary btn-success">+</button>
+									<button class="btn btn-primary btn-danger" ng-click="sell(unitsByType[i][0].zone,unitsByType[i][0]._id,unitsByType[i][0].player)">-</button>
+								</div>
+							</div>
+							<div class="col-md-12" style="height:2px; background-color:#3C3C3C;">
+							</div>
+						</div>
+					</div>
+
+					
+
+					
+					<div style="background-color:red;">
+						A supprimer :
+						<br />
+						<!--temporaire-->
+						<span ng-click="move(game.zones[0]._id,game.zones[1]._id,[game.units[0]._id])">CLICK ME To Move</span>| <span ng-click="buy(game.units[0].zone,game.units[0].player,7)">CLICK ME To buy scientist</span>
+
+						<label>Grosses unités</label>
+						<p ng-repeat="unit in game.units">{{game.matrixes.UnitData.content[unit.type].name}} - belongs to {{game.players[unit.player].name}} - is at {{game.zonesDesc[game.zones[unit.zone].zoneDesc].name}} ({{unit.x}},{{unit.y}}) <button ng-click="sell(unit.zone,unit._id,unit.player)">Sell</button></p>
+						<lavel>Players</label>
+						<p ng-repeat="p in game.players">{{p._id}} - {{p.name}} - {{p.money}}$</p>
+						<!--/temporaire-->
+					</div>
+				</div>
+				<div id="game-main-panel" class="col-md-9 game-panel">
+
+				</div>
+			</div>
 		</div>
 	</div>
-	<label>Grosses unités</label>
-	<p ng-repeat="unit in game.units">{{unit._id}} - ({{unit.x}},{{unit.y}})</p>
 </section>

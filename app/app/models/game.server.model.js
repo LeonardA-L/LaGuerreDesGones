@@ -65,7 +65,12 @@ var GameSchema = new Schema({
 	players: [{
 		type: Schema.Types.ObjectId,
 		ref: 'Player'
-	}]
+	}],
+	creator:{
+		type: Schema.Types.ObjectId,
+		ref: 'User'
+	}
 });
+
 
 mongoose.model('Game', GameSchema);

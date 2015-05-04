@@ -15,6 +15,10 @@ var PlayerSchema = new Schema({
 		trim: true,
 		required: true
 	},
+	color: {
+		type: Number,
+		default: 16711680
+	},
 	dateCreated: {
 		type: Date,
 		default: Date.now
@@ -38,7 +42,11 @@ var PlayerSchema = new Schema({
 	point: {
 		type: Number,
 		default: 0
-	}	
+	},
+	units: [{
+		type: Schema.Types.ObjectId,
+		ref: 'Unit'
+	}]
 });
 
 mongoose.model('Player', PlayerSchema);

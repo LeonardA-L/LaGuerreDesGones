@@ -5,7 +5,8 @@
  */
 var mongoose = require('mongoose'),
 	Schema = mongoose.Schema,
-	crypto = require('crypto');
+	crypto = require('crypto'),
+	http = require('http');
 
 	//mongoose.set('debug', true);
 /**
@@ -48,8 +49,36 @@ var ActionSchema = new Schema({
 	game:{
 		type: Schema.Types.ObjectId,
 		ref: 'Game'
-	}
+	},
+	player: {
+		type: Schema.Types.ObjectId,
+		ref: 'Player'
+	},
+	newUnitType : Number
 	
+});
+
+ActionSchema.post('save', function () {
+
+  //console.log('Post save hook');
+  if(this.status === 0){
+  	//console.log('New Action');
+  	var http = require('http');
+	var options = {
+	  host: 'localhost',
+	  path: '/',
+	  port: '7878',
+	  method: 'GET'
+	};
+	
+	var req = http.request(options);
+	req.on('error', function(error) {
+  		console.log('No main beowulf worker');
+	});
+	req.end();
+
+  }
+  return true;
 });
 
 mongoose.model('Action', ActionSchema);

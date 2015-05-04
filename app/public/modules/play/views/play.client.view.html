@@ -17,7 +17,7 @@
 
 					<div class="row">
 						<div class="col-md-6" style="text-align: center; ">
-							<button class="btn btn-primary" style="width:100%;" ng-click="prepareDisp()">Déplacement</button>
+							<button class="btn btn-primary" style="width:100%;" ng-click="mode==='displacement' ? resetMode() : prepareDisp()">Déplacement</button>
 						</div>
 						<div class="col-md-6" style="text-align: center; ">
 							<button class="btn btn-primary" style="width:100%;">Attaque</button>
@@ -57,7 +57,7 @@
 						</div>
 					</div>
 
-					<div class="row">
+					<div class="row" ng-if="listUnitType">
 						<div ng-repeat="i in game.matrixes.UnitData.content">
 							<div class="col-md-12 row-unit" style="/*height:80px;*/ background-color: rgba(41, 128, 185, 0.1);">
 								<div class="col-md-3 nopadding">

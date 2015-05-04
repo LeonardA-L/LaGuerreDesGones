@@ -17,8 +17,9 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 
 
 		var processGameState = function(game){
+			var selectedZone = $scope.game.selectedZone;
 			$scope.game = game;
-			
+			$scope.game.selectedZone = selectedZone;
 			var i=0;
 			var j=0;
 			// Connection between player and hash
@@ -43,7 +44,11 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			}
 			console.log('New diff');
 			console.log($scope.game);
-			$scope.listUnitsByType($scope.game.units);
+
+			console.log($scope.game.selectedZone);
+			if($scope.game.selectedZone !== undefined){
+				$scope.listUnitsByType($scope.game.zones[$scope.game.selectedZone._id].units);
+			}
 		};
 
 

@@ -59,7 +59,8 @@
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
 
 	<!--Application JavaScript Files-->
-	{% for jsFile in jsFiles %}<script type="text/javascript" src="{{jsFile}}"></script>
+	{% for jsFile in jsFiles %}
+	<script type="text/javascript" src="{{jsFile}}"></script>
 	{% endfor %} 
 
 	{% if process.env.NODE_ENV === 'development' %}

@@ -32,6 +32,10 @@ var ZoneSchema = new Schema({
 	nbUnitMax: {
 		type: Number,
 		default: DEFAULT_MAX_UNIT_NUMBER
+	},
+	point: {
+		type: Number,
+		default: 0
 	}
 });
 

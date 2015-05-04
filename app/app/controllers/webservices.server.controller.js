@@ -564,3 +564,37 @@ exports.actionCallback = function(req,res){
 	};
 	res.json(ret);
 };
+
+//Display game scoreboard 
+exports.displayScoreBoard = function(req, res) {
+	// TODO rules
+	var result = {
+		success: {}
+	};
+	var ScoreBoard = Schema.model('ScoreBoard');
+	var Player = Schema.model('Player');
+	var Matrix = Schema.model('Matrix'),
+	unitDataMatrix = Matrix.findOne({'name': 'UnitData'});
+
+	var gameId = req.params.gameId;
+	var nbUnitTypes = 8;
+	result.success.players = {};
+	ScoreBoard.find({'game': gameId}, {sort: {'point':-1}}}).populate('player zones objectives').exec(function(err, docs){
+		if (err)
+			res.send(err);
+		for (var i=0; i<docs.length; i++){
+			result.success.players[i].username = docs[i].player.username;
+			result.success.players[i].point = docs[i].point;
+			result.success.players[i].zones = docs[i].zones;
+			result.success.players[i].objectives = docs[i].objectives;
+			result.success.players[i].UnitTypes = {};
+			for (var j=0; j< nbUnitTypes; j++){
+				result.success.players[i].UnitTypes[j]={};
+				result.success.players[i].UnitTypes[j].nbKills = docs[i].getKillsByUnitType(j);
+				result.success.players[i].UnitTypes[j].nbSurvivors = docs[i].getSurvivorsByUnitType(j);
+				result.success.players[i].UnitTypes[j].name = unitDataMatrix.content[j].name;
+			}
+		}
+	});
+	res.json(result);
+};

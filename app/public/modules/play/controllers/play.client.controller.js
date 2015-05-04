@@ -202,10 +202,13 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		});
 
 		$document.ready(function() {
+			//window.jQuery = jQuery;
 			initMap();
 		});
 
 		// Mathou stuff
+		 $scope.list1 = {title: 'AngularJS - Drag Me'};
+  		$scope.list2 = {};
 		
 	}
 ]);

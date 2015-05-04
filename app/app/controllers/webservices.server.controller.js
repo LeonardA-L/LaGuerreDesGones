@@ -35,6 +35,16 @@ exports.cleanAll = function(req, res) {
 	res.json(ret);
 };
 
+exports.cleanZoneDesc = function(req, res) {
+	var ZoneDescription = mongoose.model('ZoneDescription');
+
+	ZoneDescription.remove({},function(){});
+	var ret = {
+		result:'ok'
+	};
+	res.json(ret);
+};
+
 exports.getAllZoneDescs = function(req, res) {
 	var ZoneDescription = mongoose.model('ZoneDescription');
 

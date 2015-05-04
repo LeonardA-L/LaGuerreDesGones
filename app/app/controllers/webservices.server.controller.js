@@ -299,7 +299,7 @@ exports.unjoinGame = function(req, res) {
 	res.json(result);
 };
 
-exports.diffPlay = function(req,res){
+var getPlay = function(gameId, callback, res){
 	var result = {
 		success:{}
 	};
@@ -312,151 +312,82 @@ exports.diffPlay = function(req,res){
 	var Matrix = mongoose.model('Matrix');
 	var ZoneDesc = mongoose.model('ZoneDescription');
 
-	console.log(req.params.gameId);
-	Game.findOne({'_id':req.params.gameId}, function(err,game){
-		if(err)
+	console.log(gameId);
+	Game.findOne({'_id':gameId}, function(err,game){
+		if(res && err)
 			res.send(err);
 		result.success.title = game.title;
 		if(--syncCallback === 0){
-			res.json(result);
+			callback(result);
 		}
 	});
-	Unit.find({'game':req.params.gameId}, function(err,units){
-		if(err)
+	Unit.find({'game':gameId}, function(err,units){
+		if(res && err)
 			res.send(err);
 		result.success.units = units;
 		if(--syncCallback === 0){
-			res.json(result);
+			callback(result);
 		}
 	});
-	Zone.find({'game':req.params.gameId}).exec(function(err,zones){
-		if(err)
+	Zone.find({'game':gameId}).exec(function(err,zones){
+		if(res && err)
 			res.send(err);
 		result.success.zones = zones;
 		if(--syncCallback === 0){
-			res.json(result);
+			callback(result);
 		}
 	});
 	ZoneDesc.find({}).exec(function(err,zonesDesc){
-		if(err)
+		if(res && err)
 			res.send(err);
 		result.success.zonesDesc = {};
 		for(var i=0;i<zonesDesc.length;i++){
 			result.success.zonesDesc[zonesDesc[i]._id] = zonesDesc[i];
 		}
 		if(--syncCallback === 0){
-			res.json(result);
+			callback(result);
 		}
 	});
-	Player.find({'game':req.params.gameId}, function(err,players){
-		if(err)
+	Player.find({'game':gameId}, function(err,players){
+		if(res && err)
 			res.send(err);
 		result.success.players = players;
 		if(--syncCallback === 0){
-			res.json(result);
+			callback(result);
 		}
 	});
-	Action.find({'game':req.params.gameId}, function(err,actions){
-		if(err)
+	Action.find({'game':gameId}, function(err,actions){
+		if(res && err)
 			res.send(err);
 		result.success.actions = actions;
 		if(--syncCallback === 0){
-			res.json(result);
+			callback(result);
 		}
 	});
 
 	Matrix.find({'name':{$in:['UnitData']}},function(err,matrixes){
-		if(err)
+		if(res && err)
 			res.send(err);
 		result.success.matrixes = {};
 		for(var i=0;i<matrixes.length;i++){
 			result.success.matrixes[matrixes[i].name] = matrixes[i];
 		}
 		if(--syncCallback === 0){
-			res.json(result);
+			callback(result);
 		}
 	});
 };
 
 exports.startPlay = function(req,res){
-	var result = {
-		success:{}
+	var handleReq = function(result){
+		res.json(result);
 	};
-	var syncCallback = 7;
-	var Game = mongoose.model('Game');
-	var Player = mongoose.model('Player');
-	var Zone = mongoose.model('Zone');
-	var Unit = mongoose.model('Unit');
-	var Action = mongoose.model('Action');
-	var Matrix = mongoose.model('Matrix');
-	var ZoneDesc = mongoose.model('ZoneDescription');
-
-	console.log(req.params.gameId);
-	Game.findOne({'_id':req.params.gameId}, function(err,game){
-		if(err)
-			res.send(err);
-		result.success.title = game.title;
-		if(--syncCallback === 0){
-			res.json(result);
-		}
-	});
-	Unit.find({'game':req.params.gameId}, function(err,units){
-		if(err)
-			res.send(err);
-		result.success.units = units;
-		if(--syncCallback === 0){
-			res.json(result);
-		}
-	});
-	Zone.find({'game':req.params.gameId}).exec(function(err,zones){
-		if(err)
-			res.send(err);
-		result.success.zones = zones;
-		if(--syncCallback === 0){
-			res.json(result);
-		}
-	});
-	ZoneDesc.find({}).exec(function(err,zonesDesc){
-		if(err)
-			res.send(err);
-		result.success.zonesDesc = {};
-		for(var i=0;i<zonesDesc.length;i++){
-			result.success.zonesDesc[zonesDesc[i]._id] = zonesDesc[i];
-		}
-		if(--syncCallback === 0){
-			res.json(result);
-		}
-	});
-	Player.find({'game':req.params.gameId}, function(err,players){
-		if(err)
-			res.send(err);
-		result.success.players = players;
-		if(--syncCallback === 0){
-			res.json(result);
-		}
-	});
-	Action.find({'game':req.params.gameId}, function(err,actions){
-		if(err)
-			res.send(err);
-		result.success.actions = actions;
-		if(--syncCallback === 0){
-			res.json(result);
-		}
-	});
-
-	Matrix.find({'name':{$in:['UnitData']}},function(err,matrixes){
-		if(err)
-			res.send(err);
-		result.success.matrixes = {};
-		for(var i=0;i<matrixes.length;i++){
-			result.success.matrixes[matrixes[i].name] = matrixes[i];
-		}
-		if(--syncCallback === 0){
-			res.json(result);
-		}
-	});
+	getPlay(req.params.gameId,handleReq, res);
 };
 
+var diffPlay = function(){
+	
+};
 
 exports.displacementAction = function(req, res) {
 
@@ -638,6 +569,11 @@ Matrix.remove({'name':{$in:['UnitData','ZoneTypeToUnitType']}},function(err,data
 exports.actionCallback = function(req,res){
 	console.log('A game was saved');
 	console.log(req.body);
+	var handleDiff = function(diff){
+		console.log('New diff');
+		// TODO socketio
+	};
+	getPlay(req.body.game,handleDiff);
 	var ret = {
 		result:'ok'
 	};

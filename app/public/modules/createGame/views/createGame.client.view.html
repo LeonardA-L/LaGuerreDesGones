@@ -55,6 +55,14 @@
 	</div>
 	
 	<input type="submit" ng-disabled="myForm.$invalid" ng-click="createGame()" value="Host your party !" class="col-md-offset-2 col-md-2" />
+	<br/>
+	<div id="warning" ng-if="b_lastGameHasSameName" class="col-md-6">You created two games in a row with the name "{{lastTitleGame}}"</div> <br/>
+	
+	<div id="confirmationOfHosting" ng-if="partyHost" class="col-md-6"> 
+	Your game "{{lastTitleGame}}" has been succesfully hosted ! 
+	You can now <a class="internsLinks" href="/#!/host"> create an other games</a>, 
+	<a class="internsLinks" href="/#!/perso">join your games</a> or <a class="internsLinks" href="/#!/join"> join other games</a>. </div>
 
+	<div id="confirmationOfHosting" ng-if="partyNotHost" class="col-md-6"> We fail to host your game !</div>
 </form>
 </section>

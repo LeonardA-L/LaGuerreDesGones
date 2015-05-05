@@ -1,5 +1,11 @@
 .playSection{
+	$top-margin:50px;
+	$winnerOverlayWidth:40%;
+	$winnerOverlayHeight:40%;
+
 	background: #FEE;
+	height: calc(100% - #{$top-margin} );
+	position:relative;
 	
 	.nestedClass{
 		background:#F00;
@@ -86,7 +92,7 @@
 	}
 
 	.full-height {
-		height: 100%;
+		height: calc(100% - #{$top-margin} );
 	}
 
 	#row-unit-number {
@@ -105,5 +111,24 @@
 
 	row-unit-disp-not-selected {
 		display: none;
+	}
+
+	.overallWinner{
+		background: rgba(0,0,0,0.5);
+		width:100%;
+		height:100%;
+		position:absolute;
+		top:0;
+		left:0;
+	}
+
+	.winnerDisplay{
+		background:#FFF;
+		width:$winnerOverlayWidth;
+		height:$winnerOverlayHeight;
+		padding:50px;
+		margin:0 auto;
+		position:relative;
+		top:calc( ( 100% - #{$winnerOverlayHeight} ) / 2 - #{$top-margin});
 	}
 }

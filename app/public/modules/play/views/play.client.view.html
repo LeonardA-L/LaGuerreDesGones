@@ -100,5 +100,11 @@
 				</div>
 			</div>
 		</div>
+		<div ng-if="game.winner" class="overallWinner">
+			<div class="winnerDisplay">
+			    <h2>{{game.players[game.winner].name}} remporte la partie</h2>
+			    <p>{{game.players[game.winner].name}} remporte cette partie. Vous pouvez <a href="/">revenir à l'accueil</a>, <a href="/#!/host">créer une autre partie</a> ou encore <a href="/">accéder au leaderboard de la partie</a></p>
+			</div>
+		</div>
 	</div>
 </section>

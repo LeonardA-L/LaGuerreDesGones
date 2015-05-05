@@ -618,19 +618,23 @@ var processSell = function(a){
 	Unit.findById(a.units[0], function(err, data){
 		if(err)
 			if(debug) console.log(err);
-		//console.log(data);
-		Unit.remove({'_id':a.units[0]}, function(err){
-			if(err)
-				if(debug) console.log(err);
-		});
-		var price = sellRatio*matrixes.UnitData.content[data.type].price;
-		a.player.money += price;
-		a.zone.units.splice(a.zone.units.indexOf(a.units[0]),1);
-		a.player.units.splice(a.player.units.indexOf(a.units[0]),1);
-		a.player.point += price*pointSellFactor;
-		a.player.save();
-		a.zone.save();
-
+		if(data !== null){
+			//console.log(data);
+			Unit.remove({'_id':a.units[0]}, function(err){
+				if(err)
+					if(debug) console.log(err);
+			});
+			var price = sellRatio*matrixes.UnitData.content[data.type].price;
+			a.player.money += price;
+			a.zone.units.splice(a.zone.units.indexOf(a.units[0]),1);
+			a.player.units.splice(a.player.units.indexOf(a.units[0]),1);
+			a.player.point += price*pointSellFactor;
+			a.player.save();
+			a.zone.save();
+		}
+		else{
+			if(debug) console.log('Null data');
+		}
 		syncEndProcess(a);
 	});
 };

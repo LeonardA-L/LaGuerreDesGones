@@ -425,51 +425,61 @@ var processEndDisplacement = function(a){
 					secondUnits[i].hp = baseHP * firstUnits.length;
 				}
 
-				for(i=0;i<firstUnits.length;i++){
-					for(j=0;j<secondUnits.length;j++){
-						var f = firstUnits[i];
-						var s = secondUnits[i];
-						// f to s
-						s.hp -= baseHP * (f.attack/10) * (1-s.defence/10);
-						// s to f
-						f.hp -= baseHP * (s.attack/10) * (1-f.defence/10);
-					}
-				}
+				while(firstUnits.length > 0 && secondUnits.length > 0){
+					console.log('Entering Loop');
+					for(i=0;i<firstUnits.length;i++){
+						for(j=0;j<secondUnits.length;j++){
 
-				for(i=0;i<firstUnits.length;i++){
-					if(firstUnits[i].hp <= 0){
-						var u = firstUnits[i];
-						console.log(u._id + ' OUT !');
-						
-						for(j = 0; j<a.zone.units.length;j++){
-							if(a.zone.units[j]._id === u._id){
-								a.zone.units.splice(j, 1);
-								break;
-							}
+							var f = firstUnits[i];
+							var s = secondUnits[j];
+							console.log('Fight '+i+'-'+j);
+							console.log(f);
+							console.log(s);
+							// f to s
+							var d = baseHP * (f.attack/10) * (1-s.defence/10);
+							console.log(d);
+							s.hp -= d;
+							// s to f
+							d = baseHP * (s.attack/10) * (1-f.defence/10);
+							f.hp -= d;
+							console.log(d);
 						}
-						u.remove(function(){});
-						firstUnits.splice(i, 1);
-						i--;
 					}
-				}
 
-				for(i=0;i<secondUnits.length;i++){
-					if(secondUnits[i].hp <= 0){
-						var u = secondUnits[i];
-						console.log(u._id + ' OUT !');
-						
-						for(j = 0; j<a.zone.units.length;j++){
-							if(a.zone.units[j]._id === u._id){
-								a.zone.units.splice(j, 1);
-								break;
+					for(i=0;i<firstUnits.length;i++){
+						if(firstUnits[i].hp <= 0){
+							var u = firstUnits[i];
+							console.log(u._id + ' OUT !');
+							
+							for(j = 0; j<a.zone.units.length;j++){
+								if(a.zone.units[j]._id === u._id){
+									a.zone.units.splice(j, 1);
+									break;
+								}
 							}
+							u.remove(function(){});
+							firstUnits.splice(i, 1);
+							i--;
 						}
-						u.remove(function(){});
-						secondUnits.splice(i, 1);
-						i--;
+					}
+
+					for(i=0;i<secondUnits.length;i++){
+						if(secondUnits[i].hp <= 0){
+							var u = secondUnits[i];
+							console.log(u._id + ' OUT !');
+							
+							for(j = 0; j<a.zone.units.length;j++){
+								if(a.zone.units[j]._id === u._id){
+									a.zone.units.splice(j, 1);
+									break;
+								}
+							}
+							u.remove(function(){});
+							secondUnits.splice(i, 1);
+							i--;
+						}
 					}
 				}
-
 				
 				// TODO Zone Owner
 				sp.save();
@@ -524,11 +534,12 @@ var processInit = function(a){
 				var nz = neutralZones[idx];
 				var nzd = neutralZonesDesc[idx];
 				for(var j=0;j<initPlayers;j++){
-					var u = new Unit({
-						game:a.game._id,
-						player:players[i]._id,
-						zone:nz._id
-					});
+					var u = new Unit(matrixes.UnitData.content[0]);
+
+					u.game=a.game._id,
+					u.player=players[i]._id,
+					u.zone=nz._id
+
 					affectUnitToZone(u,nz,nzd);
 					if(players[i].units === undefined){
 						players[i].units = [u._id];

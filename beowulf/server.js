@@ -47,6 +47,9 @@ var DEFAULT_MAX_UNIT_NUMBER = 8;
 var updateInterval = 120000;
 var updateMoney = 0;
 
+var pointBuyFactor = 0.5;
+var pointSellFactor = 0.5;
+
 // dirty pasted model
 
 var MatrixSchema = new Schema({
@@ -460,6 +463,7 @@ var processBuy = function(a){
 	if(debug) console.log('Processing buy action');
 	var price = matrixes.UnitData.content[a.newUnitType].price;
 	a.player.money -= price;
+	a.player.point += price*pointBuyFactor;
 	// TODO create unit according to real stuff
 	var u = new Unit(matrixes.UnitData.content[a.newUnitType]);
 	ZoneDescription.findById(a.zone.zoneDesc,function(err, zd){
@@ -489,6 +493,7 @@ var processSell = function(a){
 		a.player.money += price;
 		a.zone.units.splice(a.zone.units.indexOf(a.units[0]),1);
 		a.player.units.splice(a.player.units.indexOf(a.units[0]),1);
+		a.player.point += price*pointSellFactor;
 		a.player.save();
 		a.zone.save();
 

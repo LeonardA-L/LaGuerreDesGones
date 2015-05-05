@@ -342,6 +342,7 @@ var getPlay = function(gameId, callback, res){
 		if(res && err)
 			res.send(err);
 		result.success.title = game.title;
+		result.success.winner = game.winner;
 		if(--syncCallback === 0){
 			callback(result);
 		}

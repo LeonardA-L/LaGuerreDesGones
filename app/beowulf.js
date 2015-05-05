@@ -7,9 +7,9 @@ var init = require('./config/init')(),
 	mongoose = require('mongoose'),
 	chalk = require('chalk'),
 	express = require('express'),
-	schedule = require('node-schedule'),
 	XmlHttpRequest = require('xmlhttprequest').XMLHttpRequest,
-	http = require('http');
+	http = require('http'),
+	path = require('path');
 
 
 var debug=config.debug;
@@ -34,21 +34,32 @@ var NEUTRAL = 'neutral';
 
 var DEFAULT_MAX_UNIT_NUMBER = 8;
 
-var updateInterval = 120000;
+
+var updateInterval = 30000;
 var updateVelovInterval = 300000;
 var updateTCLInterval = 3600000;
+
 var updateMoney = 0;
 
 var pointBuyFactor = 0.5;
 var pointSellFactor = 0.5;
 var baseDispPoints = 2;
 var baseWarPoints = 4;
-var winPoints = 11
+var winPoints = 11;
+
+var victoryPoint = 300;
+
+var hopMoney = 100;
+var winMoney = 100;
+var loseMoney = 100;
+var dispMoney = 10;
 
 var odds = 25;
+var baseHP = 40;
 
-var syncEndProcess = function(action){
-	action.save();
+var maxUnitPerZone = 8;
+
+var notifyServer = function(gameId){
 	var options = {
 	  host: (process.argv[2]||config.defaultHost),
 	  path: '/'+config.callback,
@@ -65,8 +76,37 @@ var syncEndProcess = function(action){
 	req.on('error', function(error) {
   		if(debug) console.log('Server unreachable');
 	});
-	req.write(JSON.stringify({game:action.game._id || action.game}));
+	req.write(JSON.stringify({game:gameId}));
 	req.end();
+};
+
+var syncEndProcess = function(action, failed){
+	action.status = 2;
+	if(failed){
+		action.status = 3;
+		console.log('Action failed');
+	}
+	action.save();
+	if(action.game){
+		if(action.type === 8){
+			if(action.game.winner){
+				notifyServer(action.game._id || action.game);
+			}
+		}
+		else{
+			var endCheck = new Action({
+				status:0,
+				type:8,
+				date:new Date(),
+				game:action.game._id || action.game
+			});
+			endCheck.save();
+			notifyServer(action.game._id || action.game);
+		}
+	}
+	else{
+		// Push to all
+	}
 };
 
 var affectUnitToZone = function(u,z,zd){
@@ -183,7 +223,6 @@ var processEndDisplacement = function(a){
 				a.zone.owner = fp._id;
 				var i=0;
 				var j=0;
-				var baseHP = 10;
 
 				// Start by giving everyone HPs
 				for(i=0;i<firstUnits.length;i++){
@@ -195,7 +234,7 @@ var processEndDisplacement = function(a){
 
 				// While there is still two team
 				while(firstUnits.length > 0 && secondUnits.length > 0){
-					//console.log('Entering Loop');
+					//console.log('Entering Loop '+firstUnits.length+'-'+secondUnits.length);
 
 					// for each pair, make them battle
 					for(i=0;i<firstUnits.length;i++){
@@ -203,17 +242,20 @@ var processEndDisplacement = function(a){
 							var f = firstUnits[i];
 							var s = secondUnits[j];
 							
+							//console.log('Fight '+i+'-'+j);
 							// f to s
 							var r1 = (((Math.random()*2*odds)-odds)/100)+1;
 							var r2 =(((Math.random()*2*odds)-odds)/100)+1;
-							var d = baseHP * (r1*f.attack/10) * (r2*(1-s.defence)/10);
+							var d = baseHP * (r1*f.attack) * (r2*(baseHP-s.defence));
+							//console.log(r1+'-'+f.attack+'-'+r2+'-'+s.defence+'-'+d);
 							s.hp -= d;
 
 							// s to f
 							r1 = (((Math.random()*2*odds)-odds)/100)+1;
 							r2 = (((Math.random()*2*odds)-odds)/100)+1;
-							d = baseHP * (r1*s.attack/10) * (r2*(1-f.defence)/10);
+							d = baseHP * (r1*s.attack) * (r2*(baseHP-f.defence));
 							f.hp -= d;
+							//console.log(r1+'-'+s.attack+'-'+r2+'-'+f.defence+'-'+d);
 						}
 					}
 
@@ -255,11 +297,15 @@ var processEndDisplacement = function(a){
 				
 				if(secondUnits.length > 0){
 					sp.point+=winPoints;
+					sp.money += winMoney;
+					fp.money += loseMoney;
 					a.zone.owner = sp._id;
 				}
-				if(firstUnits.length > 0){
+				else {
 					fp.point+=winPoints;
 					a.zone.owner = fp._id;
+					fp.money += winMoney;
+					sp.money += loseMoney;
 				}
 
 				sp.save();
@@ -272,6 +318,7 @@ var processEndDisplacement = function(a){
 			Player.findById(secondID,function(err,player){
 				console.log('No Battle');
 				player.point+=baseDispPoints;
+				player.money += dispMoney;
 				player.save();
 				a.zone.save();
 				syncEndProcess(a);
@@ -357,21 +404,28 @@ var processInit = function(a){
 
 var processBuy = function(a){
 	if(debug) console.log('Processing buy action');
-	var price = matrixes.UnitData.content[a.newUnitType].price;
-	a.player.money -= price;
-	a.player.point += price*pointBuyFactor;
-	// TODO create unit according to real stuff
-	var u = new Unit(matrixes.UnitData.content[a.newUnitType]);
-	ZoneDescription.findById(a.zone.zoneDesc,function(err, zd){
-		u.player = a.player._id;
-		affectUnitToZone(u,a.zone,zd);
-		a.player.units.push(u._id);
-		u.save();
-		a.zone.save();
-		a.player.save();
+	if(debug) console.log('Units on zone '+a.zone.units.length);
+	if(a.zone.units.length < maxUnitPerZone){
+		var price = matrixes.UnitData.content[a.newUnitType].price;
+		a.player.money -= price;
+		a.player.point += price*pointBuyFactor;
+		// TODO create unit according to real stuff
+		var u = new Unit(matrixes.UnitData.content[a.newUnitType]);
+		ZoneDescription.findById(a.zone.zoneDesc,function(err, zd){
+			u.player = a.player._id;
+			affectUnitToZone(u,a.zone,zd);
+			a.player.units.push(u._id);
+			u.save();
+			a.zone.save();
+			a.player.save();
 
-		syncEndProcess(a);
-	});
+			syncEndProcess(a);
+		});
+	}
+	else{
+		syncEndProcess(a, true);
+	}
+	
 };
 
 var processSell = function(a){
@@ -410,16 +464,16 @@ var processHop = function(a){
 
 		Zone.find({'_id':{$in:a.game.zones}}).populate('zoneDesc units').exec(function(err,zones){
 			for(var i=0;i<zones.length;i++){
-				if(zones[i].units.length > 0){
+				if(zones[i].owner && zones[i].units.length < maxUnitPerZone){
 					// Generate Unit
 					var u = new Unit(matrixes.UnitData.content[matrixes.ZoneTypeToUnitType.content[zones[i].zoneDesc.type]]);
 					// affect to player
-					var p = players[zones[i].units[0].player];
+					var p = players[zones[i].owner];
 					u.player = p._id;
 					affectUnitToZone(u,zones[i],zones[i].zoneDesc);
 					
 					p.units.push(u._id);
-
+					p.money += hopMoney;
 					zones[i].save();
 					u.save();
 					p.save();
@@ -437,6 +491,25 @@ var processHop = function(a){
 			date:new Date(a.date.getTime()+updateInterval)
 		});
 		b.save();
+};
+
+var processEndCheck = function(a){
+	Player.find({'game':a.game._id}).sort('-point').exec(function(err, players){
+		if(players[0].point >= victoryPoint){
+			if(debug) console.log(players[0].name+' wins');
+			a.game.winner = players[0]._id;
+			a.game.save(function(err){
+				if(debug) console.log(err);
+			});
+			Action.find({'game':a.game._id}, function(err,actions){
+				for(var i=0;i<actions.length;i++){
+					actions[i].status=4;
+					actions[i].save();
+				}
+			});
+		}
+		syncEndProcess(a);
+	});
 };
 
 var processVelovStationUpdate = function(a){
@@ -625,6 +698,7 @@ var processTCLUpdate = function(a){
 	});
 }
 
+
 var actionHandlers = [];
 actionHandlers.push(processDisplacement);
 actionHandlers.push(processEndDisplacement);
@@ -634,11 +708,12 @@ actionHandlers.push(processSell);
 actionHandlers.push(processHop);
 actionHandlers.push(processVelovStationUpdate);
 actionHandlers.push(processTCLUpdate);
+actionHandlers.push(processEndCheck);
+
 
 // TODO
  var processAction = function(a){
  	actionHandlers[a.type](a);
- 	a.status = 2;
  };
 
 // Main work
@@ -687,11 +762,14 @@ var execute = function(){
 					case 7: // TCL Update
 						Action.findOne({'_id':doc._id}).exec(actionCallback);
 					break;
+					case 8: // Hop
+						Action.findOne({'_id':doc._id}).populate('game').exec(actionCallback);
+					break;
 				}
 	    	}
 
 	    	Action.count({'status':0, 'date':{$lte:new Date()}},function(err,count){
-				if(debug) console.log(count);
+				//if(debug) console.log(count);
 	    		if(count > 0){
 	    			// Re launch
 	        		execute();
@@ -755,7 +833,10 @@ var db = mongoose.connect(dbAddress, function(err) {
 });
 
 
-var app = require('./config/express')(db);
+var app = express();
+config.getGlobbedFiles('./app/models/**/*.js').forEach(function(modelPath) {
+		require(path.resolve(modelPath));
+	});
 
 Action = mongoose.model('Action');
 Zone = mongoose.model('Zone');

@@ -47,8 +47,17 @@ var loseMoney = 100;
 var dispMoney = 10;
 
 var odds = 25;
+var baseHP = 40;
 
-var syncEndProcess = function(action){
+var maxUnitPerZone = 8;
+
+
+var syncEndProcess = function(action, failed){
+	action.status = 2;
+	if(failed){
+		action.status = 3;
+		console.log('Action failed');
+	}
 	action.save();
 	var options = {
 	  host: (process.argv[2]||config.defaultHost),
@@ -184,7 +193,6 @@ var processEndDisplacement = function(a){
 				a.zone.owner = fp._id;
 				var i=0;
 				var j=0;
-				var baseHP = 10;
 
 				// Start by giving everyone HPs
 				for(i=0;i<firstUnits.length;i++){
@@ -366,21 +374,28 @@ var processInit = function(a){
 
 var processBuy = function(a){
 	if(debug) console.log('Processing buy action');
-	var price = matrixes.UnitData.content[a.newUnitType].price;
-	a.player.money -= price;
-	a.player.point += price*pointBuyFactor;
-	// TODO create unit according to real stuff
-	var u = new Unit(matrixes.UnitData.content[a.newUnitType]);
-	ZoneDescription.findById(a.zone.zoneDesc,function(err, zd){
-		u.player = a.player._id;
-		affectUnitToZone(u,a.zone,zd);
-		a.player.units.push(u._id);
-		u.save();
-		a.zone.save();
-		a.player.save();
+	if(debug) console.log('Units on zone '+a.zone.units.length);
+	if(a.zone.units.length < maxUnitPerZone){
+		var price = matrixes.UnitData.content[a.newUnitType].price;
+		a.player.money -= price;
+		a.player.point += price*pointBuyFactor;
+		// TODO create unit according to real stuff
+		var u = new Unit(matrixes.UnitData.content[a.newUnitType]);
+		ZoneDescription.findById(a.zone.zoneDesc,function(err, zd){
+			u.player = a.player._id;
+			affectUnitToZone(u,a.zone,zd);
+			a.player.units.push(u._id);
+			u.save();
+			a.zone.save();
+			a.player.save();
 
-		syncEndProcess(a);
-	});
+			syncEndProcess(a);
+		});
+	}
+	else{
+		syncEndProcess(a, true);
+	}
+	
 };
 
 var processSell = function(a){
@@ -459,7 +474,6 @@ actionHandlers.push(processHop);
 // TODO
  var processAction = function(a){
  	actionHandlers[a.type](a);
- 	a.status = 2;
  };
 
 // Main work
@@ -508,7 +522,7 @@ var execute = function(){
 	    	}
 
 	    	Action.count({'status':0, 'date':{$lte:new Date()}},function(err,count){
-				if(debug) console.log(count);
+				//if(debug) console.log(count);
 	    		if(count > 0){
 	    			// Re launch
 	        		execute();

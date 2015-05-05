@@ -79,7 +79,7 @@
 									</div>
 								</div>
 								<div class="col-md-3 nopadding" style="margin-top: 27px;  text-align:center;">
-									<button class="btn btn-primary btn-success" ng-if="game.zones[game.selectedZone._id].owner === player._id" ng-click="buyUnit(i.type)">+</button>
+									<button class="btn btn-primary btn-success" ng-if="game.zones[game.selectedZone._id].units.length < maxUnitPerZone && game.zones[game.selectedZone._id].owner === player._id" ng-click="buyUnit(i.type)">+</button>
 									<button ng-if="unitsByTypeForZone[i.type].length > 0" class="btn btn-primary btn-danger" ng-click="sell(unitsByTypeForZone[i][0].zone,unitsByTypeForZone[i][0]._id,unitsByTypeForZone[i][0].player)">-</button>
 								</div>
 							</div>

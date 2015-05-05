@@ -35,7 +35,7 @@ var NEUTRAL = 'neutral';
 var DEFAULT_MAX_UNIT_NUMBER = 8;
 
 
-var updateInterval = 30000;
+var updateInterval = 180000;
 var updateVelovInterval = 300000;
 var updateTCLInterval = 3600000;
 
@@ -443,8 +443,8 @@ var processSell = function(a){
 			});
 			var price = sellRatio*matrixes.UnitData.content[data.type].price;
 			a.player.money += price;
-			a.zone.units.splice(a.zone.units.indexOf(a.units[0]),1);
-			a.player.units.splice(a.player.units.indexOf(a.units[0]),1);
+			a.zone.units.splice(a.zone.units.indexOf(a.units[0]._id),1);
+			a.player.units.splice(a.player.units.indexOf(a.units[0]._id),1);
 			a.player.point += price*pointSellFactor;
 			a.player.save();
 			a.zone.save();

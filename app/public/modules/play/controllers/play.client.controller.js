@@ -137,14 +137,15 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			});
 		};
 
-		$scope.sell = function(zoneId,unitId,playerId,unitType){
+		$scope.sell = function(unitId,unitType){
   			var dto = {
-  				'zone':$scope.game.units[0].zone,
-  				'unit':$scope.game.units[0]._id,
-  				'player':$scope.game.units[0].player,
+  				'zone':$scope.selectedZone._id,
+  				'unit':unitId,
+  				'player':$scope.player._id,
   				'game':gameId
   			};
-  			$scope.lessUnitToDisplace(this.unitType); // à mettre dans le succes mais ça marchait pas :/
+  			console.log(dto);
+  			//$scope.lessUnitToDisplace(this.unitType); // à mettre dans le succes mais ça marchait pas :/
 			$http.post('/services/action/sell',dto).
 			//success(function(data, status, headers, config) {
 			success(function(data) {
@@ -167,6 +168,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
   				'newUnitType':newUnitTypeN,
   				'game':gameId
   			};
+
 			$http.post('/services/action/buy',dto).
 			//success(function(data, status, headers, config) {
 			success(function(data) {
@@ -314,8 +316,9 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 				else{
 					$scope.resetMode();
 					$scope.selectedZone = $scope.game.zones[that.zoneId];	// TODO Fix this
-					//console.log($scope.game);
+					console.log($scope);
 					$scope.listUnitsByType($scope.game.zones[that.zoneId].units);
+					console.log($scope);
 					colorMap();
 				}
 			});

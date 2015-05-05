@@ -87,7 +87,7 @@ var syncEndProcess = function(action, failed){
 		console.log('Action failed');
 	}
 	action.save();
-	console.log('End action '+action._id);
+	//console.log('End action '+action._id);
 	if(action.game){
 		if(action.type === 8){
 			if(action.game.winner){
@@ -431,15 +431,15 @@ var processBuy = function(a){
 
 var processSell = function(a){
 	if(debug) console.log('Processing sell action');
-	
-	Unit.findById(a.units[0], function(err, data){
-		if(err)
-			if(debug) console.log(err);
+
+	var data = a.units[0];	
+
 		if(data !== null){
 			//console.log(data);
 			Unit.remove({'_id':a.units[0]}, function(err){
 				if(err)
 					if(debug) console.log(err);
+				console.log('Removed');
 			});
 			var price = sellRatio*matrixes.UnitData.content[data.type].price;
 			a.player.money += price;
@@ -448,12 +448,12 @@ var processSell = function(a){
 			a.player.point += price*pointSellFactor;
 			a.player.save();
 			a.zone.save();
+			a.game.save();
 		}
 		else{
 			if(debug) console.log('Null data');
 		}
 		syncEndProcess(a);
-	});
 };
 
 var processHop = function(a){
@@ -714,7 +714,7 @@ actionHandlers.push(processEndCheck);
 
 // TODO
  var processAction = function(a){
-	console.log('Start action '+a._id);
+	//console.log('Start action '+a._id);
  	actionHandlers[a.type](a);
  };
 
@@ -755,7 +755,7 @@ var execute = function(){
 					break;
 					case 3: // Buy
 					case 4: // Sell
-						Action.findOne({'_id':doc._id}).populate('player zone').exec(actionCallback);
+						Action.findOne({'_id':doc._id}).populate('units game player zone').exec(actionCallback);
 					break;
 					case 5: // Hop
 						Action.findOne({'_id':doc._id}).populate('game').exec(actionCallback);

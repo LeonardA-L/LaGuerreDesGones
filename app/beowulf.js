@@ -6,11 +6,9 @@ var init = require('./config/init')(),
 	config = require('./config/config'),
 	mongoose = require('mongoose'),
 	chalk = require('chalk'),
-	Schema = mongoose.Schema;
-var express = require('express');
+	express = require('express'),
+	http = require('http');
 
-//mongoose.set('debug', true);
-//var ActionSchema=require('../app/app/models/action.server.model').ActionSchema;
 var debug=config.debug;
 var state=true;
 
@@ -30,17 +28,6 @@ var initMoney = 1000;
 var sellRatio = 0.4;
 
 var NEUTRAL = 'neutral';
-var HOSPITAL = 'hospital';
-var PARK = 'park';
-var UNIVERSITY = 'university';
-var CHURCH = 'church';
-var WOODSTOCK = 'woodstock';
-var STATION = 'station';
-var AIRPORT = 'airport';
-var CITY_HALL = 'city_hall';
-var SQUARE = 'square';
-var BANK = 'bank';
-var SHOPPING_CENTRE = 'shopping_centre';
 
 var DEFAULT_MAX_UNIT_NUMBER = 8;
 
@@ -55,238 +42,8 @@ var winPoints = 11
 
 var odds = 25;
 
-// dirty pasted model
-
-var MatrixSchema = new Schema({
-	name : String,
-	content: Schema.Types.Mixed
-});
-
-var PlayerSchema = new Schema({
-	name: {
-		type: String,
-		trim: true,
-		required: true
-	},
-	dateCreated: {
-		type: Date,
-		default: Date.now
-	},
-	isAdmin:{
-		type: Boolean,
-		default: false
-	},
-	user: {
-		type: Schema.Types.ObjectId,
-		ref: 'User'
-	},
-	game: {
-		type: Schema.Types.ObjectId,
-		ref: 'Game'
-	},
-	money: {
-		type: Number,
-		default: 0
-	},
-	point: {
-		type: Number,
-		default: 0
-	},
-	units: [{
-		type: Schema.Types.ObjectId,
-		ref: 'Unit'
-	}]
-});
-
-var ZoneDescriptionSchema = new Schema({
-	type: {
-		type: String,
-		enum: [NEUTRAL, HOSPITAL, PARK, UNIVERSITY, CHURCH, WOODSTOCK, STATION, AIRPORT, CITY_HALL, SQUARE, BANK, SHOPPING_CENTRE],
-		default: NEUTRAL
-	},
-	name: {
-		type: String,
-		trim: true,
-		default: ''
-	},
-
-	border: Schema.Types.Mixed,
-
-	x : Number,
-
-	y : Number,
-	
-	velov : Number
-
-});
-
-var GameSchema = new Schema({
-	title: {
-		type: String,
-		trim: true,
-		default: '',
-	},
-	nMaxPlayerUnit: {
-		type: Number,
-		required: true
-	},
-	nMinPlayer: {
-		type: Number
-	},
-	nMaxPlayer: {
-		type: Number,
-		required: true
-	},
-	isInit: {
-		type: Boolean,
-		default: false,
-	},
-	startTime: {
-		type: Date
-	},
-	zones: [{
-		type: Schema.Types.ObjectId,
-		ref: 'Zone'
-	}],
-	players: [{
-		type: Schema.Types.ObjectId,
-		ref: 'Player'
-	}]
-});
-
-var UnitSchema = new Schema({
-	type: {
-		type: Number,
-		default: 0
-	},
-	zone: {
-		type: Schema.Types.ObjectId,
-		ref: 'Zone'
-	},
-	attack: {
-		type: Number,
-		default: 0
-	},
-	defence: {
-		type: Number,
-		default: 0
-	},
-	point: {
-		type: Number,
-		default: 0
-	},
-	x: {
-		type: Number,
-		default: 0
-	},
-	y: {
-		type: Number,
-		default: 0
-	},
-	xt: {
-		type: Number,
-		default: 0
-	},
-	yt: {
-		type: Number,
-		default: 0
-	},
-	te: {
-		type: Number,
-		default: 0
-	},
-	ts: {
-		type: Number,
-		default: 0
-	},
-	available: {
-		type: Boolean,
-		default: true
-	},
-	game:{
-		type: Schema.Types.ObjectId,
-		ref: 'Game'
-	},
-	player: {
-		type: Schema.Types.ObjectId,
-		ref: 'Player'
-	}
-});
-
-
-var ZoneSchema = new Schema({
-	units: [{
-		type: Schema.Types.ObjectId,
-		ref: 'Unit'
-	}],
-	game:{
-		type: Schema.Types.ObjectId,
-		ref: 'Game'
-	},
-	zoneDesc:{
-		type: Schema.Types.ObjectId,
-		ref: 'ZoneDescription',
-// TODO		required: true
-	},
-	nbUnitMax: {
-		type: Number,
-		default: DEFAULT_MAX_UNIT_NUMBER
-	},
-	owner: {
-		type: Schema.Types.ObjectId,
-		ref: 'Player'
-	}
-});
-var ActionSchema = new Schema({
-
-	type :{
-		type: Number,
-		default: 0
-	},
-	date:{
-		type:Date
-	},
-	status :{
-		type: Number,
-		default: 0
-	},
-	
-	// For Displacement
-	zoneA:{
-		type: Schema.Types.ObjectId,
-		ref: 'Zone'
-	},
-	zoneB:{
-		type: Schema.Types.ObjectId,
-		ref: 'Zone'
-	},
-	units:[{
-		type: Schema.Types.ObjectId,
-		ref: 'Unit'
-	}],
-	// For battle
-	zone:{
-		type: Schema.Types.ObjectId,
-		ref: 'Zone'
-	},
-	
-	// For init
-	game:{
-		type: Schema.Types.ObjectId,
-		ref: 'Game'
-	},
-	player: {
-		type: Schema.Types.ObjectId,
-		ref: 'Player'
-	},
-	newUnitType : Number
-	
-});
-
 var syncEndProcess = function(action){
 	action.save();
-
-	var http = require('http');
 	var options = {
 	  host: (process.argv[2]||config.defaultHost),
 	  path: '/'+config.callback,
@@ -779,22 +536,6 @@ var db = mongoose.connect(dbAddress, function(err) {
 	}
 	else{
 		console.log(chalk.green('MongoDB connection successful'));
-		db.model('Unit', UnitSchema);
-		db.model('Zone', ZoneSchema);
-		db.model('Action', ActionSchema);
-		db.model('Game', GameSchema);
-		db.model('Player', PlayerSchema);
-		db.model('ZoneDescription', ZoneDescriptionSchema);
-		db.model('Matrix', MatrixSchema);
-		
-		Action = db.model('Action');
-		Zone = db.model('Zone');
-		Unit = db.model('Unit');
-		Game = db.model('Game');
-		Player = db.model('Player');
-		Matrix = db.model('Matrix');
-		ZoneDescription = db.model('ZoneDescription');
-
 
 		Matrix.find({'name':{$in:['UnitData','ZoneTypeToUnitType']}},function(err,mat){
 			matrixes = {};
@@ -817,7 +558,15 @@ var db = mongoose.connect(dbAddress, function(err) {
 });
 
 
-var app = express();
+var app = require('./config/express')(db);
+
+Action = mongoose.model('Action');
+Zone = mongoose.model('Zone');
+Unit = mongoose.model('Unit');
+Game = mongoose.model('Game');
+Player = mongoose.model('Player');
+Matrix = mongoose.model('Matrix');
+ZoneDescription = mongoose.model('ZoneDescription');
 
 app.get('/', function(req, res){
 	if(!state){

@@ -54,15 +54,16 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 		$scope.format = $scope.formats[0];
 		
 		$scope.hours = [];
-		for(var i=0; i<24; i++){
+		var i=0;
+		for(i=0; i<24; i++){
 			 if(i<10){
 				$scope.hours[i]={'num':'0'+i};
 			}else{
 				$scope.hours[i]={'num':i};
 			}
 		}
-		$scope.minutes = []
-		for(var i=0; i<60; i++){
+		$scope.minutes = [];
+		for(i=0; i<60; i++){
 			 if(i<10){
 				$scope.minutes[i]={'num':'0'+i};
 			}else{
@@ -72,7 +73,7 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 
 
 		
-		$scope.lastTitleGame = "";
+		$scope.lastTitleGame = '';
 		$scope.b_lastGameHasSameName = false;
 
 		$scope.createGame = function(){
@@ -93,7 +94,7 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 			//success(function(data, status, headers, config) {
 			success(function(data) {
 				$scope.partyHost = true;
-				if ($scope.lastTitleGame == $scope.newGame.title){
+				if ($scope.lastTitleGame === $scope.newGame.title){
 					$scope.b_lastGameHasSameName = true;			
 				}
 				$scope.lastTitleGame = $scope.newGame.title;

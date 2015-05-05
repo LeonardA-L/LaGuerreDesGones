@@ -7,7 +7,7 @@ angular.module('perso').controller('PersoController', ['$scope','Authentication'
 		$scope.authentication = Authentication;
 
 		var refreshRate = 10*1000;
-		var timerToDestroy = undefined;
+		var timerToDestroy;
 		var retrieveAvailable = function(){
 		//console.log('retrieving available games');
 
@@ -22,7 +22,7 @@ angular.module('perso').controller('PersoController', ['$scope','Authentication'
 			});
 		};
 
-		$scope.$on("$destroy", function(){
+		$scope.$on('$destroy', function(){
         	if(timerToDestroy)
         		$timeout.cancel(timerToDestroy);
     	});

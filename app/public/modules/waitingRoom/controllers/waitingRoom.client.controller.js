@@ -25,7 +25,7 @@ angular.module('waitingRoom').controller('WaitingRoomController', ['$scope',
 		*/
 
 		//$scope.listAvailable = [];
-		var timerToDestroy = undefined;
+		var timerToDestroy;
 		var retrieveAvailable = function(){
 			//console.log('retrieving available games');
 
@@ -41,7 +41,7 @@ angular.module('waitingRoom').controller('WaitingRoomController', ['$scope',
 			  });
 		};
 
-		$scope.$on("$destroy", function(){
+		$scope.$on('$destroy', function(){
         	if(timerToDestroy)
         		$timeout.cancel(timerToDestroy);
     	});

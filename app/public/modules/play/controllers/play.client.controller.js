@@ -84,6 +84,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			if($scope.game.selectedZone !== undefined){
 				$scope.listUnitsByType($scope.game.zones[$scope.game.selectedZone._id].units);
 			}
+
 		};
 
 

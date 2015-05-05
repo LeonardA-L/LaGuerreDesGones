@@ -7,7 +7,8 @@ var init = require('./config/init')(),
 	mongoose = require('mongoose'),
 	chalk = require('chalk'),
 	express = require('express'),
-	http = require('http');
+	http = require('http'),
+	path = require('path');
 
 var debug=config.debug;
 var state=true;
@@ -558,7 +559,10 @@ var db = mongoose.connect(dbAddress, function(err) {
 });
 
 
-var app = require('./config/express')(db);
+var app = express();
+config.getGlobbedFiles('./app/models/**/*.js').forEach(function(modelPath) {
+		require(path.resolve(modelPath));
+	});
 
 Action = mongoose.model('Action');
 Zone = mongoose.model('Zone');

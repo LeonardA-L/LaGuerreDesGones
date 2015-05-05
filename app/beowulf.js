@@ -434,11 +434,11 @@ var processHop = function(a){
 
 		Zone.find({'_id':{$in:a.game.zones}}).populate('zoneDesc units').exec(function(err,zones){
 			for(var i=0;i<zones.length;i++){
-				if(zones[i].units.length > 0){
+				if(zones[i].owner && zones[i].units.length < maxUnitPerZone){
 					// Generate Unit
 					var u = new Unit(matrixes.UnitData.content[matrixes.ZoneTypeToUnitType.content[zones[i].zoneDesc.type]]);
 					// affect to player
-					var p = players[zones[i].units[0].player];
+					var p = players[zones[i].owner];
 					u.player = p._id;
 					affectUnitToZone(u,zones[i],zones[i].zoneDesc);
 					

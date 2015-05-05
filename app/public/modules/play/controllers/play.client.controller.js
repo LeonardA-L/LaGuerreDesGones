@@ -322,12 +322,31 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 
 		$document.ready(function() {
 			initMap();
+
+			google.maps.event.addDomListener(map, "click", function (event) {
+				for (var i in $scope.game.zonesPolygons) {
+					var polygon=$scope.game.zonesPolygons[i];
+        			if(google.maps.geometry.poly.containsLocation(event.latLng, polygon)) {
+            			onZoneClicked(polygon);
+            			break;
+        			}
+    			}
+			});
 		});
 
   		$scope.onUnitIconDrop = function (event, ui) {
-  			// TODO get zone for pageX/Y
-			$(document.elementFromPoint(event.pageX, event.pageY)).click();  
+			simulateClick(event.pageX, event.pageY);
   		};
+
+  		function simulateClick(x, y) {
+    		var clickEvent= document.createEvent('MouseEvents');
+    		clickEvent.initMouseEvent(
+    			'click', true, true, window, 0,
+    			0, 0, x, y, false, false,
+    			false, false, 0, null
+    		);
+    		document.elementFromPoint(x, y).dispatchEvent(clickEvent);
+		}
 		
 		$scope.resetMode();
 	}

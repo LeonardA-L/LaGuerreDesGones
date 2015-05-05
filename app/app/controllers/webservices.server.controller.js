@@ -364,7 +364,7 @@ var getPlay = function(gameId, callback, res){
 			callback(result);
 		}
 	});
-	Action.find({'game':gameId}, function(err,actions){
+	Action.find({'game':gameId}).sort('-date').exec(function(err,actions){
 		if(res && err)
 			res.send(err);
 		result.success.actions = actions;
@@ -482,7 +482,7 @@ Matrix.remove({'name':{$in:['UnitData','ZoneTypeToUnitType']}},function(err,data
 		content :[{
 			type:0,
 			attack:1,
-			defense:1,
+			defence:1,
 			point:1,
 			price:10,
 			name:'Lyonnais'
@@ -490,7 +490,7 @@ Matrix.remove({'name':{$in:['UnitData','ZoneTypeToUnitType']}},function(err,data
 		{
 			type:1,
 			attack:1,
-			defense:2,
+			defence:2,
 			point:2,
 			price:20,
 			name:'Cycliste'
@@ -498,7 +498,7 @@ Matrix.remove({'name':{$in:['UnitData','ZoneTypeToUnitType']}},function(err,data
 		{
 			type:2,
 			attack:4,
-			defense:1,
+			defence:1,
 			point:3,
 			price:40,
 			name:'Etudiant'
@@ -506,7 +506,7 @@ Matrix.remove({'name':{$in:['UnitData','ZoneTypeToUnitType']}},function(err,data
 		{
 			type:3,
 			attack:1,
-			defense:2,
+			defence:2,
 			point:2,
 			price:20,
 			name:'Hippie'
@@ -514,7 +514,7 @@ Matrix.remove({'name':{$in:['UnitData','ZoneTypeToUnitType']}},function(err,data
 		{
 			type:4,
 			attack:2,
-			defense:1,
+			defence:1,
 			point:2,
 			price:20,
 			name:'Joggeur'
@@ -522,7 +522,7 @@ Matrix.remove({'name':{$in:['UnitData','ZoneTypeToUnitType']}},function(err,data
 		{
 			type:5,
 			attack:1,
-			defense:4,
+			defence:4,
 			point:3,
 			price:40,
 			name:'Médecin'
@@ -530,7 +530,7 @@ Matrix.remove({'name':{$in:['UnitData','ZoneTypeToUnitType']}},function(err,data
 		{
 			type:6,
 			attack:1,
-			defense:1,
+			defence:1,
 			point:2,
 			price:30,
 			name:'Prête'
@@ -538,7 +538,7 @@ Matrix.remove({'name':{$in:['UnitData','ZoneTypeToUnitType']}},function(err,data
 		{
 			type:7,
 			attack:3,
-			defense:2,
+			defence:2,
 			point:3,
 			price:45,
 			name:'Scientifique'

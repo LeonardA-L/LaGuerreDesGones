@@ -6,12 +6,18 @@
 
 					
 					<h1>{{game.title}}</h1>
+						<span data-drag="true" jqyoui-draggable="{animate:true}" data-jqyoui-options="{revert: 'invalid'}">So you think you can drag</span>
 
+						<div class="btn btn-primary" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" ng-model="list1" jqyoui-draggable="{animate:true}" ng-hide="!list1.title">{{list1.title}}</div>
+						<div class="thumbnail" data-drop="true" data-jqyoui-options ng-model="list2" jqyoui-droppable style='height:50px;'>
+						  <div class="btn btn-success" data-drag="false" data-jqyoui-options ng-model="list2" jqyoui-draggable ng-hide="!list2.title">{{list2.title}}</div>
+						</div>
+						<div>{{list2}}</div>
 					<hr />
 
 					<div class="row">
 						<div class="col-md-6" style="text-align: center; ">
-							<button class="btn btn-primary" style="width:100%;">Déplacement</button>
+							<button class="btn btn-primary" style="width:100%;" ng-click="mode==='displacement' ? resetMode() : prepareDisp()">Déplacement</button>
 						</div>
 						<div class="col-md-6" style="text-align: center; ">
 							<button class="btn btn-primary" style="width:100%;">Attaque</button>
@@ -22,7 +28,27 @@
 						</div>
 						<div class="col-md-12 separator"></div>
 						<div class="col-md-12" style="text-align: center; ">
-							<label>Ici le countdown avant les nouvelles unités</label>
+							<label>Nouvelles unités dans {{remaining}}</label>
+						</div>
+						<div class="col-md-12 separator"></div>
+						<div class="col-md-12" style="text-align: center; ">
+							<label>Points {{player.point}}</label>
+						</div>
+					</div>
+
+					<div ng-if="mode==='displacement'">
+						<h2>Displacement</h2>
+							<h3>Add units</h3>
+							<p>Units on this zone are</p>
+							<p ng-repeat="i in game.selectedZone.units">{{i._id}} <button class="btn btn-primary" ng-click="addUnitToDisp(i._id)">Add2Disp</button></p>
+						<div ng-if="disp.step>0">
+							<h3>Choose a zone</h3>
+							Click on a zone you want to move to : {{game.zonesDesc[game.zones[disp.zoneBId].zoneDesc].name}}
+						</div>
+						<div ng-if="disp.step>1">
+							<h3>Validate displacement</h3>
+							Are you sure you want to move {{disp.unitIds.length}} to {{game.zonesDesc[game.zones[disp.zoneBId].zoneDesc].name}} ? <br />
+							<button class="btn btn-primary" ng-click="validateDisp()">Validate</button> <button class="btn btn-danger" ng-click="resetMode()">Cancel</button>
 						</div>
 					</div>
 
@@ -30,16 +56,16 @@
 
 					<div ng-if="game.selectedZone" style="text-align:center; ">
 						<h2>{{game.zonesDesc[game.zones[game.selectedZone._id].zoneDesc].name}}</h2>
-
+						<h3 ng-if="game.zones[game.selectedZone._id].owner">Possédée par {{game.players[game.zones[game.selectedZone._id].owner].name}}</h3>
 						<div class="row">
 						</div>
 					</div>
 
-					<div class="row">
+					<div class="row" ng-if="listUnitType">
 						<div ng-repeat="i in game.matrixes.UnitData.content">
-							<div class="col-md-12" style="/*height:80px;*/ background-color: rgba(41, 128, 185, 0.1);">
+							<div class="col-md-12 row-unit" style="/*height:80px;*/ background-color: rgba(41, 128, 185, 0.1);">
 								<div class="col-md-3 nopadding">
-									<img src="http://liris.cnrs.fr/vasile-marian.scuturici/files/marian.jpg" height=74 width=74 style="margin-top:3px; margin-bottom:3px;" />
+									<img class="unit-icon" src="http://liris.cnrs.fr/vasile-marian.scuturici/files/marian.jpg" height=74 width=74 style="margin-top:3px; margin-bottom:3px;" />
 								</div>
 								<div class="col-md-3 nopadding" style="margin-top: 27px; text-align:center;">
 									<span>{{i.name}}</span>
@@ -53,8 +79,8 @@
 									</div>
 								</div>
 								<div class="col-md-3 nopadding" style="margin-top: 27px;  text-align:center;">
-									<button class="btn btn-primary btn-success">+</button>
-									<button class="btn btn-primary btn-danger" ng-click="sell(unitsByType[i][0].zone,unitsByType[i][0]._id,unitsByType[i][0].player)">-</button>
+									<button class="btn btn-primary btn-success" ng-if="game.zones[game.selectedZone._id].owner === player._id" ng-click="buyUnit(i.type)">+</button>
+									<button ng-if="unitsByTypeForZone[i.type].length > 0" class="btn btn-primary btn-danger" ng-click="sell(unitsByType[i][0].zone,unitsByType[i][0]._id,unitsByType[i][0].player)">-</button>
 								</div>
 							</div>
 							<div class="col-md-12" style="height:2px; background-color:#3C3C3C;">

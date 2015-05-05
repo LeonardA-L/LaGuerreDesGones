@@ -5,8 +5,7 @@
 var init = require('./config/init')(),
 	config = require('./config/config'),
 	mongoose = require('mongoose'),
-	chalk = require('chalk'),
-	cronjob = require('./app/controllers/cronjob.server.controller');
+	chalk = require('chalk');
 
 /**
  * Main application entry file.
@@ -36,7 +35,3 @@ exports = module.exports = app;
 
 // Logging initialization
 console.log('MEAN.JS application started on port ' + config.port);
-
-cronjob.registerCronJob('https://api.jcdecaux.com/vls/v1/stations?contract=Lyon&apiKey=d7f8e02837f368139f58a1efda258d77b8366bfe', cronjob.velovProcess, '*');
-
-cronjob.registerTCLCronJob(20);

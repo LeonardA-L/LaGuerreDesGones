@@ -225,11 +225,14 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			for (var i = 0; i < $scope.game.zones.length; i++) { 
 				var zone = $scope.game.zones[i];
 				var polygon = $scope.game.zonesPolygons[zone._id];
-				var color = 16711680/*zone.owner.color*/.toString(16);	//TODO Color
-				polygon.setOptions({
-					strokeColor: '#'+color,
-					fillColor: '#'+color
-				});
+				if(zone.owner){
+					
+					var color = $scope.game.players[zone.owner].color.toString(16);	//TODO Color
+					polygon.setOptions({
+						strokeColor: '#'+color,
+						fillColor: '#'+color
+					});
+				}
 			}
 		}
 

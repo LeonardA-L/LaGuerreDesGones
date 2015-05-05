@@ -467,9 +467,9 @@ var processBuy = function(a){
 	// TODO create unit according to real stuff
 	var u = new Unit(matrixes.UnitData.content[a.newUnitType]);
 	ZoneDescription.findById(a.zone.zoneDesc,function(err, zd){
+		u.player = a.player._id;
 		affectUnitToZone(u,a.zone,zd);
 		a.player.units.push(u._id);
-		u.player = a.player._id;
 		u.save();
 		a.zone.save();
 		a.player.save();
@@ -513,10 +513,11 @@ var processHop = function(a){
 				if(zones[i].units.length > 0){
 					// Generate Unit
 					var u = new Unit(matrixes.UnitData.content[matrixes.ZoneTypeToUnitType.content[zones[i].zoneDesc.type]]);
-					affectUnitToZone(u,zones[i],zones[i].zoneDesc);
 					// affect to player
 					var p = players[zones[i].units[0].player];
 					u.player = p._id;
+					affectUnitToZone(u,zones[i],zones[i].zoneDesc);
+					
 					p.units.push(u._id);
 
 					zones[i].save();

@@ -40,7 +40,7 @@
 
 					<hr />
 
-					<div ng-if="game.selectedZone center-content">
+					<div ng-if="game.selectedZone" class="center-content">
 						<h2>{{game.zonesDesc[game.zones[game.selectedZone._id].zoneDesc].name}}</h2>
 
 						<div class="row">
@@ -51,7 +51,7 @@
 						<div ng-repeat="i in game.matrixes.UnitData.content">
 							<div class="col-md-12 row-unit">
 								<div class="col-md-3 nopadding">
-									<img class="unit-icon" data-drag="true" data-jqyoui-options="{revert: 'invalid',appendTo: 'body', containment: 'window', scroll: false, helper: 'clone'}" jqyoui-draggable="{animate:true,onStop:'onUnitIconDrop'}" src="http://liris.cnrs.fr/vasile-marian.scuturici/files/marian.jpg"/>
+									<img class="unit-icon" data-drag="true" data-jqyoui-options="{revert: 'invalid',appendTo: 'body', containment: 'window', scroll: false, helper: 'clone'}" jqyoui-draggable="{animate:true,onStop:'onUnitIconDrop'}" src="http://liris.cnrs.fr/vasile-marian.scuturici/files/marian.jpg" height=74 width=74/>
 								</div>
 								<div id="row-unit-name" class="col-md-3 nopadding center-content">
 									<span>{{i.name}}</span>

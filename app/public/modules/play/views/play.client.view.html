@@ -53,26 +53,32 @@
 
 					<div class="row" ng-if="listUnitType">
 						<div ng-repeat="i in game.matrixes.UnitData.content">
-							<div class="col-md-12 row-unit {{(disp.unitTypes[i.type].length > 0) ? 'select-to-displace' : ''}}">
+							<div class="col-md-12 row-unit {{(disp.unitTypes[i.type] > 0) ? 'select-to-displace' : ''}}">
 								<div class="col-md-3 nopadding">
 									<img class="unit-icon" data-drag="true" data-unit-type="{{i.type}}" data-jqyoui-options="{revert: 'invalid',appendTo: 'body', containment: 'window', scroll: false, helper: 'clone'}" jqyoui-draggable="{animate:true,onStart:'onUnitIconDrag', onStop:'onUnitIconDrop'}" src="http://liris.cnrs.fr/vasile-marian.scuturici/files/marian.jpg" height=74 width=74/>
 								</div>
 								<div id="row-unit-name" class="col-md-3 nopadding center-content">
 									<span>{{i.name}}</span>
+									<br/>
+									<span>{{unitsByTypeForZone[i.type].length}}</span>
 								</div>
-								<div class="col-md-3 nopadding full-height">
-									<div id="row-unit-number-label">
-										<span>Nombre</span>
-									</div>
-									<div id="row-unit-number">
-										<span>{{unitsByTypeForZone[i.type].length}}</span>
-									</div>
-								</div>
-
 								<div id="row-unit-actions" class="col-md-3 nopadding center-content">
 									<button class="btn btn-primary btn-success" ng-if="game.zones[selectedZone._id].owner === player._id" ng-click="buyUnit(i.type)">+</button>
 									<button ng-if="unitsByTypeForZone[i.type].length > 0" class="btn btn-primary btn-danger" ng-click="sell(unitsByType[i][0].zone,unitsByType[i][0]._id,unitsByType[i][0].player)">-</button>
 								</div>
+								<div class="col-md-3 nopadding full-height">
+									<div id="row-unit-number-label">
+										
+									</div>
+									<div id="row-unit-number">
+										
+									</div>
+								</div>
+
+
+							</div>
+							<div class="col-md-12 {{(disp.unitTypes[i.type] > 0) ? 'row-unit-disp-selected' : 'row-unit-disp-not-selected'}}">
+
 							</div>
 							<div class="col-md-12 row-unit-separator">
 							</div>

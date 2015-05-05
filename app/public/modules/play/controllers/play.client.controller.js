@@ -336,9 +336,10 @@ var unitType=undefined;
             				break;
             			}
             			else {
-            				console.log(unitType);
-            				$scope.disp.unitTypes.push(unitType);
-            				//$scope.disp.unitsType.push();
+            				if($scope.disp.unitTypes[unitType] < $scope.unitsByTypeForZone[unitType].length) {
+            					$scope.disp.unitTypes[unitType]++;
+            					console.log($scope.disp.unitTypes);
+            				}
             			}
             			break;
         			}
@@ -367,6 +368,9 @@ var unitType=undefined;
 				'unitTypes':[],
 				//'step':0
 			};
+			for (var type in $scope.game.matrixes.UnitData.content) {
+				$scope.disp.unitTypes[type]=0;
+			}
   		};
 
   		function simulateClick(x, y) {

@@ -94,6 +94,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 
 		Socket.on(gameId+'.diff', function(diff) {
 		    processGameState(diff.success);
+		    colorMap();
 		});
 
 		$http.get('/services/play/'+gameId+'/start').
@@ -101,6 +102,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		  success(function(data) {
 		  	processGameState(data.success);
 			drawZoneMap($scope.game);
+			//colorMap();
 			console.log($scope);
 		  }).
 		  error(function(data) {
@@ -289,6 +291,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 
 		$scope.prepareDisp = function(){
 			$scope.resetMode();
+			$scope.mode = 'displacement';
 			$scope.disp = {
 				'zoneAId':$scope.selectedZone._id,
 				'unitIds':[],
@@ -316,9 +319,9 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 				else{
 					$scope.resetMode();
 					$scope.selectedZone = $scope.game.zones[that.zoneId];	// TODO Fix this
-					console.log($scope);
+					//console.log($scope);
 					$scope.listUnitsByType($scope.game.zones[that.zoneId].units);
-					console.log($scope);
+					//console.log($scope);
 					colorMap();
 				}
 			});

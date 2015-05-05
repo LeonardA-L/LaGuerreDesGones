@@ -26,22 +26,6 @@
 						</div>
 					</div>
 
-					<div ng-if="mode==='displacement'" style="display:none;">
-						<h2>Displacement</h2>
-							<h3>Add units</h3>
-							<p>Units on this zone are</p>
-							<p ng-repeat="i in selectedZone.units">{{i._id}} <button class="btn btn-primary" ng-click="addUnitToDisp(i._id)">Add2Disp</button></p>
-						<div ng-if="disp.step>0">
-							<h3>Choose a zone</h3>
-							Click on a zone you want to move to : {{game.zonesDesc[game.zones[disp.zoneBId].zoneDesc].name}}
-						</div>
-						<div ng-if="disp.step>1">
-							<h3>Validate displacement</h3>
-							Are you sure you want to move {{disp.unitIds.length}} to {{game.zonesDesc[game.zones[disp.zoneBId].zoneDesc].name}} ? <br />
-							<button class="btn btn-primary" ng-click="validateDisp()">Validate</button> <button class="btn btn-danger" ng-click="resetMode()">Cancel</button>
-						</div>
-					</div>
-
 					<hr />
 
 					<div ng-if="selectedZone" class="center-content">
@@ -109,6 +93,24 @@
 							</div>
 						</div>
 					</div>
+
+
+					<div ng-if="mode==='displacement'">
+						<h2>Displacement</h2>
+							<h3>Add units</h3>
+							<p>Units on this zone are</p>
+							<p ng-repeat="i in selectedZone.units">{{i._id}} <button class="btn btn-primary" ng-click="addUnitToDisp(i._id)">Add2Disp</button></p>
+						<div ng-if="disp.step>0">
+							<h3>Choose a zone</h3>
+							Click on a zone you want to move to : {{game.zonesDesc[game.zones[disp.zoneBId].zoneDesc].name}}
+						</div>
+						<div ng-if="disp.step>1">
+							<h3>Validate displacement</h3>
+							Are you sure you want to move {{disp.unitIds.length}} to {{game.zonesDesc[game.zones[disp.zoneBId].zoneDesc].name}} ? <br />
+							<button class="btn btn-primary" ng-click="validateDisp()">Validate</button> <button class="btn btn-danger" ng-click="resetMode()">Cancel</button>
+						</div>
+					</div>
+
 				</div>
 				<div id="game-main-panel" class="col-md-9 game-panel">
 				</div>

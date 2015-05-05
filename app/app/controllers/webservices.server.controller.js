@@ -188,22 +188,26 @@ exports.getWaiting = function(req, res) {
 	
 	var Game = mongoose.model('Game');
 
-    Game.find({'isInit':false, 'creator._id':{$ne:req.user._id}}).populate('players creator', 'username avatarUrl').exec(function (err, docs) {
+    Game.find({'isInit':false, 'creator._id':{$ne:req.user._id}}).populate('players','user').populate( 'creator', 'username avatarUrl').exec(function (err, docs) {
 	  if (err)
             res.send(err);
         for(var i=0;i<docs.length;i++){
         	var g = docs[i];
+
         	if(g.players===null){
         		docs.splice(i, 1);
-        		continue;
+			i--;
+			continue;
         	}
+
         	for(var j=0;j<g.players.length;j++){
         		if(''+g.players[j].user === ''+req.user._id){
         			docs.splice(i, 1);
+				i--;
+				break;
         		}
         	}
         }
-        //console.log(docs);
         res.json({'success':docs}); // return all nerds in JSON format
     });
 };
@@ -259,6 +263,7 @@ exports.joinGame = function(req, res) {
       }
     });
 	console.log('Player '+player.name+' wants to join game n°'+req.params.gameId);
+console.log('Id user joined = '+player.user);
 	res.json(result);
 };
 
@@ -272,12 +277,14 @@ exports.unjoinGame = function(req, res) {
 	var Player = mongoose.model('Player');
 	// TODO possibly optimizable
 	Game.findOne({'_id':req.params.gameId}).populate('players').exec(function(err,game){
-		if(err)
-			res.send(err);
 
 		var destroyCallback = function(err){
-			if(err)
+			if(err){
 				res.send(err);
+			}
+			else{
+				res.json(result);
+			}
 		};
 
 		for(var i=0;i<game.players.length;i++){
@@ -296,7 +303,6 @@ exports.unjoinGame = function(req, res) {
 			}
 		}
 	});
-	res.json(result);
 };
 
 var getPlay = function(gameId, callback, res){

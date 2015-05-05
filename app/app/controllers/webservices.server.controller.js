@@ -610,12 +610,6 @@ exports.firstUseFillBDD = function(req,res){
 
 			bikeStation.save();
 		}
-
-
-		var ret = {
-			result:'ok'
-		};
-		res.json(ret);
 	});
 	var Action = mongoose.model('Action');
 	Action.count({'type':6},function(err,count){
@@ -636,6 +630,11 @@ exports.firstUseFillBDD = function(req,res){
 			b.save();
 		}
 	});
+
+	var ret = {
+		result:'ok'
+	};
+	res.json(ret);
 };
 
 

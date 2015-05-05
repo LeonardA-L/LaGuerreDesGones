@@ -51,6 +51,8 @@ var pointBuyFactor = 0.5;
 var pointSellFactor = 0.5;
 var baseWarPoints = 4;
 
+var odds = 25;
+
 // dirty pasted model
 
 var MatrixSchema = new Schema({
@@ -435,12 +437,17 @@ var processEndDisplacement = function(a){
 							console.log('Fight '+i+'-'+j);
 							console.log(f);
 							console.log(s);
+
 							// f to s
-							var d = baseHP * (f.attack/10) * (1-s.defence/10);
+							var r1 = (((Math.random()*2*odds)-odds)/100)+1;
+							var r2 =(((Math.random()*2*odds)-odds)/100)+1;
+							var d = baseHP * (r1*f.attack/10) * (r2*(1-s.defence)/10);
 							console.log(d);
 							s.hp -= d;
 							// s to f
-							d = baseHP * (s.attack/10) * (1-f.defence/10);
+							r1 = (((Math.random()*2*odds)-odds)/100)+1;
+							r2 = (((Math.random()*2*odds)-odds)/100)+1;
+							d = baseHP * (r1*s.attack/10) * (r2*(1-f.defence)/10);
 							f.hp -= d;
 							console.log(d);
 						}

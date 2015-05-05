@@ -104,13 +104,39 @@ function calculAllTravelTimes(mode)
 }
 
 
+function getTCLTime(departureZone, arrivalZone, currentDate)
+{
+	var xmlHttp = new XmlHttpRequest();
+	var url = 'http://app.tcl.fr/mob_app/appli_mobile/getitineraire/android/'+
+		departureZone.tclID + '/' + arrivalZone.tclID + '/' +
+		currentDate.getFullYear() + '|' + (1+currentDate.getMonth()) + '|' + currentDate.getDate() + '/' +
+		currentDate.getHours() + '|'  + currentDate.getMinutes() + '/1/1/0/0/0/0/0/0/0/1';
+	xmlHttp.open('GET',url,false);
+	xmlHttp.setRequestHeader('User-Agent','TCL Android (API 8+)');
+	xmlHttp.send();
+	if(xmlHttp.status === 200){
+		// TODO Add Date check
+		var data = JSON.parse(xmlHttp.responseText);
+		try{
+			var regex = /([0-9].*) minutes/;
+			var duration = data.DATA.DetailsItineraire.duration;
+			var match = regex.exec(duration);
+			return parseInt(match[1]) * 60 * 1000;
+		} catch(e) {
+			return -1;
+		}
+	} else {
+		return -1;
+	}
+}
+
 function calculateTravelTime(modeNum, symetric) {
 	var TravelTime = mongoose.model('TravelTime');
 	var ZoneDescription = mongoose.model('ZoneDescription');
 
 	var currentDate = new Date();
-
-	ZoneDescription.find({}).populate('adjacentZones', '_id x y').exec(function (err, zonesDesc) {
+	console.log('--- TCL Update started ---');
+	ZoneDescription.find({}).populate('adjacentZones', '_id x y tclID').exec(function (err, zonesDesc) {
 		var i=0, j=0;
 		var times = [];
 		var nbInsert = 0;
@@ -124,8 +150,8 @@ function calculateTravelTime(modeNum, symetric) {
 		}
      	for(i=0; i<zonesDesc.length;i++) {
 			for(j=0;j<zonesDesc[i].adjacentZones.length;j++) {
-				if(times[zonesDesc[i]._id][zonesDesc[i].adjacentZones._id] === undefined) {
-					var time = 60*1000;
+				if(times[zonesDesc[i]._id][zonesDesc[i].adjacentZones[j]._id] === undefined) {
+					var time = getTCLTime(zonesDesc[i], zonesDesc[i].adjacentZones[j], currentDate);
 					times[zonesDesc[i]._id][zonesDesc[i].adjacentZones[j]._id] = time;
 					if(symetric) {
 						times[zonesDesc[i].adjacentZones[j]._id][zonesDesc[i]._id] = time;
@@ -184,13 +210,9 @@ function calculateTravelTime(modeNum, symetric) {
 			console.log('\t' + nbUpdate + ' update');
 			console.log('\t' + nbInsert + ' insert');
 			console.log('\t' + nbNotModified + ' not modified');
-			console.log('\t' + nbRemoved + ' removed');
-			
+			console.log('\t' + nbRemoved + ' removed');	
 		});
-
     });
-	
-
 }
 
 

@@ -69,7 +69,7 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 				
 		}
 		
-		$scope.lastTitleGame = "";
+		$scope.lastTitleGame = '';
 		$scope.b_lastGameHasSameName = false;
 
 		$scope.createGame = function(){
@@ -91,7 +91,7 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 			//success(function(data, status, headers, config) {
 			success(function(data) {
 				$scope.partyHost = true;
-				if ($scope.lastTitleGame == $scope.newGame.title){
+				if ($scope.lastTitleGame === $scope.newGame.title){
 					$scope.b_lastGameHasSameName = true;			
 				}
 				$scope.lastTitleGame = $scope.newGame.title;

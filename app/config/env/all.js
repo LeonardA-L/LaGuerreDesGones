@@ -25,7 +25,7 @@ module.exports = {
 				'public/lib/angular-bootstrap/ui-bootstrap-tpls.js',
 				'public/lib/jquery/dist/jquery.js',
 				'public/lib/angular-animate/angular-animate.min.js',
-				'public/lib/angular-aria/agular-aria.min.js',
+				'public/lib/angular-aria/angular-aria.min.js',
 				'public/lib/angular-material/angular-material.js',
 				'public/lib/angular-socket-io/socket.js'
 			]

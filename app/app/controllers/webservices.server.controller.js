@@ -21,14 +21,25 @@ exports.cleanAll = function(req, res) {
 	var Zone = mongoose.model('Zone');
 	var Unit = mongoose.model('Unit');
 	var Action = mongoose.model('Action');
-	//var ZoneDescription = mongoose.model('ZoneDescription');
+	var TravelTime = mongoose.model('TravelTime');
 
 	Game.remove({},function(){});
 	Player.remove({},function(){});
 	Zone.remove({},function(){});
 	Unit.remove({},function(){});
 	Action.remove({},function(){});
-	//ZoneDescription.remove({},function(){});
+	TravelTime.remove({}, function(){});
+
+	var ret = {
+		result:'ok'
+	};
+	res.json(ret);
+};
+
+exports.cleanZoneDesc = function(req, res) {
+	var ZoneDescription = mongoose.model('ZoneDescription');
+
+	ZoneDescription.remove({},function(){});
 	var ret = {
 		result:'ok'
 	};
@@ -39,6 +50,18 @@ exports.getAllZoneDescs = function(req, res) {
 	var ZoneDescription = mongoose.model('ZoneDescription');
 
     ZoneDescription.find({}, function (err, docs) {
+	  if (err)
+            res.send(err);
+
+        console.log(docs);
+        res.json({'success':docs}); // return all nerds in JSON format
+    });
+};
+
+exports.getAllTravelTime = function(req, res) {
+	var TravelTime = mongoose.model('TravelTime');
+
+    TravelTime.find({}, function (err, docs) {
 	  if (err)
             res.send(err);
 
@@ -188,22 +211,26 @@ exports.getWaiting = function(req, res) {
 	
 	var Game = mongoose.model('Game');
 
-    Game.find({'isInit':false, 'creator._id':{$ne:req.user._id}}).populate('players creator', 'username avatarUrl').exec(function (err, docs) {
+    Game.find({'isInit':false, 'creator._id':{$ne:req.user._id}}).populate('players','user').populate( 'creator', 'username avatarUrl').exec(function (err, docs) {
 	  if (err)
             res.send(err);
         for(var i=0;i<docs.length;i++){
         	var g = docs[i];
+
         	if(g.players===null){
         		docs.splice(i, 1);
-        		continue;
+			i--;
+			continue;
         	}
+
         	for(var j=0;j<g.players.length;j++){
         		if(''+g.players[j].user === ''+req.user._id){
         			docs.splice(i, 1);
+				i--;
+				break;
         		}
         	}
         }
-        //console.log(docs);
         res.json({'success':docs}); // return all nerds in JSON format
     });
 };
@@ -259,6 +286,7 @@ exports.joinGame = function(req, res) {
       }
     });
 	console.log('Player '+player.name+' wants to join game n°'+req.params.gameId);
+console.log('Id user joined = '+player.user);
 	res.json(result);
 };
 
@@ -272,12 +300,14 @@ exports.unjoinGame = function(req, res) {
 	var Player = mongoose.model('Player');
 	// TODO possibly optimizable
 	Game.findOne({'_id':req.params.gameId}).populate('players').exec(function(err,game){
-		if(err)
-			res.send(err);
 
 		var destroyCallback = function(err){
-			if(err)
+			if(err){
 				res.send(err);
+			}
+			else{
+				res.json(result);
+			}
 		};
 
 		for(var i=0;i<game.players.length;i++){
@@ -296,7 +326,6 @@ exports.unjoinGame = function(req, res) {
 			}
 		}
 	});
-	res.json(result);
 };
 
 var getPlay = function(gameId, callback, res){
@@ -466,118 +495,156 @@ exports.buyAction = function(req, res) {
 	res.json(ret);
 };
 
+//TODO ----------------------------------------------------------------------------------------------------------------------------------------------  CLEAN
+
+//TODO ----------------------------------------------------------------------------------------------------------------------------------------------  CLEAN
+
 exports.firstUseFillBDD = function(req,res){
-/*
-// First use : fill BDD
-*/
-var Matrix = mongoose.model('Matrix');
-Matrix.remove({'name':{$in:['UnitData','ZoneTypeToUnitType']}},function(err,data){
-	var unitData = new Matrix({
-		name:'UnitData',
-		content :[{
-			type:0,
-			attack:1,
-			defence:1,
-			point:1,
-			price:10,
-			name:'Lyonnais'
-		},
-		{
-			type:1,
-			attack:1,
-			defence:2,
-			point:2,
-			price:20,
-			name:'Cycliste'
-		},
-		{
-			type:2,
-			attack:4,
-			defence:1,
-			point:3,
-			price:40,
-			name:'Etudiant'
-		},
-		{
-			type:3,
-			attack:1,
-			defence:2,
-			point:2,
-			price:20,
-			name:'Hippie'
-		},
-		{
-			type:4,
-			attack:2,
-			defence:1,
-			point:2,
-			price:20,
-			name:'Joggeur'
-		},
-		{
-			type:5,
-			attack:1,
-			defence:4,
-			point:3,
-			price:40,
-			name:'Médecin'
-		},
-		{
-			type:6,
-			attack:1,
-			defence:1,
-			point:2,
-			price:30,
-			name:'Prête'
-		},
-		{
-			type:7,
-			attack:3,
-			defence:2,
-			point:3,
-			price:45,
-			name:'Scientifique'
-		}]
+	/*
+	// First use : fill BDD
+	*/
+	var Matrix = mongoose.model('Matrix');
+	Matrix.remove({'name':{$in:['UnitData','ZoneTypeToUnitType']}},function(err,data){
+		var unitData = new Matrix({
+			name:'UnitData',
+			content :[{
+				type:0,
+				attack:1,
+				defence:1,
+				point:1,
+				price:10,
+				name:'Lyonnais'
+			},
+			{
+				type:1,
+				attack:1,
+				defence:2,
+				point:2,
+				price:20,
+				name:'Cycliste'
+			},
+			{
+				type:2,
+				attack:4,
+				defence:1,
+				point:3,
+				price:40,
+				name:'Etudiant'
+			},
+			{
+				type:3,
+				attack:1,
+				defence:2,
+				point:2,
+				price:20,
+				name:'Hippie'
+			},
+			{
+				type:4,
+				attack:2,
+				defence:1,
+				point:2,
+				price:20,
+				name:'Joggeur'
+			},
+			{
+				type:5,
+				attack:1,
+				defence:4,
+				point:3,
+				price:40,
+				name:'Médecin'
+			},
+			{
+				type:6,
+				attack:1,
+				defence:1,
+				point:2,
+				price:30,
+				name:'Prête'
+			},
+			{
+				type:7,
+				attack:3,
+				defence:2,
+				point:3,
+				price:45,
+				name:'Scientifique'
+			}]
+		});
+		unitData.save();
+
+		var NEUTRAL = 'neutral';
+		var HOSPITAL = 'hospital';
+		var PARK = 'park';
+		var UNIVERSITY = 'university';
+		var CHURCH = 'church';
+		var WOODSTOCK = 'woodstock';
+		var STATION = 'station';
+		var AIRPORT = 'airport';
+		var CITY_HALL = 'city_hall';
+		var SQUARE = 'square';
+		var BANK = 'bank';
+		var SHOPPING_CENTRE = 'shopping_centre';
+
+		var zoneTypeToUnitType = new Matrix({
+		name:'ZoneTypeToUnitType',
+		content :{
+			neutral : 0,
+			hospital : 5,
+			park : 3,
+			university : 2,
+			curch : 6,
+			woodstock : 3,
+			station : 1,
+			airport : 1,
+			city_hall:0,
+			square:4,
+			shopping_centre:0,
+			bank:7
+		}});
+		zoneTypeToUnitType.save();
+	
+		var BikeStation = mongoose.model('BikeStation');
+		var velovStationID = [11001, 4002, 1301, 2030, 2002, 2004, 2007, 5045, 5044, 5040, 9004, 12001, 10119, 10102, 6036,
+								10072, 10031, 6007, 6044, 10117, 3082, 3099, 10113, 3090, 8002, 7062, 7061, 7007, 7020, 8051, 8061];
+
+		for(var i = 0; i<velovStationID.length; i++){
+			var bikeStation = new BikeStation({
+				idStation:velovStationID[i],
+				date:new Date()
+			});
+
+			bikeStation.save();
+		}
 	});
-	unitData.save();
-
-	var NEUTRAL = 'neutral';
-	var HOSPITAL = 'hospital';
-	var PARK = 'park';
-	var UNIVERSITY = 'university';
-	var CHURCH = 'church';
-	var WOODSTOCK = 'woodstock';
-	var STATION = 'station';
-	var AIRPORT = 'airport';
-	var CITY_HALL = 'city_hall';
-	var SQUARE = 'square';
-	var BANK = 'bank';
-	var SHOPPING_CENTRE = 'shopping_centre';
-
-	var zoneTypeToUnitType = new Matrix({
-	name:'ZoneTypeToUnitType',
-	content :{
-		neutral : 0,
-		hospital : 5,
-		park : 3,
-		university : 2,
-		curch : 6,
-		woodstock : 3,
-		station : 1,
-		airport : 1,
-		city_hall:0,
-		square:4,
-		shopping_centre:0,
-		bank:7
-	}});
-	zoneTypeToUnitType.save();
+	var Action = mongoose.model('Action');
+	Action.count({'type':6},function(err,count){
+		if(count === 0){
+			var a = new Action({
+				type:6,
+				date:new Date()
+			});
+			a.save();
+		}
+	});
+	Action.count({'type':7},function(err,count){
+		if(count === 0){
+			var b = new Action({
+				type:7,
+				date:new Date()
+			});
+			b.save();
+		}
+	});
 
 	var ret = {
 		result:'ok'
 	};
 	res.json(ret);
-});
 };
+
+
 
 exports.actionCallback = function(req,res){
 	console.log('A game was saved');
@@ -594,3 +661,4 @@ exports.actionCallback = function(req,res){
 	};
 	res.json(ret);
 };
+

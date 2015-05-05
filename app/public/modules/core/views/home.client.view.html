@@ -1,19 +1,32 @@
 <section data-ng-controller="HomeController">
+<div class="container-fluid">
 	<h1>PLD App</h1>
-	<h2>Quick access</h2>
-	<p>
-		<a href="/#!/host">Host</a><br />
-		<a href="/#!/join">Join</a><br />
-		<a href="/#!/perso">Perso</a><br />
-	</p>
-	<h2>Temporary APIs</h2>
-	<p>
-		<a href="/services/api/games">View all Games</a><br />
-		<a href="/services/api/units">View all Units</a><br />
-		<a href="/services/api/zones">View all Zones</a><br />
-		<a href="/services/api/actions">View all Actions</a><br />
-		<a href="/services/api/zoneDescs">View all ZoneDescription</a><br /><br />
-		<a href="/services/api/players">View all Players</a><br /><br />
-		<a href="/services/api/cleanAll">Clean the entire database (Attention)</a><br />
-	</p>
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h2 class="panel-title">Quick access</h2>
+		</div>
+		<div class="panel-body list-group">
+			<a class="list-group-item" href="/#!/host">Host</a>
+			<a class="list-group-item" href="/#!/join">Join</a>
+			<a class="list-group-item" href="/#!/perso">Perso</a>
+		</div>
+	</div>
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h2 class="panel-title">Temporary APIs</h2>
+		</div>	
+		<div class="panel-body list-group">
+			<a class="list-group-item" href="/services/api/games">View all Games</a>
+			<a class="list-group-item" href="/services/api/units">View all Units</a>
+			<a class="list-group-item" href="/services/api/zones">View all Zones</a>
+			<a class="list-group-item" href="/services/api/actions">View all Actions</a>
+			<a class="list-group-item" href="/services/api/travelTime">View all Travel Times</a>
+			<a class="list-group-item" href="/services/api/zoneDescs">View all ZoneDescription</a>
+			<a class="list-group-item" href="/services/api/players">View all Players</a>
+			<a class="list-group-item" href="/services/api/cleanAll">Clean the entire database (Attention)</a>
+			<a class="list-group-item" href="/services/api/cleanZoneDesc">Clean all ZoneDesc (Attention)</a>
+		</div>
+	</div>
+</div>
+
 </section>

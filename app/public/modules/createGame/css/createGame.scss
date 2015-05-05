@@ -1,24 +1,50 @@
 .createGameSection{
-	background: #FEE;
+	background: white;
 
 	.nestedClass{
-		background:#F00;
+		background: white;
 	}
+	
+	.form {
+		margin-left: auto;
+		margin-right: auto;
+		width: 80%;
+	}
+
+	#btnHosting {
+		margin-left: 20%;
+		width: 60%;
+	}
+
+	#warning{
+		font-weight: bold;
+		color: red;
+	}
+
+	#warningNext {
+		text-color : black;
+	}
+
+	#textSuccess{
+		font-weight: bold;
+	}
+
+	.internsLinks{
+		color : green;
+		font-weight: bold;
+	}
+
+	.internsLinks:hover, .internsLinks:focus {
+	  	text-decoration: none;
+	}
+	
+	.title {
+		text-align : center;
+		margin-left: auto;
+		margin-right: auto;
+		width: 50%;
+	}
+
 }
 
-#confirmationOfHosting{
-	color: green;
-}
 
-#warning{
-	color: red;
-}
-
-.internsLinks{
-	color : green;
-	font-weight: bold;
-}
-
-.internsLinks:hover, .internsLinks:focus {
-  	text-decoration: none;
-}

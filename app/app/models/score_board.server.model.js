@@ -48,9 +48,9 @@ var ScoreBoardSchema = new Schema({
  * Calculate total player points 
  */
 ScoreBoardSchema.methods.calculatePoints= function(){
-	var Unit = Schema.model('Unit');
-	var Zone = Schema.model('Zone');
-	var Objective = Schema.model('Objective');
+	var Unit = mongoose.model('Unit');
+	var Zone = mongoose.model('Zone');
+	var Objective = mongoose.model('Objective');
 	this.point = 0;
 	var i;
 	var doc;
@@ -76,7 +76,7 @@ ScoreBoardSchema.methods.calculatePoints= function(){
  * Get the number of kills by unit type 
  */
  ScoreBoardSchema.methods.getKillsByUnitType = function(type){
-	var Unit = Schema.model('Unit');
+	var Unit = mongoose.model('Unit');
 	var nb = 0;
 	for (var i=0; i<this.kills.length; i++){
 		var doc = Unit.findById(this.kills[i]);
@@ -90,7 +90,7 @@ ScoreBoardSchema.methods.calculatePoints= function(){
  * Get the number of survivors by unit type 
  */
  ScoreBoardSchema.methods.getSurvivorsByUnitType = function(type){
-	var Unit = Schema.model('Unit');
+	var Unit = mongoose.model('Unit');
 	var nb = 0;
 	for (var i=0; i<this.survivors.length; i++){
 		var doc = Unit.findById(this.survivors[i]);
@@ -104,7 +104,7 @@ ScoreBoardSchema.methods.calculatePoints= function(){
  * Get the number of proprietary zones by zone type 
  */
  ScoreBoardSchema.methods.getZonesByUnitType = function(type){
-	var Zone = Schema.model('Zone');
+	var Zone = mongoose.model('Zone');
 	var nb = 0;
 	for (var i=0; i<this.zones.length; i++){
 		var doc = Zone.findById(this.zones[i]).populate('zoneDesc');

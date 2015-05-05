@@ -15,7 +15,7 @@ module.exports = function(app) {
 	app.route('/services/game/:gameId/unjoin').get(webservices.unjoinGame);
 	// Game Scoreboard
 	app.route('/services/game/:gameId/scoreBoard').get(webservices.displayScoreBoard);
-	
+
 	app.route('/services/api/games').get(webservices.getAllGames);
 	app.route('/services/api/actions').get(webservices.getAllActions);
 	app.route('/services/api/units').get(webservices.getAllUnits);

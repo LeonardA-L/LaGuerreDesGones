@@ -571,15 +571,15 @@ exports.displayScoreBoard = function(req, res) {
 	var result = {
 		success: {}
 	};
-	var ScoreBoard = Schema.model('ScoreBoard');
-	var Player = Schema.model('Player');
-	var Matrix = Schema.model('Matrix'),
+	var ScoreBoard = mongoose.model('ScoreBoard');
+	var Player = mongoose.model('Player');
+	var Matrix = mongoose.model('Matrix'),
 	unitDataMatrix = Matrix.findOne({'name': 'UnitData'});
 
 	var gameId = req.params.gameId;
 	var nbUnitTypes = 8;
 	result.success.players = {};
-	ScoreBoard.find({'game': gameId}, {sort: {'point':-1}}}).populate('player zones objectives').exec(function(err, docs){
+	ScoreBoard.find({'game': gameId}, {sort: {'point':-1}}).populate('player zones objectives').exec(function(err, docs){
 		if (err)
 			res.send(err);
 		for (var i=0; i<docs.length; i++){

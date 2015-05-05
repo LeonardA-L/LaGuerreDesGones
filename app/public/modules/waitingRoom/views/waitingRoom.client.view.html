@@ -1,15 +1,9 @@
 <section class="waitingRoomSection" data-ng-controller="WaitingRoomController">
-	<div  class="waitingRoomSection">
-<div class="container-fluid">
-<h1>Join a game</h1>
-<p>
-Here's a list of games you can join :
-</p>
-</div>
-<div class="list-group">
-<p ng-if="!listAvailable">The list is loading. Please wait...</p>
-<game-box ng-if="listAvailable.length == 0">There are no games available. You can <a href="#!/host">host one</a> and wait for other players to come!</game-box>
-<game-box ng-repeat="data in listAvailable" data="data" join="true" user="authentication.user"></game-box>
-</div>
-</div>
+	<div  class="waitingRoomSection container-fluid">
+		<h1>Join a game</h1>
+		<p>Here's a list of games you can join : </p>
+		<p ng-if="!listAvailable">The list is loading. Please wait...</p>
+		<game-box ng-if="listAvailable.length == 0">There are no games available. You can <a href="#!/host">host one</a> and wait for other players to come!</game-box>
+		<game-box ng-repeat="data in listAvailable" data="data" join="true" user="authentication.user"></game-box>
+	</div>
 </section>

@@ -14,6 +14,8 @@ angular.module('plddirectives').directive('gameBox', ['$http', '$filter',
 				// Game box directive logic
 				scope.load = false;
 				scope.joinok = scope.join;
+				scope.gamejoined=false;
+				scope.gameunsub=false;
 
 scope.data.startTime=$filter('date')(scope.data.startTime,'dd/MM/yyyy HH:mm');
 
@@ -28,6 +30,7 @@ scope.data.startTime=$filter('date')(scope.data.startTime,'dd/MM/yyyy HH:mm');
 					  success(function(data) {
 						//console.log(data.success);
 						if(data.success){
+							scope.gamejoined=true;
 							scope.joinok = false;
 							scope.load = false;
 						}
@@ -46,6 +49,7 @@ scope.data.startTime=$filter('date')(scope.data.startTime,'dd/MM/yyyy HH:mm');
 					  success(function(data) {
 						//console.log(data.success);
 						if(data.success){
+							scope.gameunsub=true;
 							scope.play = false;
 							scope.unsub = false;
 							scope.load = false;

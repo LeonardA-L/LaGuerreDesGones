@@ -84,6 +84,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			if($scope.game.selectedZone !== undefined){
 				$scope.listUnitsByType($scope.game.zones[$scope.game.selectedZone._id].units);
 			}
+
 		};
 
 
@@ -147,6 +148,10 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			error(function(data) {
 		    	console.log('error');
 			});
+		};
+
+		$scope.buyUnit = function(newUnitTypeN){
+			$scope.buy($scope.game.selectedZone._id, $scope.player._id, newUnitTypeN);
 		};
 
 		$scope.buy = function(zoneId, playerId, newUnitTypeN){
@@ -221,11 +226,14 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			for (var i = 0; i < $scope.game.zones.length; i++) { 
 				var zone = $scope.game.zones[i];
 				var polygon = $scope.game.zonesPolygons[zone._id];
-				var color = 16711680/*zone.owner.color*/.toString(16);	//TODO Color
-				polygon.setOptions({
-					strokeColor: '#'+color,
-					fillColor: '#'+color
-				});
+				if(zone.owner){
+					
+					var color = $scope.game.players[zone.owner].color.toString(16);	//TODO Color
+					polygon.setOptions({
+						strokeColor: '#'+color,
+						fillColor: '#'+color
+					});
+				}
 			}
 		}
 

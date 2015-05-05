@@ -7,7 +7,7 @@
 
 		<button class="col-md-1 btn btn-default" ng-if="joinok && !load" ng-click="joinGame(data._id)">Join</button>
 		<button class="col-md-1 btn btn btn-disabled" ng-if="load">Loading...</button>
-		<button class="col-md-1 btn btn-default" aria-valuenow="60" aria-valuemax="100" ng-if="play" href="/#!/play/{{data._id}}">Play</button> 
+		<a href="/#!/play/{{data._id}}"><button class="col-md-1 btn btn-default" aria-valuenow="60" aria-valuemax="100" ng-if="play">Play</button></a>
 		<button class="col-md-1 btn btn btn-default" ng-if="unsub" ng-click="unjoinGame(data._id)">Unsubscribe</button>
 		<span class="alert alert-success" ng-if="gamejoined"> Game joined !</span>
 		<span class="alert alert-success" ng-if="gameunsub"> Game unsubscribed !</span>

@@ -2,6 +2,14 @@
 
 module.exports = {
 	db: process.env.MONGOHQ_URL || process.env.MONGOLAB_URI || 'mongodb://' + (process.env.DB_1_PORT_27017_TCP_ADDR || 'localhost') + '/pldapp',
+	dbname: 'pldapp',
+	pollingInterval:4,
+	defaultPort:27017,
+	defaultHost:'localhost',
+	autoWakeupInterval:20000,
+	callback:'services/play/callback',
+	defaultCallbackPort:3000,
+	debug:false,
 	assets: {
 		lib: {
 			css: [

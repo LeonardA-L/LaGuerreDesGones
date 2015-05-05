@@ -88,4 +88,9 @@ mongod
 logs/
 build/
 
+# Python
+# ======
+*.pyc
+=======
 *~
+

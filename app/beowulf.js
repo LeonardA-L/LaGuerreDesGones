@@ -597,7 +597,7 @@ function getTCLTime(departureZone, arrivalZone, currentDate)
  * symetric : Should consider that the time from A to B is the same time that from B to A
  * modeNum : 3 TODO
  */
-function calculateTravelTime(modeNum, symetric) {
+function calculateTravelTime(modeNum, symetric, action) {
 	if(modeNum !== 3){
 		console.log('calculateTravelTime can only calculate TCL time');
 		return;
@@ -689,7 +689,7 @@ function calculateTravelTime(modeNum, symetric) {
 }
 
 var processTCLUpdate = function(a){
-	calculateTravelTime(3, true);
+	calculateTravelTime(3, true, a);
 	var b = new Action({
 			type:7,
 			date:new Date(new Date().getTime()+updateTCLInterval)

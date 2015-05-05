@@ -20,8 +20,10 @@ module.exports = function(app) {
 	app.route('/services/api/zones').get(webservices.getAllZones);
 	app.route('/services/api/zoneDescs').get(webservices.getAllZoneDescs);
 	app.route('/services/api/players').get(webservices.getAllPlayers);
+	app.route('/services/api/travelTime').get(webservices.getAllTravelTime);
 	app.route('/services/api/generateHop/:gameId').get(webservices.generateHop);
 	app.route('/services/api/cleanAll').get(webservices.cleanAll);
+	app.route('/services/api/cleanZoneDesc').get(webservices.cleanZoneDesc);
 
 	app.route('/services/play/:gameId/start').get(webservices.startPlay);
 

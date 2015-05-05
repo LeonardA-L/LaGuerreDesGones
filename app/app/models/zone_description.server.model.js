@@ -38,6 +38,11 @@ var ZoneDescriptionSchema = new Schema({
 		trim: true,
 		default: ''
 	},
+	tclID: {
+		type: String,
+		trim: true,
+		default: ''
+	},
 
 	border: Schema.Types.Mixed,
 

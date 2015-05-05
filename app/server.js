@@ -61,6 +61,98 @@ function persistAllBikeStations()
 
 
 
+function calculateTravelTime(modeNum, symetric) {
+	var TravelTime = mongoose.model('TravelTime');
+	var ZoneDescription = mongoose.model('ZoneDescription');
+
+	var currentDate = new Date();
+
+	ZoneDescription.find({}).populate('adjacentZones', '_id x y').exec(function (err, zonesDesc) {
+		var i=0, j=0;
+		var times = [];
+		var nbInsert = 0;
+		var nbUpdate = 0;
+		var nbNotModified = 0;
+		var nbRemoved = 0;
+
+		// Generate Time between 2 zones
+		for(i=0; i<zonesDesc.length;i++) {
+			times[zonesDesc[i]._id] = [];
+		}
+     	for(i=0; i<zonesDesc.length;i++) {
+			for(j=0;j<zonesDesc[i].adjacentZones.length;j++) {
+				if(times[zonesDesc[i]._id][zonesDesc[i].adjacentZones._id] === undefined) {
+					var time = 60*1000;
+					times[zonesDesc[i]._id][zonesDesc[i].adjacentZones[j]._id] = time;
+					if(symetric) {
+						times[zonesDesc[i].adjacentZones[j]._id][zonesDesc[i]._id] = time;
+					}
+				}
+			}
+		}
+		// Update DB
+		TravelTime.find({mode:modeNum}, function (err, travelTimes) {
+			//Update all existing times in DB
+			var tv;
+     		for(i=0; i<travelTimes.length;i++) {
+				tv = travelTimes[i];
+				var newTime;
+				try {
+					newTime = times[tv.departureZone][tv.arrivalZone];
+				} catch (e) {
+					// Shouldn't happen
+					nbNotModified++;
+					console.log('An entry cannot be found in last TCL response => Keep entry');
+					continue;
+				}
+				if(newTime === -1) {
+					tv.remove();
+					nbRemoved ++;
+				} else {
+					tv.time = newTime;
+					tv.date = currentDate;
+					tv.save();
+					nbUpdate ++;
+				}
+
+				// Remove Entry from times
+				var index = times[tv.departureZone].indexOf(tv.arrivalZone);
+				delete times[tv.departureZone][tv.arrivalZone];
+				if(Object.keys(times[tv.departureZone]).length === 0) {
+					delete times[tv.departureZone];
+				}
+			}
+	     	for(var departure in times) {
+				for(var arrival in times[departure]) {
+					tv = new TravelTime({
+						departureZone:departure,
+						arrivalZone:arrival,
+						date:currentDate,
+						time:times[departure][arrival],
+						mode:modeNum
+					});
+					tv.save();
+					nbInsert++;
+				}
+			}
+			console.log('--- TCL Update finished ---');
+			var diff = new Date().getTime() - currentDate.getTime();
+			console.log('\tJob done in '+diff+'ms, '+currentDate);
+			console.log('\t' + nbUpdate + ' update');
+			console.log('\t' + nbInsert + ' insert');
+			console.log('\t' + nbNotModified + ' not modified');
+			console.log('\t' + nbRemoved + ' removed');
+			
+		});
+
+    });
+	
+
+}
+
+
+
+
 
 /**
 * Recupererer service
@@ -107,8 +199,10 @@ exports = module.exports = app;
 // Logging initialization
 console.log('MEAN.JS application started on port ' + config.port);
 
-persistAllBikeStations();
-registerCronJob('https://api.jcdecaux.com/vls/v1/stations?contract=Lyon&apiKey=d7f8e02837f368139f58a1efda258d77b8366bfe', velovProcess, '*');
+calculateTravelTime(3, true);
+
+//persistAllBikeStations();
+//registerCronJob('https://api.jcdecaux.com/vls/v1/stations?contract=Lyon&apiKey=d7f8e02837f368139f58a1efda258d77b8366bfe', velovProcess, '*');
 
 
 

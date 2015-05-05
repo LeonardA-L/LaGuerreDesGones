@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('plddirectives').directive('gameBox', ['$http', '$filter',
-	function($http, $filter) {
+	function($http, $filter, $location) {
 		return {
 			templateUrl: 'modules/plddirectives/directives/game-box/game-box.html',
 			scope : { data : '=',
@@ -16,7 +16,6 @@ angular.module('plddirectives').directive('gameBox', ['$http', '$filter',
 				scope.joinok = scope.join;
 				scope.gamejoined=false;
 				scope.gameunsub=false;
-
 scope.data.startTime=$filter('date')(scope.data.startTime,'dd/MM/yyyy HH:mm');
 
 				scope.play = scope.playp && scope.data.isInit;

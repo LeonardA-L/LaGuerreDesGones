@@ -323,9 +323,9 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		$document.ready(function() {
 			initMap();
 
-			google.maps.event.addDomListener(map, "click", function (event) {
-				for (var i in $scope.game.zonesPolygons) {
-					var polygon=$scope.game.zonesPolygons[i];
+			google.maps.event.addDomListener(map, 'click', function (event) {
+				for (var i in $scope.zonesPolygons) {
+					var polygon=$scope.zonesPolygons[i];
         			if(google.maps.geometry.poly.containsLocation(event.latLng, polygon)) {
             			onZoneClicked(polygon);
             			break;

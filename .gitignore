@@ -91,6 +91,6 @@ build/
 # Python
 # ======
 *.pyc
-=======
+#=======
 *~
-
+.node-xmlhttprequest-sync-*

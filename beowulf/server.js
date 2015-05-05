@@ -384,7 +384,6 @@ var processEndDisplacement = function(a){
 		for(i=0;i<a.zone.units.length;i++){
 			var u = a.zone.units[i];
 			firstUnits.push(u);
-			console.log(u);
 		}
 		console.log('New on stage');
 		var secondID = a.units[0].player;
@@ -396,7 +395,6 @@ var processEndDisplacement = function(a){
 	 		u.ts=a.date.getTime();
 	 		u.te=u.ts;
 	 		affectUnitToZone(u,a.zone, a.zone.zoneDesc);
-			console.log(u);
 			secondUnits.push(u);
 			u.save();
  		}
@@ -404,6 +402,7 @@ var processEndDisplacement = function(a){
 		// TODO Battle
 		if(''+firstID !== ''+secondID && firstID !== undefined){
 			Player.find({'_id':{$in:[firstID,secondID]}},function(err,players){
+				
 				var fp = players[0];
 				var sp = players[1];
 				if(players[0]._id === secondID){
@@ -415,6 +414,63 @@ var processEndDisplacement = function(a){
 				sp.point+=baseWarPoints;
 
 				console.log('Battle between '+fp.name+' and '+sp.name);
+				a.zone.owner = fp._id;
+				var i=0;
+				var j=0;
+				var baseHP = 10;
+				for(i=0;i<firstUnits.length;i++){
+					firstUnits[i].hp = baseHP * secondUnits.length;
+				}
+				for(i=0;i<secondUnits.length;i++){
+					secondUnits[i].hp = baseHP * firstUnits.length;
+				}
+
+				for(i=0;i<firstUnits.length;i++){
+					for(j=0;j<secondUnits.length;j++){
+						var f = firstUnits[i];
+						var s = secondUnits[i];
+						// f to s
+						s.hp -= baseHP * (f.attack/10) * (1-s.defence/10);
+						// s to f
+						f.hp -= baseHP * (s.attack/10) * (1-f.defence/10);
+					}
+				}
+
+				for(i=0;i<firstUnits.length;i++){
+					if(firstUnits[i].hp <= 0){
+						var u = firstUnits[i];
+						console.log(u._id + ' OUT !');
+						
+						for(j = 0; j<a.zone.units.length;j++){
+							if(a.zone.units[j]._id === u._id){
+								a.zone.units.splice(j, 1);
+								break;
+							}
+						}
+						u.remove(function(){});
+						firstUnits.splice(i, 1);
+						i--;
+					}
+				}
+
+				for(i=0;i<secondUnits.length;i++){
+					if(secondUnits[i].hp <= 0){
+						var u = secondUnits[i];
+						console.log(u._id + ' OUT !');
+						
+						for(j = 0; j<a.zone.units.length;j++){
+							if(a.zone.units[j]._id === u._id){
+								a.zone.units.splice(j, 1);
+								break;
+							}
+						}
+						u.remove(function(){});
+						secondUnits.splice(i, 1);
+						i--;
+					}
+				}
+
+				
 				// TODO Zone Owner
 				sp.save();
 				fp.save();

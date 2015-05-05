@@ -337,10 +337,7 @@ var unitType=undefined;
             				break;
             			}
             			else {
-            				if($scope.disp.unitTypes[unitType] < $scope.unitsByTypeForZone[unitType].length) {
-            					$scope.disp.unitTypes[unitType]++;
-            					console.log($scope.disp.unitTypes);
-            				}
+            				$scope.plusUnitToDisplace(unitType);
             			}
             			break;
         			}
@@ -348,6 +345,19 @@ var unitType=undefined;
 			});
 		});
 
+		$scope.plusUnitToDisplace = function (idType) {
+			if($scope.disp.unitTypes[idType] < $scope.unitsByTypeForZone[idType].length) {
+				$scope.disp.unitTypes[unitType]++;
+			}
+		};
+
+		$scope.lessUnitToDisplace = function (idType) {
+			if($scope.disp.unitTypes[idType] > 0) {
+				$scope.disp.unitTypes[unitType]--;
+			}
+		};
+ 
+ 
 		$scope.onUnitIconDrag = function (event, ui) {
 			if (''==$scope.mode) {
 				$scope.prepareDispDrag();

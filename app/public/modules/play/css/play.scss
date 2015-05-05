@@ -95,15 +95,19 @@
 	}
 
 	.select-to-displace {
-		background-color: rgba(52, 0, 219,1.0);
+		background-color: #3498db;
 	}
 
 	.row-unit-disp-selected {
-		height:40px;
-		background-color:white;
+		
 	}
 
-	row-unit-disp-not-selected {
+	.row-unit-disp-not-selected {
 		display: none;
 	}
+
+	.row-unit-displacement {
+		margin-top: 10px;
+	}
+	/* useless row-unit-number-label; row-unit-number; */
 }

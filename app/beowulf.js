@@ -41,6 +41,11 @@ var baseDispPoints = 2;
 var baseWarPoints = 4;
 var winPoints = 11
 
+var hopMoney = 100;
+var winMoney = 100;
+var loseMoney = 100;
+var dispMoney = 10;
+
 var odds = 25;
 
 var syncEndProcess = function(action){
@@ -191,7 +196,7 @@ var processEndDisplacement = function(a){
 
 				// While there is still two team
 				while(firstUnits.length > 0 && secondUnits.length > 0){
-					//console.log('Entering Loop');
+					//console.log('Entering Loop '+firstUnits.length+'-'+secondUnits.length);
 
 					// for each pair, make them battle
 					for(i=0;i<firstUnits.length;i++){
@@ -199,17 +204,20 @@ var processEndDisplacement = function(a){
 							var f = firstUnits[i];
 							var s = secondUnits[j];
 							
+							//console.log('Fight '+i+'-'+j);
 							// f to s
 							var r1 = (((Math.random()*2*odds)-odds)/100)+1;
 							var r2 =(((Math.random()*2*odds)-odds)/100)+1;
-							var d = baseHP * (r1*f.attack/10) * (r2*(1-s.defence)/10);
+							var d = baseHP * (r1*f.attack) * (r2*(baseHP-s.defence));
+							//console.log(r1+'-'+f.attack+'-'+r2+'-'+s.defence+'-'+d);
 							s.hp -= d;
 
 							// s to f
 							r1 = (((Math.random()*2*odds)-odds)/100)+1;
 							r2 = (((Math.random()*2*odds)-odds)/100)+1;
-							d = baseHP * (r1*s.attack/10) * (r2*(1-f.defence)/10);
+							d = baseHP * (r1*s.attack) * (r2*(baseHP-f.defence));
 							f.hp -= d;
+							//console.log(r1+'-'+s.attack+'-'+r2+'-'+f.defence+'-'+d);
 						}
 					}
 
@@ -251,11 +259,15 @@ var processEndDisplacement = function(a){
 				
 				if(secondUnits.length > 0){
 					sp.point+=winPoints;
+					sp.money += winMoney;
+					fp.money += loseMoney;
 					a.zone.owner = sp._id;
 				}
-				if(firstUnits.length > 0){
+				else {
 					fp.point+=winPoints;
 					a.zone.owner = fp._id;
+					fp.money += winMoney;
+					sp.money += loseMoney;
 				}
 
 				sp.save();
@@ -268,6 +280,7 @@ var processEndDisplacement = function(a){
 			Player.findById(secondID,function(err,player){
 				console.log('No Battle');
 				player.point+=baseDispPoints;
+				player.money += dispMoney;
 				player.save();
 				a.zone.save();
 				syncEndProcess(a);
@@ -415,7 +428,7 @@ var processHop = function(a){
 					affectUnitToZone(u,zones[i],zones[i].zoneDesc);
 					
 					p.units.push(u._id);
-
+					p.money += hopMoney;
 					zones[i].save();
 					u.save();
 					p.save();

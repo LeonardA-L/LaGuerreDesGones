@@ -476,7 +476,7 @@ var processEndDisplacement = function(a){
 					for(i=0;i<secondUnits.length;i++){
 						if(secondUnits[i].hp <= 0){
 							var u = secondUnits[i];
-							console.log(u._id + ' OUT !');
+							//console.log(u._id + ' OUT !');
 							
 							for(j = 0; j<a.zone.units.length;j++){
 								if(a.zone.units[j]._id === u._id){

@@ -1,7 +1,7 @@
 'use strict';
 
-angular.module('plddirectives').directive('gameBox', ['$http',
-	function($http) {
+angular.module('plddirectives').directive('gameBox', ['$http', '$filter',
+	function($http, $filter, $location) {
 		return {
 			templateUrl: 'modules/plddirectives/directives/game-box/game-box.html',
 			scope : { data : '=',
@@ -14,6 +14,10 @@ angular.module('plddirectives').directive('gameBox', ['$http',
 				// Game box directive logic
 				scope.load = false;
 				scope.joinok = scope.join;
+				scope.gamejoined=false;
+				scope.gameunsub=false;
+scope.data.startTime=$filter('date')(scope.data.startTime,'dd/MM/yyyy HH:mm');
+
 				scope.play = scope.playp && scope.data.isInit;
 				
 				scope.unsub = scope.playp && !scope.data.isInit && (scope.data.creator !== scope.user._id || scope.data.players.length===1);
@@ -25,6 +29,7 @@ angular.module('plddirectives').directive('gameBox', ['$http',
 					  success(function(data) {
 						//console.log(data.success);
 						if(data.success){
+							scope.gamejoined=true;
 							scope.joinok = false;
 							scope.load = false;
 						}
@@ -43,6 +48,7 @@ angular.module('plddirectives').directive('gameBox', ['$http',
 					  success(function(data) {
 						//console.log(data.success);
 						if(data.success){
+							scope.gameunsub=true;
 							scope.play = false;
 							scope.unsub = false;
 							scope.load = false;

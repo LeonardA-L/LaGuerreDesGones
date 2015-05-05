@@ -1,0 +1,13 @@
+#!/bin/bash
+echo "Starting beowulf worker 1"
+nohup node beowulf.js & 
+
+def=0
+length=${1:-$def}
+
+for (( c=2; c<=$length; c++ ))
+do
+	echo "Starting beowulf worker $c"
+	nohup node beowulf.js localhost 27017 $[c + 7877] 3000 &
+
+done

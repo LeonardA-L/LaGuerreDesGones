@@ -31,6 +31,10 @@
 		overflow-y: scroll;
 	}
 
+	#game-main-panel {
+
+	}
+
 	#game-left-panel hr {
 		border-color:#3C3C3C;
 	}
@@ -43,5 +47,54 @@
 	.separator {
 		margin-top: 10px;
 		margin-bottom: 10px;
+	}
+
+	.center-content {
+		text-align: center;
+	}
+
+	.unit-icon {
+		margin-top:3px;
+		margin-bottom:3px;
+	}
+
+	.row-unit {
+		background-color: rgba(41, 128, 185, 0.1);
+	}
+
+	.row-unit-separator {
+		height:2px;
+		background-color:#3C3C3C;
+	}
+
+	#row-unit-number-label {
+		height:50%;
+		margin-top: 13px;
+		text-align:center;
+	}
+
+	#row-unit-name {
+		margin-top: 27px;
+	}
+
+	#row-unit-actions {
+		margin-top: 27px;
+	}
+
+	.full-width {
+		width: 100%;
+	}
+
+	.full-height {
+		height: 100%;
+	}
+
+	#row-unit-number {
+		height:50%;
+		text-align:center;
+	}
+
+	.select-to-displace {
+		background-color: rgba(52, 0, 219,1.0);
 	}
 }

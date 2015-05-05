@@ -26,7 +26,7 @@
 						</div>
 					</div>
 
-					<div ng-if="mode==='displacement'">
+					<div ng-if="mode==='displacement'" style="display:none;">
 						<h2>Displacement</h2>
 							<h3>Add units</h3>
 							<p>Units on this zone are</p>
@@ -66,17 +66,24 @@
 									<button class="btn btn-primary btn-success" ng-if="game.zones[selectedZone._id].owner === player._id" ng-click="buyUnit(i.type)">+</button>
 									<button ng-if="unitsByTypeForZone[i.type].length > 0" class="btn btn-primary btn-danger" ng-click="sell(unitsByType[i][0].zone,unitsByType[i][0]._id,unitsByType[i][0].player)">-</button>
 								</div>
-								<div class="col-md-3 nopadding full-height">
-									<div id="row-unit-number-label">
-										
-									</div>
-									<div id="row-unit-number">
-										
+								<div class="col-md-3 nopadding full-height center-content">
+									<div class="row-unit-displacement full-height {{(disp.unitTypes[i.type] > 0) ? 'row-unit-disp-selected' : 'row-unit-disp-not-selected'}}">
+										<div>
+									        <a href="">
+									          <span class="glyphicon glyphicon-triangle-top" ng-click="plusUnitToDisplace(i.type)"></span>
+									        </a>
+									   	</div>
+									   	<div>
+											<span>{{disp.unitTypes[i.type]}}<span>
+										</div>
+										<div>
+											<a href="">
+												<span class="glyphicon glyphicon-triangle-bottom" ng-click="lessUnitToDisplace(i.type)"></span>
+											</a>
+										</div>
 									</div>
 								</div>
-
 							</div>
-
 							<div class="col-md-12 row-unit-separator">
 							</div>
 						</div>

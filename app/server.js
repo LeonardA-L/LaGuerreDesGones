@@ -58,50 +58,7 @@ function persistAllBikeStations()
 	}
 }
 
-function travelTime(latitudeDep, longitudeDep, latitudeArr, longitudeArr, mode)
-{
-	var xmlHttp = new XmlHttpRequest();	
-	xmlHttp.open( 'GET', 'https://maps.googleapis.com/maps/api/distancematrix/json?origins='+latitudeDep+','+longitudeDep+
-					'&destinations='+latitudeArr+','+longitudeArr+'&mode='+mode+'&key=AIzaSyAHDzUFLgSp1qwdZZPnQpYtkRxF9r1gk0A', false );
-	xmlHttp.send();
-	var data = JSON.parse(xmlHttp.responseText);
-	return data.rows[0].elements[0].duration.value;
-}
 
-function calculAllTravelTimes(mode)
-{
-	 var zoneDescription = mongoose.model('ZoneDescription');
-	 var TravelTime = mongoose.model('TravelTime');
-	
-	 zoneDescription.find({}, function(err, zonesDesc) {
-     	for(var i=1; i<zonesDesc.length;i++)
-		{
-			for(var j=1;j<zonesDesc[i].adjacentZones.length;j++)
-			{
-				var t_time = travelTime(zonesDesc[i].y,zonesDesc[i].x,zonesDesc.adjacentZones[j].y,zonesDesc.adjacentZones[j].x,mode);
-				var m_mode;
-				switch(mode)
-				{
-					case 'walking' :
-						m_mode = 2;
-						break;
-					case 'bicycling' :
-						m_mode = 1;
-						break;
-				}				
-				var t_travelTime = new TravelTime({
-					departureZone:zonesDesc[i]._id,
-					arrivalZone:zonesDesc[i].adjacentZones[j]._id,
-					date:new Date(),
-					time:t_time,
-					mode:m_mode
-				});
-				t_travelTime.save();
-			}
-			
-		}	
-     });
-}
 
 
 

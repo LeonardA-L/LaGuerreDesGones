@@ -84,8 +84,8 @@
 									<span>{{unitsByTypeForZone[i.type].length}}</span>
 								</div>
 								<div id="row-unit-actions" class="col-md-3 nopadding center-content">
-									<button class="btn btn-primary btn-success" ng-if="game.zones[selectedZone._id].owner === player._id" ng-click="buyUnit(i.type)">+</button>
-									<button ng-if="unitsByTypeForZone[i.type].length > 0" class="btn btn-primary btn-danger" ng-click="sell(selectedZone._id,unitsByType[i][0]._id,i.type,unitsByType[i][0].player)">-</button>
+									<button class="btn btn-primary btn-success" ng-if="game.zones[selectedZone._id].units.length < maxUnitPerZone && game.zones[selectedZone._id].owner === player._id" ng-click="buyUnit(i.type)">+</button>
+									<button ng-if="unitsByTypeForZone[i.type].length > 0" class="btn btn-primary btn-danger" ng-click="sell(unitsByTypeForZone[i.type][0]._id, i.type)">-</button>
 								</div>
 								<div class="col-md-3 nopadding full-height center-content">
 									<div class="row-unit-displacement full-height {{(disp.unitTypes[i.type] > 0) ? 'row-unit-disp-selected' : 'row-unit-disp-not-selected'}}">

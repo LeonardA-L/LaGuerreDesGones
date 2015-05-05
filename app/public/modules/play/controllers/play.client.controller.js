@@ -235,6 +235,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		 */
 		function colorMap(){
 			var selectedZoneDescId;
+			var toDisplaceZoneDescId=$scope.disp.zoneDesc;
 			var reachableZoneDescId;
 			if($scope.selectedZone){
 				selectedZoneDescId = $scope.selectedZone.zoneDesc;
@@ -263,6 +264,9 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 					vFillOpacity = 0.7;
 				} else if(reachableZoneDescId && reachableZoneDescId.indexOf(zone.zoneDesc) !== -1){
 					vFillOpacity = 0.5;
+				} else if (toDisplaceZoneDescId && zone.zoneDesc === selectedZoneDescId) {
+					vStrokeWeight = 4;
+					vFillOpacity = 0.7;
 				}
 				polygon.setOptions({
 					strokeColor: '#'+color,
@@ -349,6 +353,8 @@ var unitType=undefined;
 			if($scope.disp.unitTypes[idType] < $scope.unitsByTypeForZone[idType].length) {
 				$scope.disp.unitTypes[idType]++;
 				$scope.mode='displacement';
+				//vérifier pas pas même que celle où on est
+				//$scope.disp.zoneDesc=$scope.selectedZone.zoneDesc;
 			}
 		};
 
@@ -381,7 +387,7 @@ var unitType=undefined;
   		$scope.prepareDispDrag = function () {
 			$scope.resetMode();
 			$scope.disp = {
-				//'zoneAId':$scope.game.selectedZone._id,
+				'zoneDesc':undefined,
 				'unitTypes':[],
 				//'step':0
 			};

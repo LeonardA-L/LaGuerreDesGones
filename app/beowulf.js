@@ -87,6 +87,7 @@ var syncEndProcess = function(action, failed){
 		console.log('Action failed');
 	}
 	action.save();
+	console.log('End action '+action._id);
 	if(action.game){
 		if(action.type === 8){
 			if(action.game.winner){
@@ -713,6 +714,7 @@ actionHandlers.push(processEndCheck);
 
 // TODO
  var processAction = function(a){
+	console.log('Start action '+a._id);
  	actionHandlers[a.type](a);
  };
 

@@ -277,12 +277,14 @@ exports.unjoinGame = function(req, res) {
 	var Player = mongoose.model('Player');
 	// TODO possibly optimizable
 	Game.findOne({'_id':req.params.gameId}).populate('players').exec(function(err,game){
-		if(err)
-			res.send(err);
 
 		var destroyCallback = function(err){
-			if(err)
+			if(err){
 				res.send(err);
+			}
+			else{
+				res.json(result);
+			}
 		};
 
 		for(var i=0;i<game.players.length;i++){
@@ -301,7 +303,6 @@ exports.unjoinGame = function(req, res) {
 			}
 		}
 	});
-	res.json(result);
 };
 
 var getPlay = function(gameId, callback, res){

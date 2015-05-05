@@ -54,6 +54,9 @@ var winMoney = 100;
 var loseMoney = 100;
 var dispMoney = 10;
 
+// green, purple, dark blue, red, light blue, yellow, orange, brown
+var colorPlayer = [5025616, 10233776, 4149685, 16007990, 48340, 16771899, 16733986, 7951688];
+
 var odds = 25;
 var baseHP = 40;
 
@@ -379,6 +382,7 @@ var processInit = function(a){
 					nz.save();
 				}
 				//console.log(players[i]);
+				players[i].color = colorPlayer[i];
 				players[i].money = initMoney;
 				players[i].save();
 			}	

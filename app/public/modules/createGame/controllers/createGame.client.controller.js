@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('createGame').controller('CreateGameController', ['$scope','Authentication','$http','$filter',
+angular.module('createGame').controller('CreateGameController', ['$scope','Authentication','$http','$filter', 
 	function($scope, Authentication, $http, $filter) {
 		console.log($scope);
 		// This provides Authentication context.

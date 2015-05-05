@@ -1,5 +1,18 @@
-<div class="gameBox">
-Game : {{data.title}} by {{data.creator.username}}. Starts at {{data.startTime}} <button ng-if="joinok && !load" ng-click="joinGame(data._id)">Join</button> <span ng-if="load"> Load</span>
-<a ng-if="play" href="/#!/play/{{data._id}}">Play</a> <button ng-if="unsub" ng-click="unjoinGame(data._id)">Unsubscribe</button>
-<span ng-if="!joinok && !load"> Game joined !</span>
+<div class="gameBox list-group-item container-fluid">
+
+<h2> {{data.title}}</h2> 
+
+<div class="row">
+<p class="col-md-4">by {{data.creator.username}}</p> 
+
+<button class="col-md-1 btn btn-default" ng-if="joinok && !load" ng-click="joinGame(data._id)">Join</button>
+<button class="col-md-1 btn btn btn-default" ng-if="load"> Load</button>
+<a ng-if="play" href="/#!/play/{{data._id}}">Play</a> 
+<button class="col-md-1 btn btn btn-default" ng-if="unsub" ng-click="unjoinGame(data._id)">Unsubscribe</button>
+<span class="alert alert-success" ng-if="!unsub && !joinok && !load"> Game joined !</span>
+</div>
+
+<div >
+<p>Starting time : {{data.startTime}}</p>
+</div>
 </div>

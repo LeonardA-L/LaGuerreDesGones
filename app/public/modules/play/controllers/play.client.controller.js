@@ -19,6 +19,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		console.log($stateParams);
 
 		var generationInterval = 120000;
+		$scope.maxUnitPerZone = 8;
 
 
 		var countdownForGenerationDestroy;

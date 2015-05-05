@@ -6,11 +6,10 @@ var init = require('./config/init')(),
 	config = require('./config/config'),
 	mongoose = require('mongoose'),
 	chalk = require('chalk'),
-	Schema = mongoose.Schema;
-var express = require('express');
+	express = require('express'),
+	http = require('http'),
+	path = require('path');
 
-//mongoose.set('debug', true);
-//var ActionSchema=require('../app/app/models/action.server.model').ActionSchema;
 var debug=config.debug;
 var state=true;
 
@@ -30,263 +29,31 @@ var initMoney = 1000;
 var sellRatio = 0.4;
 
 var NEUTRAL = 'neutral';
-var HOSPITAL = 'hospital';
-var PARK = 'park';
-var UNIVERSITY = 'university';
-var CHURCH = 'church';
-var WOODSTOCK = 'woodstock';
-var STATION = 'station';
-var AIRPORT = 'airport';
-var CITY_HALL = 'city_hall';
-var SQUARE = 'square';
-var BANK = 'bank';
-var SHOPPING_CENTRE = 'shopping_centre';
 
 var DEFAULT_MAX_UNIT_NUMBER = 8;
 
-var updateInterval = 120000;
+var updateInterval = 30000;
 var updateMoney = 0;
 
 var pointBuyFactor = 0.5;
 var pointSellFactor = 0.5;
 var baseDispPoints = 2;
 var baseWarPoints = 4;
-var winPoints = 11
+var winPoints = 11;
+
+var victoryPoint = 300;
+
+var hopMoney = 100;
+var winMoney = 100;
+var loseMoney = 100;
+var dispMoney = 10;
 
 var odds = 25;
+var baseHP = 40;
 
-// dirty pasted model
+var maxUnitPerZone = 8;
 
-var MatrixSchema = new Schema({
-	name : String,
-	content: Schema.Types.Mixed
-});
-
-var PlayerSchema = new Schema({
-	name: {
-		type: String,
-		trim: true,
-		required: true
-	},
-	dateCreated: {
-		type: Date,
-		default: Date.now
-	},
-	isAdmin:{
-		type: Boolean,
-		default: false
-	},
-	user: {
-		type: Schema.Types.ObjectId,
-		ref: 'User'
-	},
-	game: {
-		type: Schema.Types.ObjectId,
-		ref: 'Game'
-	},
-	money: {
-		type: Number,
-		default: 0
-	},
-	point: {
-		type: Number,
-		default: 0
-	},
-	units: [{
-		type: Schema.Types.ObjectId,
-		ref: 'Unit'
-	}]
-});
-
-var ZoneDescriptionSchema = new Schema({
-	type: {
-		type: String,
-		enum: [NEUTRAL, HOSPITAL, PARK, UNIVERSITY, CHURCH, WOODSTOCK, STATION, AIRPORT, CITY_HALL, SQUARE, BANK, SHOPPING_CENTRE],
-		default: NEUTRAL
-	},
-	name: {
-		type: String,
-		trim: true,
-		default: ''
-	},
-
-	border: Schema.Types.Mixed,
-
-	x : Number,
-
-	y : Number,
-	
-	velov : Number
-
-});
-
-var GameSchema = new Schema({
-	title: {
-		type: String,
-		trim: true,
-		default: '',
-	},
-	nMaxPlayerUnit: {
-		type: Number,
-		required: true
-	},
-	nMinPlayer: {
-		type: Number
-	},
-	nMaxPlayer: {
-		type: Number,
-		required: true
-	},
-	isInit: {
-		type: Boolean,
-		default: false,
-	},
-	startTime: {
-		type: Date
-	},
-	zones: [{
-		type: Schema.Types.ObjectId,
-		ref: 'Zone'
-	}],
-	players: [{
-		type: Schema.Types.ObjectId,
-		ref: 'Player'
-	}]
-});
-
-var UnitSchema = new Schema({
-	type: {
-		type: Number,
-		default: 0
-	},
-	zone: {
-		type: Schema.Types.ObjectId,
-		ref: 'Zone'
-	},
-	attack: {
-		type: Number,
-		default: 0
-	},
-	defence: {
-		type: Number,
-		default: 0
-	},
-	point: {
-		type: Number,
-		default: 0
-	},
-	x: {
-		type: Number,
-		default: 0
-	},
-	y: {
-		type: Number,
-		default: 0
-	},
-	xt: {
-		type: Number,
-		default: 0
-	},
-	yt: {
-		type: Number,
-		default: 0
-	},
-	te: {
-		type: Number,
-		default: 0
-	},
-	ts: {
-		type: Number,
-		default: 0
-	},
-	available: {
-		type: Boolean,
-		default: true
-	},
-	game:{
-		type: Schema.Types.ObjectId,
-		ref: 'Game'
-	},
-	player: {
-		type: Schema.Types.ObjectId,
-		ref: 'Player'
-	}
-});
-
-
-var ZoneSchema = new Schema({
-	units: [{
-		type: Schema.Types.ObjectId,
-		ref: 'Unit'
-	}],
-	game:{
-		type: Schema.Types.ObjectId,
-		ref: 'Game'
-	},
-	zoneDesc:{
-		type: Schema.Types.ObjectId,
-		ref: 'ZoneDescription',
-// TODO		required: true
-	},
-	nbUnitMax: {
-		type: Number,
-		default: DEFAULT_MAX_UNIT_NUMBER
-	},
-	owner: {
-		type: Schema.Types.ObjectId,
-		ref: 'Player'
-	}
-});
-var ActionSchema = new Schema({
-
-	type :{
-		type: Number,
-		default: 0
-	},
-	date:{
-		type:Date
-	},
-	status :{
-		type: Number,
-		default: 0
-	},
-	
-	// For Displacement
-	zoneA:{
-		type: Schema.Types.ObjectId,
-		ref: 'Zone'
-	},
-	zoneB:{
-		type: Schema.Types.ObjectId,
-		ref: 'Zone'
-	},
-	units:[{
-		type: Schema.Types.ObjectId,
-		ref: 'Unit'
-	}],
-	// For battle
-	zone:{
-		type: Schema.Types.ObjectId,
-		ref: 'Zone'
-	},
-	
-	// For init
-	game:{
-		type: Schema.Types.ObjectId,
-		ref: 'Game'
-	},
-	player: {
-		type: Schema.Types.ObjectId,
-		ref: 'Player'
-	},
-	newUnitType : Number
-	
-});
-
-var syncEndProcess = function(action){
-	action.save();
-
-	var http = require('http');
+var notifyServer = function(gameId){
 	var options = {
 	  host: (process.argv[2]||config.defaultHost),
 	  path: '/'+config.callback,
@@ -303,8 +70,37 @@ var syncEndProcess = function(action){
 	req.on('error', function(error) {
   		if(debug) console.log('Server unreachable');
 	});
-	req.write(JSON.stringify({game:action.game._id || action.game}));
+	req.write(JSON.stringify({game:gameId}));
 	req.end();
+};
+
+var syncEndProcess = function(action, failed){
+	action.status = 2;
+	if(failed){
+		action.status = 3;
+		console.log('Action failed');
+	}
+	action.save();
+	if(action.game){
+		if(action.type === 8){
+			if(action.game.winner){
+				notifyServer(action.game._id || action.game);
+			}
+		}
+		else{
+			var endCheck = new Action({
+				status:0,
+				type:8,
+				date:new Date(),
+				game:action.game._id || action.game
+			});
+			endCheck.save();
+			notifyServer(action.game._id || action.game);
+		}
+	}
+	else{
+		// Push to all
+	}
 };
 
 var affectUnitToZone = function(u,z,zd){
@@ -421,7 +217,6 @@ var processEndDisplacement = function(a){
 				a.zone.owner = fp._id;
 				var i=0;
 				var j=0;
-				var baseHP = 10;
 
 				// Start by giving everyone HPs
 				for(i=0;i<firstUnits.length;i++){
@@ -433,7 +228,7 @@ var processEndDisplacement = function(a){
 
 				// While there is still two team
 				while(firstUnits.length > 0 && secondUnits.length > 0){
-					//console.log('Entering Loop');
+					//console.log('Entering Loop '+firstUnits.length+'-'+secondUnits.length);
 
 					// for each pair, make them battle
 					for(i=0;i<firstUnits.length;i++){
@@ -441,17 +236,20 @@ var processEndDisplacement = function(a){
 							var f = firstUnits[i];
 							var s = secondUnits[j];
 							
+							//console.log('Fight '+i+'-'+j);
 							// f to s
 							var r1 = (((Math.random()*2*odds)-odds)/100)+1;
 							var r2 =(((Math.random()*2*odds)-odds)/100)+1;
-							var d = baseHP * (r1*f.attack/10) * (r2*(1-s.defence)/10);
+							var d = baseHP * (r1*f.attack) * (r2*(baseHP-s.defence));
+							//console.log(r1+'-'+f.attack+'-'+r2+'-'+s.defence+'-'+d);
 							s.hp -= d;
 
 							// s to f
 							r1 = (((Math.random()*2*odds)-odds)/100)+1;
 							r2 = (((Math.random()*2*odds)-odds)/100)+1;
-							d = baseHP * (r1*s.attack/10) * (r2*(1-f.defence)/10);
+							d = baseHP * (r1*s.attack) * (r2*(baseHP-f.defence));
 							f.hp -= d;
+							//console.log(r1+'-'+s.attack+'-'+r2+'-'+f.defence+'-'+d);
 						}
 					}
 
@@ -476,7 +274,7 @@ var processEndDisplacement = function(a){
 					for(i=0;i<secondUnits.length;i++){
 						if(secondUnits[i].hp <= 0){
 							var u = secondUnits[i];
-							console.log(u._id + ' OUT !');
+							//console.log(u._id + ' OUT !');
 							
 							for(j = 0; j<a.zone.units.length;j++){
 								if(a.zone.units[j]._id === u._id){
@@ -493,11 +291,15 @@ var processEndDisplacement = function(a){
 				
 				if(secondUnits.length > 0){
 					sp.point+=winPoints;
+					sp.money += winMoney;
+					fp.money += loseMoney;
 					a.zone.owner = sp._id;
 				}
-				if(firstUnits.length > 0){
+				else {
 					fp.point+=winPoints;
 					a.zone.owner = fp._id;
+					fp.money += winMoney;
+					sp.money += loseMoney;
 				}
 
 				sp.save();
@@ -510,6 +312,7 @@ var processEndDisplacement = function(a){
 			Player.findById(secondID,function(err,player){
 				console.log('No Battle');
 				player.point+=baseDispPoints;
+				player.money += dispMoney;
 				player.save();
 				a.zone.save();
 				syncEndProcess(a);
@@ -595,21 +398,28 @@ var processInit = function(a){
 
 var processBuy = function(a){
 	if(debug) console.log('Processing buy action');
-	var price = matrixes.UnitData.content[a.newUnitType].price;
-	a.player.money -= price;
-	a.player.point += price*pointBuyFactor;
-	// TODO create unit according to real stuff
-	var u = new Unit(matrixes.UnitData.content[a.newUnitType]);
-	ZoneDescription.findById(a.zone.zoneDesc,function(err, zd){
-		u.player = a.player._id;
-		affectUnitToZone(u,a.zone,zd);
-		a.player.units.push(u._id);
-		u.save();
-		a.zone.save();
-		a.player.save();
+	if(debug) console.log('Units on zone '+a.zone.units.length);
+	if(a.zone.units.length < maxUnitPerZone){
+		var price = matrixes.UnitData.content[a.newUnitType].price;
+		a.player.money -= price;
+		a.player.point += price*pointBuyFactor;
+		// TODO create unit according to real stuff
+		var u = new Unit(matrixes.UnitData.content[a.newUnitType]);
+		ZoneDescription.findById(a.zone.zoneDesc,function(err, zd){
+			u.player = a.player._id;
+			affectUnitToZone(u,a.zone,zd);
+			a.player.units.push(u._id);
+			u.save();
+			a.zone.save();
+			a.player.save();
 
-		syncEndProcess(a);
-	});
+			syncEndProcess(a);
+		});
+	}
+	else{
+		syncEndProcess(a, true);
+	}
+	
 };
 
 var processSell = function(a){
@@ -618,19 +428,23 @@ var processSell = function(a){
 	Unit.findById(a.units[0], function(err, data){
 		if(err)
 			if(debug) console.log(err);
-		//console.log(data);
-		Unit.remove({'_id':a.units[0]}, function(err){
-			if(err)
-				if(debug) console.log(err);
-		});
-		var price = sellRatio*matrixes.UnitData.content[data.type].price;
-		a.player.money += price;
-		a.zone.units.splice(a.zone.units.indexOf(a.units[0]),1);
-		a.player.units.splice(a.player.units.indexOf(a.units[0]),1);
-		a.player.point += price*pointSellFactor;
-		a.player.save();
-		a.zone.save();
-
+		if(data !== null){
+			//console.log(data);
+			Unit.remove({'_id':a.units[0]}, function(err){
+				if(err)
+					if(debug) console.log(err);
+			});
+			var price = sellRatio*matrixes.UnitData.content[data.type].price;
+			a.player.money += price;
+			a.zone.units.splice(a.zone.units.indexOf(a.units[0]),1);
+			a.player.units.splice(a.player.units.indexOf(a.units[0]),1);
+			a.player.point += price*pointSellFactor;
+			a.player.save();
+			a.zone.save();
+		}
+		else{
+			if(debug) console.log('Null data');
+		}
 		syncEndProcess(a);
 	});
 };
@@ -644,16 +458,16 @@ var processHop = function(a){
 
 		Zone.find({'_id':{$in:a.game.zones}}).populate('zoneDesc units').exec(function(err,zones){
 			for(var i=0;i<zones.length;i++){
-				if(zones[i].units.length > 0){
+				if(zones[i].owner && zones[i].units.length < maxUnitPerZone){
 					// Generate Unit
 					var u = new Unit(matrixes.UnitData.content[matrixes.ZoneTypeToUnitType.content[zones[i].zoneDesc.type]]);
 					// affect to player
-					var p = players[zones[i].units[0].player];
+					var p = players[zones[i].owner];
 					u.player = p._id;
 					affectUnitToZone(u,zones[i],zones[i].zoneDesc);
 					
 					p.units.push(u._id);
-
+					p.money += hopMoney;
 					zones[i].save();
 					u.save();
 					p.save();
@@ -673,6 +487,25 @@ var processHop = function(a){
 		b.save();
 };
 
+var processEndCheck = function(a){
+	Player.find({'game':a.game._id}).sort('-point').exec(function(err, players){
+		if(players[0].point >= victoryPoint){
+			if(debug) console.log(players[0].name+' wins');
+			a.game.winner = players[0]._id;
+			a.game.save(function(err){
+				if(debug) console.log(err);
+			});
+			Action.find({'game':a.game._id}, function(err,actions){
+				for(var i=0;i<actions.length;i++){
+					actions[i].status=4;
+					actions[i].save();
+				}
+			});
+		}
+		syncEndProcess(a);
+	});
+};
+
 var actionHandlers = [];
 actionHandlers.push(processDisplacement);
 actionHandlers.push(processEndDisplacement);
@@ -680,11 +513,13 @@ actionHandlers.push(processInit);
 actionHandlers.push(processBuy);
 actionHandlers.push(processSell);
 actionHandlers.push(processHop);
+actionHandlers.push(null);
+actionHandlers.push(null);
+actionHandlers.push(processEndCheck);
 
 // TODO
  var processAction = function(a){
  	actionHandlers[a.type](a);
- 	a.status = 2;
  };
 
 // Main work
@@ -729,11 +564,14 @@ var execute = function(){
 					case 5: // Hop
 						Action.findOne({'_id':doc._id}).populate('game').exec(actionCallback);
 					break;
+					case 8: // Hop
+						Action.findOne({'_id':doc._id}).populate('game').exec(actionCallback);
+					break;
 				}
 	    	}
 
 	    	Action.count({'status':0, 'date':{$lte:new Date()}},function(err,count){
-				if(debug) console.log(count);
+				//if(debug) console.log(count);
 	    		if(count > 0){
 	    			// Re launch
 	        		execute();
@@ -775,22 +613,6 @@ var db = mongoose.connect(dbAddress, function(err) {
 	}
 	else{
 		console.log(chalk.green('MongoDB connection successful'));
-		db.model('Unit', UnitSchema);
-		db.model('Zone', ZoneSchema);
-		db.model('Action', ActionSchema);
-		db.model('Game', GameSchema);
-		db.model('Player', PlayerSchema);
-		db.model('ZoneDescription', ZoneDescriptionSchema);
-		db.model('Matrix', MatrixSchema);
-		
-		Action = db.model('Action');
-		Zone = db.model('Zone');
-		Unit = db.model('Unit');
-		Game = db.model('Game');
-		Player = db.model('Player');
-		Matrix = db.model('Matrix');
-		ZoneDescription = db.model('ZoneDescription');
-
 
 		Matrix.find({'name':{$in:['UnitData','ZoneTypeToUnitType']}},function(err,mat){
 			matrixes = {};
@@ -814,6 +636,17 @@ var db = mongoose.connect(dbAddress, function(err) {
 
 
 var app = express();
+config.getGlobbedFiles('./app/models/**/*.js').forEach(function(modelPath) {
+		require(path.resolve(modelPath));
+	});
+
+Action = mongoose.model('Action');
+Zone = mongoose.model('Zone');
+Unit = mongoose.model('Unit');
+Game = mongoose.model('Game');
+Player = mongoose.model('Player');
+Matrix = mongoose.model('Matrix');
+ZoneDescription = mongoose.model('ZoneDescription');
 
 app.get('/', function(req, res){
 	if(!state){

@@ -12,13 +12,16 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		};
 		$scope.listUnitType = false;
 	    var gameId = $stateParams.gameId;
+
 		var map;
+		var isMapInit = false;
+
 		console.log($stateParams);
 
 		var generationInterval = 120000;
 
 
-		var countdownForGenerationDestroy = undefined;
+		var countdownForGenerationDestroy;
 		var countdownForGeneration = function(){
 			return $timeout(function(){
 				var remainingS = Math.floor(($scope.game.nextRefresh - (new Date().getTime()))/1000);
@@ -41,9 +44,9 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 
 
 		var processGameState = function(game){
-			var selectedZone = $scope.game.selectedZone;
+			var selectedZone = $scope.selectedZone;
 			$scope.game = game;
-			$scope.game.selectedZone = selectedZone;
+			$scope.selectedZone = selectedZone;
 			var i=0;
 			var j=0;
 			// Connection between player and hash
@@ -80,9 +83,9 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			console.log('New diff');
 			console.log($scope.game);
 
-			console.log($scope.game.selectedZone);
-			if($scope.game.selectedZone !== undefined){
-				$scope.listUnitsByType($scope.game.zones[$scope.game.selectedZone._id].units);
+			console.log($scope.selectedZone);
+			if($scope.selectedZone !== undefined){
+				$scope.listUnitsByType($scope.game.zones[$scope.selectedZone._id].units);
 			}
 
 		};
@@ -151,7 +154,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		};
 
 		$scope.buyUnit = function(newUnitTypeN){
-			$scope.buy($scope.game.selectedZone._id, $scope.player._id, newUnitTypeN);
+			$scope.buy($scope.selectedZone._id, $scope.player._id, newUnitTypeN);
 		};
 
 		$scope.buy = function(zoneId, playerId, newUnitTypeN){
@@ -185,55 +188,88 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 
 		function drawZoneMap(game) {
 			initMap();
-			var allPolygons = [];
-			var zoomBordr = new google.maps.LatLngBounds();
-			for (var i = 0; i < game.zones.length; i++) { 
-				var border = game.zonesDesc[game.zones[i].zoneDesc].border;
-				var borderCoords = [ ];
-				for (var j = 0; j < border.length; j++) { 
-					var point = new google.maps.LatLng(border[j][1], border[j][0]);
-					borderCoords.push(point);
-					zoomBordr.extend(point);
+			if(!isMapInit) {
+				var allPolygons = {};
+				var zoomBordr = new google.maps.LatLngBounds();
+				for (var i = 0; i < game.zones.length; i++) { 
+					var border = game.zonesDesc[game.zones[i].zoneDesc].border;
+					var borderCoords = [ ];
+					for (var j = 0; j < border.length; j++) { 
+						var point = new google.maps.LatLng(border[j][1], border[j][0]);
+						borderCoords.push(point);
+						zoomBordr.extend(point);
+					}
+					// Close border
+					borderCoords.push(borderCoords[0]);
+					// Create the polygon
+					var polygon = new google.maps.Polygon({
+						paths: borderCoords,
+						strokeColor: '#333333',
+						strokeOpacity: 0.65,
+						strokeWeight: 1,
+						fillColor: '#333333',
+						fillOpacity: 0.35
+					});
+					polygon.zoneId = game.zones[i]._id;
+					polygon.zoneDescId = game.zones[i].zoneDesc;
+					allPolygons[polygon.zoneDescId] = polygon;
+					// Listener on click
+					google.maps.event.addListener(polygon, 'click', onZoneClicked);
+					polygon.setMap(map);
 				}
-				// Close border
-				borderCoords.push(borderCoords[0]);
-				// Create the polygon
-				var borderPolygon = new google.maps.Polygon({
-					paths: borderCoords,
-					strokeColor: '#333333',
-					strokeOpacity: 0.65,
-					strokeWeight: 2,
-					fillColor: '#333333',
-					fillOpacity: 0.35
-				});
-				borderPolygon.zoneId = game.zones[i]._id;
-				borderPolygon.zoneDescId = game.zones[i].zoneDesc;
-				allPolygons[borderPolygon.zoneId] = borderPolygon;
-				// Listener on click
-				google.maps.event.addListener(borderPolygon, 'click', onZoneClicked);
-				borderPolygon.setMap(map);
-			}
-			// Add zones Polygons to Game variable
-			game.zonesPolygons = allPolygons;
-			// Center the map
-			map.setCenter(zoomBordr.getCenter());
-			map.fitBounds(zoomBordr); 
+				// Add zones Polygons to Game variable
+				$scope.zonesPolygons = allPolygons;
+				// Center the map
+				map.setCenter(zoomBordr.getCenter());
+				map.fitBounds(zoomBordr); 
 
-			colorMap();
+				colorMap();
+			}
 		}
 
-		function colorMap(){	// TODO Creation color => Grey / color
+
+		/**
+		 *	Update all the colors on the map and the hightlight
+		 */
+		function colorMap(){
+			var selectedZoneDescId;
+			var reachableZoneDescId;
+			if($scope.selectedZone){
+				selectedZoneDescId = $scope.selectedZone.zoneDesc;
+				reachableZoneDescId = $scope.game.zonesDesc[selectedZoneDescId].adjacentZones;
+			}
 			for (var i = 0; i < $scope.game.zones.length; i++) { 
 				var zone = $scope.game.zones[i];
-				var polygon = $scope.game.zonesPolygons[zone._id];
+				var polygon = $scope.zonesPolygons[zone.zoneDesc];
+				var initColor;
 				if(zone.owner){
-					
-					var color = $scope.game.players[zone.owner].color.toString(16);	//TODO Color
-					polygon.setOptions({
-						strokeColor: '#'+color,
-						fillColor: '#'+color
-					});
+					initColor = $scope.game.players[zone.owner].color;
+				} else {
+					initColor = 3355443;
 				}
+				var color = initColor.toString(16);
+				var vStrokeOpacity = 0.65;
+				var vFillOpacity = 0.3;
+				var vStrokeWeight = 1;
+
+				if(reachableZoneDescId){
+					console.log(reachableZoneDescId.indexOf(zone.zoneDesc));
+				}
+
+				if(selectedZoneDescId && zone.zoneDesc === selectedZoneDescId){
+					vStrokeWeight = 4;
+					vFillOpacity = 0.7;
+				} else if(reachableZoneDescId && reachableZoneDescId.indexOf(zone.zoneDesc) !== -1){
+					vFillOpacity = 0.5;
+				}
+				polygon.setOptions({
+					strokeColor: '#'+color,
+					fillColor: '#'+color,
+					strokeOpacity: vStrokeOpacity,
+					strokeWeight: vStrokeWeight,
+					fillOpacity: vFillOpacity
+				});
+
 			}
 		}
 
@@ -246,7 +282,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			$scope.resetMode();
 			$scope.mode='displacement';
 			$scope.disp = {
-				'zoneAId':$scope.game.selectedZone._id,
+				'zoneAId':$scope.selectedZone._id,
 				'unitIds':[],
 				'step':0
 			};
@@ -271,9 +307,10 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 				}
 				else{
 					$scope.resetMode();
-					$scope.game.selectedZone = $scope.game.zones[that.zoneId];	// TODO Fix this
+					$scope.selectedZone = $scope.game.zones[that.zoneId];	// TODO Fix this
 					//console.log($scope.game);
 					$scope.listUnitsByType($scope.game.zones[that.zoneId].units);
+					colorMap();
 				}
 			});
 		}

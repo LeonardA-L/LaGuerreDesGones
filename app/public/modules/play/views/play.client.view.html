@@ -30,7 +30,7 @@
 						<h2>Displacement</h2>
 							<h3>Add units</h3>
 							<p>Units on this zone are</p>
-							<p ng-repeat="i in game.selectedZone.units">{{i._id}} <button class="btn btn-primary" ng-click="addUnitToDisp(i._id)">Add2Disp</button></p>
+							<p ng-repeat="i in selectedZone.units">{{i._id}} <button class="btn btn-primary" ng-click="addUnitToDisp(i._id)">Add2Disp</button></p>
 						<div ng-if="disp.step>0">
 							<h3>Choose a zone</h3>
 							Click on a zone you want to move to : {{game.zonesDesc[game.zones[disp.zoneBId].zoneDesc].name}}
@@ -44,9 +44,9 @@
 
 					<hr />
 
-					<div ng-if="game.selectedZone" class="center-content">
-						<h2>{{game.zonesDesc[game.zones[game.selectedZone._id].zoneDesc].name}}</h2>
-						<h3 ng-if="game.zones[game.selectedZone._id].owner">Possédée par {{game.players[game.zones[game.selectedZone._id].owner].name}}</h3>
+					<div ng-if="selectedZone" class="center-content">
+						<h2>{{game.zonesDesc[game.zones[selectedZone._id].zoneDesc].name}}</h2>
+						<h3 ng-if="game.zones[selectedZone._id].owner">Possédée par {{game.players[game.zones[selectedZone._id].owner].name}}</h3>
 						<div class="row">
 						</div>
 					</div>
@@ -70,7 +70,7 @@
 								</div>
 
 								<div id="row-unit-actions" class="col-md-3 nopadding center-content">
-									<button class="btn btn-primary btn-success" ng-if="game.zones[game.selectedZone._id].owner === player._id" ng-click="buyUnit(i.type)">+</button>
+									<button class="btn btn-primary btn-success" ng-if="game.zones[selectedZone._id].owner === player._id" ng-click="buyUnit(i.type)">+</button>
 									<button ng-if="unitsByTypeForZone[i.type].length > 0" class="btn btn-primary btn-danger" ng-click="sell(unitsByType[i][0].zone,unitsByType[i][0]._id,unitsByType[i][0].player)">-</button>
 								</div>
 							</div>

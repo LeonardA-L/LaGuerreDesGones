@@ -439,7 +439,7 @@ var processHop = function(a){
 		b.save();
 };
 
-processVelovStationUpdate = function(a){
+var processVelovStationUpdate = function(a){
 	console.log('--- Velov Update started ---');
 	var xmlHttp = new XmlHttpRequest();	
 	xmlHttp.open( 'GET', 'https://api.jcdecaux.com/vls/v1/stations?contract=Lyon&apiKey=d7f8e02837f368139f58a1efda258d77b8366bfe', false );
@@ -589,6 +589,7 @@ function calculateTravelTime(modeNum, symetric) {
 					delete times[tv.departureZone];
 				}
 			}
+			// persist last travel time
 	     	for(var departure in times) {
 				for(var arrival in times[departure]) {
 					tv = new TravelTime({
@@ -613,7 +614,7 @@ function calculateTravelTime(modeNum, symetric) {
     });
 }
 
-processTCLUpdate = function(a){
+var processTCLUpdate = function(a){
 	calculateTravelTime(3, true);
 	var b = new Action({
 			type:7,

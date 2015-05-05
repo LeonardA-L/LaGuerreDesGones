@@ -26,9 +26,14 @@
 
 	<div class="input-group">
 		<span class="input-group-addon" id="basic-addon1">Starting time :</span>
-		<select ng-model="startTime" class="form-control">
+
+		<select ng-model="startHour" class="hourSelect form-control">
 			<option ng-repeat="hour in hours">{{hour.num}}</option>
 		</select>
+		<select ng-model="startTime" class="hourSelect form-control">
+			<option ng-repeat="minute in minutes">{{minute.num}}</option>
+		</select>
+		
 	</div>
 	<div ng-show="errDate" class="alert alert-danger" role="alert">
 		Starting hour is too early !
@@ -73,7 +78,7 @@
 
 	<div id="textSuccess" ng-if="partyHost" class="alert alert-info" role="alert">
 	You can <span ng-if="b_lastGameHasSameName"> still </span> <a class="alert-link" href="/#!/host"> create an other games</a>, 
-	<a class="alert-link" href="/#!/perso">join your games</a> or <a class="alert-link" href="/#!/join"> join other games</a>. </div>
+	<a class="alert-link" href="/#!/perso">see your games</a> or <a class="alert-link" href="/#!/join"> join other games</a>. </div>
 	</div>
 
 </form>

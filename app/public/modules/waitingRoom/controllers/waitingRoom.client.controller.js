@@ -25,7 +25,7 @@ angular.module('waitingRoom').controller('WaitingRoomController', ['$scope',
 		*/
 
 		//$scope.listAvailable = [];
-
+		var timerToDestroy = undefined;
 		var retrieveAvailable = function(){
 			//console.log('retrieving available games');
 
@@ -33,13 +33,18 @@ angular.module('waitingRoom').controller('WaitingRoomController', ['$scope',
 			  //success(function(data, status, headers, config) {
 			  success(function(data) {
 				$scope.listAvailable = data.success;
-				$timeout(retrieveAvailable,refreshRate);
+				timerToDestroy = $timeout(retrieveAvailable,refreshRate);
 				console.log(data);
 			  }).
 			  error(function(data) {
 			    console.log('error');
 			  });
 		};
+
+		$scope.$on("$destroy", function(){
+        	if(timerToDestroy)
+        		$timeout.cancel(timerToDestroy);
+    	});
 
 		retrieveAvailable();
 	}

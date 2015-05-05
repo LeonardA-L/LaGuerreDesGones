@@ -32,14 +32,16 @@ var NEUTRAL = 'neutral';
 
 var DEFAULT_MAX_UNIT_NUMBER = 8;
 
-var updateInterval = 120000;
+var updateInterval = 30000;
 var updateMoney = 0;
 
 var pointBuyFactor = 0.5;
 var pointSellFactor = 0.5;
 var baseDispPoints = 2;
 var baseWarPoints = 4;
-var winPoints = 11
+var winPoints = 11;
+
+var victoryPoint = 300;
 
 var hopMoney = 100;
 var winMoney = 100;
@@ -51,14 +53,7 @@ var baseHP = 40;
 
 var maxUnitPerZone = 8;
 
-
-var syncEndProcess = function(action, failed){
-	action.status = 2;
-	if(failed){
-		action.status = 3;
-		console.log('Action failed');
-	}
-	action.save();
+var notifyServer = function(gameId){
 	var options = {
 	  host: (process.argv[2]||config.defaultHost),
 	  path: '/'+config.callback,
@@ -75,8 +70,37 @@ var syncEndProcess = function(action, failed){
 	req.on('error', function(error) {
   		if(debug) console.log('Server unreachable');
 	});
-	req.write(JSON.stringify({game:action.game._id || action.game}));
+	req.write(JSON.stringify({game:gameId}));
 	req.end();
+};
+
+var syncEndProcess = function(action, failed){
+	action.status = 2;
+	if(failed){
+		action.status = 3;
+		console.log('Action failed');
+	}
+	action.save();
+	if(action.game){
+		if(action.type === 8){
+			if(action.game.winner){
+				notifyServer(action.game._id || action.game);
+			}
+		}
+		else{
+			var endCheck = new Action({
+				status:0,
+				type:8,
+				date:new Date(),
+				game:action.game._id || action.game
+			});
+			endCheck.save();
+			notifyServer(action.game._id || action.game);
+		}
+	}
+	else{
+		// Push to all
+	}
 };
 
 var affectUnitToZone = function(u,z,zd){
@@ -463,6 +487,25 @@ var processHop = function(a){
 		b.save();
 };
 
+var processEndCheck = function(a){
+	Player.find({'game':a.game._id}).sort('-point').exec(function(err, players){
+		if(players[0].point >= victoryPoint){
+			if(debug) console.log(players[0].name+' wins');
+			a.game.winner = players[0]._id;
+			a.game.save(function(err){
+				if(debug) console.log(err);
+			});
+			Action.find({'game':a.game._id}, function(err,actions){
+				for(var i=0;i<actions.length;i++){
+					actions[i].status=4;
+					actions[i].save();
+				}
+			});
+		}
+		syncEndProcess(a);
+	});
+};
+
 var actionHandlers = [];
 actionHandlers.push(processDisplacement);
 actionHandlers.push(processEndDisplacement);
@@ -470,6 +513,9 @@ actionHandlers.push(processInit);
 actionHandlers.push(processBuy);
 actionHandlers.push(processSell);
 actionHandlers.push(processHop);
+actionHandlers.push(null);
+actionHandlers.push(null);
+actionHandlers.push(processEndCheck);
 
 // TODO
  var processAction = function(a){
@@ -516,6 +562,9 @@ var execute = function(){
 						Action.findOne({'_id':doc._id}).populate('player zone').exec(actionCallback);
 					break;
 					case 5: // Hop
+						Action.findOne({'_id':doc._id}).populate('game').exec(actionCallback);
+					break;
+					case 8: // Hop
 						Action.findOne({'_id':doc._id}).populate('game').exec(actionCallback);
 					break;
 				}

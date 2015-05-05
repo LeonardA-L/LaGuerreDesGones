@@ -137,13 +137,14 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			});
 		};
 
-		$scope.sell = function(zoneId,unitId,playerId){
+		$scope.sell = function(zoneId,unitId,playerId,unitType){
   			var dto = {
   				'zone':$scope.game.units[0].zone,
   				'unit':$scope.game.units[0]._id,
   				'player':$scope.game.units[0].player,
   				'game':gameId
   			};
+  			$scope.lessUnitToDisplace(this.unitType); // à mettre dans le succes mais ça marchait pas :/
 			$http.post('/services/action/sell',dto).
 			//success(function(data, status, headers, config) {
 			success(function(data) {
@@ -282,7 +283,6 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 
 		$scope.prepareDisp = function(){
 			$scope.resetMode();
-			$scope.mode='displacement';
 			$scope.disp = {
 				'zoneAId':$scope.selectedZone._id,
 				'unitIds':[],
@@ -348,6 +348,7 @@ var unitType=undefined;
 		$scope.plusUnitToDisplace = function (idType) {
 			if($scope.disp.unitTypes[idType] < $scope.unitsByTypeForZone[idType].length) {
 				$scope.disp.unitTypes[idType]++;
+				$scope.mode='displacement';
 			}
 		};
 
@@ -355,8 +356,14 @@ var unitType=undefined;
 			if($scope.disp.unitTypes[idType] > 0) {
 				$scope.disp.unitTypes[idType]--;
 			}
+			if ($("#list-unit").find(".row-unit-disp-selected").length == 0) {
+				$scope.endDisplacement();
+			}
 		};
  
+ 		$scope.endDisplacement = function () {
+ 			$scope.mode='';
+ 		}
  
 		$scope.onUnitIconDrag = function (event, ui) {
 			if (''==$scope.mode) {
@@ -373,7 +380,6 @@ var unitType=undefined;
 
   		$scope.prepareDispDrag = function () {
 			$scope.resetMode();
-			$scope.mode='displacement';
 			$scope.disp = {
 				//'zoneAId':$scope.game.selectedZone._id,
 				'unitTypes':[],

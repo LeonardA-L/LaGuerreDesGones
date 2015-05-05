@@ -204,13 +204,14 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 					strokeOpacity: 0.65,
 					strokeWeight: 2,
 					fillColor: '#333333',
-					fillOpacity: 0.35
+					fillOpacity: 0.35,
+					clickable:false
 				});
 				borderPolygon.zoneId = game.zones[i]._id;
 				borderPolygon.zoneDescId = game.zones[i].zoneDesc;
 				allPolygons[borderPolygon.zoneId] = borderPolygon;
 				// Listener on click
-				google.maps.event.addListener(borderPolygon, 'click', onZoneClicked);
+				//google.maps.event.addListener(borderPolygon, 'click', onZoneClicked);
 				borderPolygon.setMap(map);
 			}
 			// Add zones Polygons to Game variable
@@ -240,6 +241,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		$scope.resetMode=function(){
 			$scope.mode = '';
 			$scope.disp = {};
+			$scope.dispDrag = {};
 		};
 
 		$scope.prepareDisp = function(){
@@ -262,8 +264,8 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			$scope.resetMode();
 		};
 
-		function onZoneClicked(event){
-			var that = this;
+		function onZoneClicked(polygon){
+			var that = polygon;
 			$scope.$apply(function(){
 				if($scope.mode === 'displacement' && $scope.disp.step>=1){
 					$scope.disp.zoneBId = that.zoneId;
@@ -283,22 +285,52 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			$('#game-wrap-panels').css({'height':(($(window).height())-$('header').height())+'px'});
 		});
 
+var isDragging=false;
+var unitType=undefined;
+
 		$document.ready(function() {
 			initMap();
 
-			google.maps.event.addDomListener(map, "click", function (event) {
+			google.maps.event.addDomListener(map, 'click', function (event) {
 				for (var i in $scope.game.zonesPolygons) {
 					var polygon=$scope.game.zonesPolygons[i];
         			if(google.maps.geometry.poly.containsLocation(event.latLng, polygon)) {
-            			onZoneClicked(polygon);
+        				if(! isDragging) {
+            				onZoneClicked(polygon);
+            				break;
+            			}
+            			else {
+            				console.log(unitType);
+            				$scope.disp.unitTypes.push(unitType);
+            				//$scope.disp.unitsType.push();
+            			}
             			break;
         			}
     			}
 			});
 		});
 
+		$scope.onUnitIconDrag = function (event, ui) {
+			if (''==$scope.mode) {
+				$scope.prepareDispDrag();
+			}
+			unitType=ui.helper.attr("data-unit-type");
+			isDragging=true;
+		};
+
   		$scope.onUnitIconDrop = function (event, ui) {
 			simulateClick(event.pageX, event.pageY);
+			isDragging=false;
+  		};
+
+  		$scope.prepareDispDrag = function () {
+			$scope.resetMode();
+			$scope.mode='displacement';
+			$scope.disp = {
+				//'zoneAId':$scope.game.selectedZone._id,
+				'unitTypes':[],
+				//'step':0
+			};
   		};
 
   		function simulateClick(x, y) {

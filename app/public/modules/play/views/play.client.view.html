@@ -21,7 +21,7 @@
 							<label>Nouvelles unités dans {{remaining}}</label>
 						</div>
 						<div class="col-md-12 separator"></div>
-						<div class="col-md-12" style="text-align: center; ">
+						<div class="col-md-12 center-content" >
 							<label>Points {{player.point}}</label>
 						</div>
 					</div>
@@ -53,9 +53,9 @@
 
 					<div class="row" ng-if="listUnitType">
 						<div ng-repeat="i in game.matrixes.UnitData.content">
-							<div class="col-md-12 row-unit">
+							<div class="col-md-12 row-unit {{(disp.unitTypes[i.type].length > 0) ? 'select-to-displace' : ''}}">
 								<div class="col-md-3 nopadding">
-									<img class="unit-icon" data-drag="true" data-jqyoui-options="{revert: 'invalid',appendTo: 'body', containment: 'window', scroll: false, helper: 'clone'}" jqyoui-draggable="{animate:true,onStop:'onUnitIconDrop'}" src="http://liris.cnrs.fr/vasile-marian.scuturici/files/marian.jpg" height=74 width=74/>
+									<img class="unit-icon" data-drag="true" data-unit-type="{{i.type}}" data-jqyoui-options="{revert: 'invalid',appendTo: 'body', containment: 'window', scroll: false, helper: 'clone'}" jqyoui-draggable="{animate:true,onStart:'onUnitIconDrag', onStop:'onUnitIconDrop'}" src="http://liris.cnrs.fr/vasile-marian.scuturici/files/marian.jpg" height=74 width=74/>
 								</div>
 								<div id="row-unit-name" class="col-md-3 nopadding center-content">
 									<span>{{i.name}}</span>

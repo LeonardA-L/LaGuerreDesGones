@@ -759,8 +759,10 @@ var execute = function(){
 					break;
 					case 5: // Hop
 						Action.findOne({'_id':doc._id}).populate('game').exec(actionCallback);
+					break;
 					case 6: // Velov Update
 						Action.findOne({'_id':doc._id}).exec(actionCallback);
+					break;
 					case 7: // TCL Update
 						Action.findOne({'_id':doc._id}).exec(actionCallback);
 					break;

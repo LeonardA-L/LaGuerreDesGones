@@ -413,5 +413,11 @@ var unitType=undefined;
 		}
 		
 		$scope.resetMode();
+		window.scrollTo(0,0);
+		$('body').css('overflow-y','hidden');
+
+		$scope.$on('$destroy', function(){
+        	$('body').css('overflow-y','auto');
+    	});
 	}
 ]);

@@ -1,11 +1,10 @@
 .playSection{
-	$top-margin:50px;
+	
 	$winnerOverlayWidth:40%;
 	$winnerOverlayHeight:40%;
 
 	background: #FEE;
 	height: calc(100% - #{$top-margin} );
-	position:relative;
 	
 	.nestedClass{
 		background:#F00;

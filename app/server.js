@@ -6,60 +6,7 @@ var init = require('./config/init')(),
 	config = require('./config/config'),
 	mongoose = require('mongoose'),
 	chalk = require('chalk'),
-	schedule = require('node-schedule'),
-	XmlHttpRequest = require('xmlhttprequest').XMLHttpRequest;
-	
-
-function velovProcess(data)
-{
-	var BikeStation = mongoose.model('BikeStation');
-	var velovStationID = [11001, 4002, 1301, 2030, 2002, 2004, 2007, 5045, 5044, 5040, 9004, 12001, 10119, 10102, 6036,
-							10072, 10031, 6007, 6044, 10117, 3082, 3099, 10113, 3090, 8002, 7062, 7061, 7007, 7020, 8051, 8061];
-
-	var mBikeStations = [];
-	BikeStation.find({ 'idStation' : {$in:velovStationID}}, function(err, bikeStations)
-	{
-		mBikeStations = bikeStations;
-		console.log(mBikeStations);
-		for(var i = 0; i<data.length; i++){			
-			for(var j=0; j<mBikeStations.length; j++)
-			{
-				console.log('COMPARING  ' + mBikeStations[j].idStation + ' WITH ' + data[i].number);
-				if(mBikeStations[j].idStation === data[i].number)
-				{
-					mBikeStations[j].standsAvailable = data[i].available_bike_stands;
-					mBikeStations[j].bikesAvailable = data[i].available_bikes;
-					mBikeStations[j].date = new Date();
-					console.log(data[i].available_bike_stands);
-					mBikeStations[j].save();
-					console.log(mBikeStations[j]+' SAUVEGARDE !!!!!');
-				}
-			}
-	}
-});
-	
-	
-	
-}
-
-function persistAllBikeStations()
-{
-	var BikeStation = mongoose.model('BikeStation');
-	var velovStationID = [11001, 4002, 1301, 2030, 2002, 2004, 2007, 5045, 5044, 5040, 9004, 12001, 10119, 10102, 6036,
-							10072, 10031, 6007, 6044, 10117, 3082, 3099, 10113, 3090, 8002, 7062, 7061, 7007, 7020, 8051, 8061];
-
-	for(var i = 0; i<velovStationID.length; i++){
-		var bikeStation = new BikeStation({
-			idStation:velovStationID[i],
-			date:new Date()
-		});
-
-		bikeStation.save();
-	}
-}
-
-
-
+	cronjob = require('./app/controllers/cronjob.server.controller');
 
 function calculateTravelTime(modeNum, symetric) {
 	var TravelTime = mongoose.model('TravelTime');
@@ -150,26 +97,6 @@ function calculateTravelTime(modeNum, symetric) {
 
 }
 
-
-
-
-
-/**
-* Recupererer service
-* Traiter le resultat (parser, maj des infos....)
-* Persistance dans la base
-*/
-function registerCronJob(serviceAddress, resultTreatment, cronMinutesInterval)
-{  
-	var cron = schedule.scheduleJob(cronMinutesInterval+' * * * *', function(){
-		var xmlHttp = new XmlHttpRequest();	
-		xmlHttp.open( 'GET', serviceAddress, false );
-		xmlHttp.send();
-		var data = JSON.parse(xmlHttp.responseText);
-		var result = resultTreatment(data);
-		});
-}
-
 /**
  * Main application entry file.
  * Please note that the order of loading is important.
@@ -199,10 +126,9 @@ exports = module.exports = app;
 // Logging initialization
 console.log('MEAN.JS application started on port ' + config.port);
 
-calculateTravelTime(3, true);
+//calculateTravelTime(3, true);
 
-//persistAllBikeStations();
-//registerCronJob('https://api.jcdecaux.com/vls/v1/stations?contract=Lyon&apiKey=d7f8e02837f368139f58a1efda258d77b8366bfe', velovProcess, '*');
+cronjob.registerCronJob('https://api.jcdecaux.com/vls/v1/stations?contract=Lyon&apiKey=d7f8e02837f368139f58a1efda258d77b8366bfe', cronjob.velovProcess, '*');
 
 
 

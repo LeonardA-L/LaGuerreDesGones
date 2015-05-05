@@ -347,13 +347,13 @@ var unitType=undefined;
 
 		$scope.plusUnitToDisplace = function (idType) {
 			if($scope.disp.unitTypes[idType] < $scope.unitsByTypeForZone[idType].length) {
-				$scope.disp.unitTypes[unitType]++;
+				$scope.disp.unitTypes[idType]++;
 			}
 		};
 
 		$scope.lessUnitToDisplace = function (idType) {
 			if($scope.disp.unitTypes[idType] > 0) {
-				$scope.disp.unitTypes[unitType]--;
+				$scope.disp.unitTypes[idType]--;
 			}
 		};
  

@@ -49,6 +49,7 @@ var updateMoney = 0;
 
 var pointBuyFactor = 0.5;
 var pointSellFactor = 0.5;
+var baseWarPoints = 4;
 
 // dirty pasted model
 
@@ -316,7 +317,7 @@ var affectUnitToZone = function(u,z,zd){
 var processDisplacement = function(a){
 
 	var syncFunction=function(){
-		var duration = 30000;
+		var duration = 10000;
 		for (var i=0 ; i < a.units.length ; ++i) {
 	 		var u = a.units[i];
 	 		u.available=false;
@@ -369,21 +370,69 @@ var processDisplacement = function(a){
 var processEndDisplacement = function(a){
 	if(debug) console.log('Processing end displacement action');
 	//console.log(a);
-	Zone.findById(a.game.zone).populate('zoneDesc').exec(function(err,zo){
+	Zone.findById(a.zone._id).populate('zoneDesc units').exec(function(err,zo){
 		a.game.zone = zo;
- 		for (var i=0 ; i < a.units.length ; ++i) {
+		a.zone = zo;
+		var i=0;
+
+		var firstID = undefined
+		var firstUnits = [];
+		if(a.zone.units.length > 0){
+			firstID = a.zone.units[0].player;
+		}
+		console.log(firstID);
+		for(i=0;i<a.zone.units.length;i++){
+			var u = a.zone.units[i];
+			firstUnits.push(u);
+			console.log(u);
+		}
+		console.log('New on stage');
+		var secondID = a.units[0].player;
+		console.log(secondID);
+		var secondUnits = [];
+ 		for (i=0 ; i < a.units.length ; ++i) {
 	 		var u = a.units[i];
 	 		u.available=true;
 	 		u.ts=a.date.getTime();
 	 		u.te=u.ts;
 	 		affectUnitToZone(u,a.zone, a.zone.zoneDesc);
-			a.zone.save();
-			// TODO
+			console.log(u);
+			secondUnits.push(u);
 			u.save();
  		}
-		// TODO Zone Owner
+		
+		// TODO Battle
+		if(''+firstID !== ''+secondID && firstID !== undefined){
+			Player.find({'_id':{$in:[firstID,secondID]}},function(err,players){
+				var fp = players[0];
+				var sp = players[1];
+				if(players[0]._id === secondID){
+					fp = players[1];
+					sp = players[0];
+				}
 
-		syncEndProcess(a);
+				fp.point+=baseWarPoints;
+				sp.point+=baseWarPoints;
+
+				console.log('Battle between '+fp.name+' and '+sp.name);
+				// TODO Zone Owner
+				sp.save();
+				fp.save();
+				a.zone.save();
+				syncEndProcess(a);
+			});
+		}
+		else{
+			Player.findById(secondID,function(err,player){
+				console.log('No Battle');
+				player.point+=baseWarPoints;
+				player.save();
+				a.zone.save();
+				syncEndProcess(a);
+			});
+		}
+		
+		
  	});
 	
 };

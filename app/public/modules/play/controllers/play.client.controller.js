@@ -278,6 +278,26 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			});
 		}
 
+		// Chat Messages
+		$scope.sendMessage = function(message){
+				console.log('Controller Sending Messages');
+
+				var chatMessage = {
+	  				'game': gameId,
+	  				'message': message,
+	  				'player': '1'//TODO $scope.player._id‏
+				};
+
+				$http.post('/services/chat/send', chatMessage).
+				//success(function(data, status, headers, config) {
+				success(function(data) {	
+			  		console.log('Success posting chat message');							
+			 	})
+				.error(function(data) {
+			  		console.log('Error in posting chat message');
+			 	});
+		};		
+
 		$('#game-wrap-panels').css({'height':(($(window).height())-$('header').height())+'px'});
 		$(window).resize(function() {
 			$('#game-wrap-panels').css({'height':(($(window).height())-$('header').height())+'px'});

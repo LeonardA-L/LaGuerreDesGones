@@ -32,4 +32,6 @@ module.exports = function(app) {
 	app.route('/services/play/callback').post(webservices.actionCallback);	
 
 	app.route('/services/firstUse').get(webservices.firstUseFillBDD);
+
+	app.route('/services/chat/send').post(webservices.sendMessage);		
 };

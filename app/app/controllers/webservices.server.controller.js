@@ -309,7 +309,7 @@ var getPlay = function(gameId, callback, res){
 	var result = {
 		success:{}
 	};
-	var syncCallback = 7;
+	var syncCallback = 8;
 	var Game = mongoose.model('Game');
 	var Player = mongoose.model('Player');
 	var Zone = mongoose.model('Zone');
@@ -317,6 +317,7 @@ var getPlay = function(gameId, callback, res){
 	var Action = mongoose.model('Action');
 	var Matrix = mongoose.model('Matrix');
 	var ZoneDesc = mongoose.model('ZoneDescription');
+	var ChatMessage = mongoose.model('ChatMessage');
 
 	console.log(gameId);
 	Game.findOne({'_id':gameId}, function(err,game){
@@ -380,6 +381,18 @@ var getPlay = function(gameId, callback, res){
 		for(var i=0;i<matrixes.length;i++){
 			result.success.matrixes[matrixes[i].name] = matrixes[i];
 		}
+		if(--syncCallback === 0){
+			callback(result);
+		}
+	});
+	
+	ChatMessage.find({'game':gameId}, function(err,chatMessages){
+		console.log('################## Chat Message #################');
+		console.log(chatMessages);
+		console.log('################## Fin Chat Message #################');
+		if(res && err)
+			res.send(err);
+		result.success.chatMessages = chatMessages;
 		if(--syncCallback === 0){
 			callback(result);
 		}
@@ -599,3 +612,21 @@ exports.actionCallback = function(req,res){
 	};
 	res.json(ret);
 };
+
+// Chat message
+exports.sendMessage = function(req,res){
+	console.log('Sending a message in the chat');
+	
+	var ChatMessage = mongoose.model('ChatMessage');
+
+	var cm = new ChatMessage({
+		game: req.body.game,
+		player:req.body.player,
+		message:req.body.message,
+		date:new Date()
+    });
+	console.log('chatMessage = ' + cm + '##### END OF MESSAGE');
+
+	cm.save();
+};
+

@@ -314,7 +314,6 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 				else{
 					$scope.resetMode();
 					$scope.selectedZone = $scope.game.zones[that.zoneId];	// TODO Fix this
-					//console.log($scope.game);
 					$scope.listUnitsByType($scope.game.zones[that.zoneId].units);
 					colorMap();
 				}
@@ -362,7 +361,14 @@ var unitType=undefined;
 			if($scope.disp.unitTypes[idType] > 0) {
 				$scope.disp.unitTypes[idType]--;
 			}
-			if ($("#list-unit").find(".row-unit-disp-selected").length == 0) {
+			var isEndDisplacement = true;
+			for (var i = 0 ; i < $scope.disp.unitTypes.length ; ++i) {
+				if ($scope.disp.unitTypes[i]>0) {
+					isEndDisplacement=false;
+					break;
+				}
+			}
+			if (isEndDisplacement) {
 				$scope.endDisplacement();
 			}
 		};

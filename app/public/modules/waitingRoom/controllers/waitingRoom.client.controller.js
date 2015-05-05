@@ -34,6 +34,7 @@ angular.module('waitingRoom').controller('WaitingRoomController', ['$scope',
 			  success(function(data) {
 				$scope.listAvailable = data.success;
 				$timeout(retrieveAvailable,refreshRate);
+				console.log(data);
 			  }).
 			  error(function(data) {
 			    console.log('error');

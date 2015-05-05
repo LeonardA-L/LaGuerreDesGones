@@ -69,7 +69,6 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 				$scope.minutes[i]={'num':i};
 			}
 		}
-		console.log($scope);
 
 
 		

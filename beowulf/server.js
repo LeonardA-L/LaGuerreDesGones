@@ -49,7 +49,9 @@ var updateMoney = 0;
 
 var pointBuyFactor = 0.5;
 var pointSellFactor = 0.5;
+var baseDispPoints = 2;
 var baseWarPoints = 4;
+var winPoints = 11
 
 var odds = 25;
 
@@ -420,6 +422,8 @@ var processEndDisplacement = function(a){
 				var i=0;
 				var j=0;
 				var baseHP = 10;
+
+				// Start by giving everyone HPs
 				for(i=0;i<firstUnits.length;i++){
 					firstUnits[i].hp = baseHP * secondUnits.length;
 				}
@@ -427,36 +431,35 @@ var processEndDisplacement = function(a){
 					secondUnits[i].hp = baseHP * firstUnits.length;
 				}
 
+				// While there is still two team
 				while(firstUnits.length > 0 && secondUnits.length > 0){
-					console.log('Entering Loop');
+					//console.log('Entering Loop');
+
+					// for each pair, make them battle
 					for(i=0;i<firstUnits.length;i++){
 						for(j=0;j<secondUnits.length;j++){
-
 							var f = firstUnits[i];
 							var s = secondUnits[j];
-							console.log('Fight '+i+'-'+j);
-							console.log(f);
-							console.log(s);
-
+							
 							// f to s
 							var r1 = (((Math.random()*2*odds)-odds)/100)+1;
 							var r2 =(((Math.random()*2*odds)-odds)/100)+1;
 							var d = baseHP * (r1*f.attack/10) * (r2*(1-s.defence)/10);
-							console.log(d);
 							s.hp -= d;
+
 							// s to f
 							r1 = (((Math.random()*2*odds)-odds)/100)+1;
 							r2 = (((Math.random()*2*odds)-odds)/100)+1;
 							d = baseHP * (r1*s.attack/10) * (r2*(1-f.defence)/10);
 							f.hp -= d;
-							console.log(d);
 						}
 					}
 
+					// Take out the ones who are dead
 					for(i=0;i<firstUnits.length;i++){
 						if(firstUnits[i].hp <= 0){
 							var u = firstUnits[i];
-							console.log(u._id + ' OUT !');
+							//console.log(u._id + ' OUT !');
 							
 							for(j = 0; j<a.zone.units.length;j++){
 								if(a.zone.units[j]._id === u._id){
@@ -488,7 +491,15 @@ var processEndDisplacement = function(a){
 					}
 				}
 				
-				// TODO Zone Owner
+				if(secondUnits.length > 0){
+					sp.point+=winPoints;
+					a.zone.owner = sp._id;
+				}
+				if(firstUnits.length > 0){
+					fp.point+=winPoints;
+					a.zone.owner = fp._id;
+				}
+
 				sp.save();
 				fp.save();
 				a.zone.save();
@@ -498,7 +509,7 @@ var processEndDisplacement = function(a){
 		else{
 			Player.findById(secondID,function(err,player){
 				console.log('No Battle');
-				player.point+=baseWarPoints;
+				player.point+=baseDispPoints;
 				player.save();
 				a.zone.save();
 				syncEndProcess(a);

@@ -47,6 +47,14 @@ var DEFAULT_MAX_UNIT_NUMBER = 8;
 var updateInterval = 120000;
 var updateMoney = 0;
 
+var pointBuyFactor = 0.5;
+var pointSellFactor = 0.5;
+var baseDispPoints = 2;
+var baseWarPoints = 4;
+var winPoints = 11
+
+var odds = 25;
+
 // dirty pasted model
 
 var MatrixSchema = new Schema({
@@ -313,7 +321,7 @@ var affectUnitToZone = function(u,z,zd){
 var processDisplacement = function(a){
 
 	var syncFunction=function(){
-		var duration = 30000;
+		var duration = 10000;
 		for (var i=0 ; i < a.units.length ; ++i) {
 	 		var u = a.units[i];
 	 		u.available=false;
@@ -366,21 +374,149 @@ var processDisplacement = function(a){
 var processEndDisplacement = function(a){
 	if(debug) console.log('Processing end displacement action');
 	//console.log(a);
-	Zone.findById(a.game.zone).populate('zoneDesc').exec(function(err,zo){
+	Zone.findById(a.zone._id).populate('zoneDesc units').exec(function(err,zo){
 		a.game.zone = zo;
- 		for (var i=0 ; i < a.units.length ; ++i) {
+		a.zone = zo;
+		var i=0;
+
+		var firstID = undefined
+		var firstUnits = [];
+		if(a.zone.units.length > 0){
+			firstID = a.zone.units[0].player;
+		}
+		console.log(firstID);
+		for(i=0;i<a.zone.units.length;i++){
+			var u = a.zone.units[i];
+			firstUnits.push(u);
+		}
+		console.log('New on stage');
+		var secondID = a.units[0].player;
+		console.log(secondID);
+		var secondUnits = [];
+ 		for (i=0 ; i < a.units.length ; ++i) {
 	 		var u = a.units[i];
 	 		u.available=true;
 	 		u.ts=a.date.getTime();
 	 		u.te=u.ts;
 	 		affectUnitToZone(u,a.zone, a.zone.zoneDesc);
-			a.zone.save();
-			// TODO
+			secondUnits.push(u);
 			u.save();
  		}
-		// TODO Zone Owner
+		
+		// TODO Battle
+		if(''+firstID !== ''+secondID && firstID !== undefined){
+			Player.find({'_id':{$in:[firstID,secondID]}},function(err,players){
+				
+				var fp = players[0];
+				var sp = players[1];
+				if(players[0]._id === secondID){
+					fp = players[1];
+					sp = players[0];
+				}
 
-		syncEndProcess(a);
+				fp.point+=baseWarPoints;
+				sp.point+=baseWarPoints;
+
+				console.log('Battle between '+fp.name+' and '+sp.name);
+				a.zone.owner = fp._id;
+				var i=0;
+				var j=0;
+				var baseHP = 10;
+
+				// Start by giving everyone HPs
+				for(i=0;i<firstUnits.length;i++){
+					firstUnits[i].hp = baseHP * secondUnits.length;
+				}
+				for(i=0;i<secondUnits.length;i++){
+					secondUnits[i].hp = baseHP * firstUnits.length;
+				}
+
+				// While there is still two team
+				while(firstUnits.length > 0 && secondUnits.length > 0){
+					//console.log('Entering Loop');
+
+					// for each pair, make them battle
+					for(i=0;i<firstUnits.length;i++){
+						for(j=0;j<secondUnits.length;j++){
+							var f = firstUnits[i];
+							var s = secondUnits[j];
+							
+							// f to s
+							var r1 = (((Math.random()*2*odds)-odds)/100)+1;
+							var r2 =(((Math.random()*2*odds)-odds)/100)+1;
+							var d = baseHP * (r1*f.attack/10) * (r2*(1-s.defence)/10);
+							s.hp -= d;
+
+							// s to f
+							r1 = (((Math.random()*2*odds)-odds)/100)+1;
+							r2 = (((Math.random()*2*odds)-odds)/100)+1;
+							d = baseHP * (r1*s.attack/10) * (r2*(1-f.defence)/10);
+							f.hp -= d;
+						}
+					}
+
+					// Take out the ones who are dead
+					for(i=0;i<firstUnits.length;i++){
+						if(firstUnits[i].hp <= 0){
+							var u = firstUnits[i];
+							//console.log(u._id + ' OUT !');
+							
+							for(j = 0; j<a.zone.units.length;j++){
+								if(a.zone.units[j]._id === u._id){
+									a.zone.units.splice(j, 1);
+									break;
+								}
+							}
+							u.remove(function(){});
+							firstUnits.splice(i, 1);
+							i--;
+						}
+					}
+
+					for(i=0;i<secondUnits.length;i++){
+						if(secondUnits[i].hp <= 0){
+							var u = secondUnits[i];
+							console.log(u._id + ' OUT !');
+							
+							for(j = 0; j<a.zone.units.length;j++){
+								if(a.zone.units[j]._id === u._id){
+									a.zone.units.splice(j, 1);
+									break;
+								}
+							}
+							u.remove(function(){});
+							secondUnits.splice(i, 1);
+							i--;
+						}
+					}
+				}
+				
+				if(secondUnits.length > 0){
+					sp.point+=winPoints;
+					a.zone.owner = sp._id;
+				}
+				if(firstUnits.length > 0){
+					fp.point+=winPoints;
+					a.zone.owner = fp._id;
+				}
+
+				sp.save();
+				fp.save();
+				a.zone.save();
+				syncEndProcess(a);
+			});
+		}
+		else{
+			Player.findById(secondID,function(err,player){
+				console.log('No Battle');
+				player.point+=baseDispPoints;
+				player.save();
+				a.zone.save();
+				syncEndProcess(a);
+			});
+		}
+		
+		
  	});
 	
 };
@@ -416,11 +552,12 @@ var processInit = function(a){
 				var nz = neutralZones[idx];
 				var nzd = neutralZonesDesc[idx];
 				for(var j=0;j<initPlayers;j++){
-					var u = new Unit({
-						game:a.game._id,
-						player:players[i]._id,
-						zone:nz._id
-					});
+					var u = new Unit(matrixes.UnitData.content[0]);
+
+					u.game=a.game._id,
+					u.player=players[i]._id,
+					u.zone=nz._id
+
 					affectUnitToZone(u,nz,nzd);
 					if(players[i].units === undefined){
 						players[i].units = [u._id];
@@ -460,12 +597,13 @@ var processBuy = function(a){
 	if(debug) console.log('Processing buy action');
 	var price = matrixes.UnitData.content[a.newUnitType].price;
 	a.player.money -= price;
+	a.player.point += price*pointBuyFactor;
 	// TODO create unit according to real stuff
 	var u = new Unit(matrixes.UnitData.content[a.newUnitType]);
 	ZoneDescription.findById(a.zone.zoneDesc,function(err, zd){
+		u.player = a.player._id;
 		affectUnitToZone(u,a.zone,zd);
 		a.player.units.push(u._id);
-		u.player = a.player._id;
 		u.save();
 		a.zone.save();
 		a.player.save();
@@ -489,6 +627,7 @@ var processSell = function(a){
 		a.player.money += price;
 		a.zone.units.splice(a.zone.units.indexOf(a.units[0]),1);
 		a.player.units.splice(a.player.units.indexOf(a.units[0]),1);
+		a.player.point += price*pointSellFactor;
 		a.player.save();
 		a.zone.save();
 
@@ -508,10 +647,11 @@ var processHop = function(a){
 				if(zones[i].units.length > 0){
 					// Generate Unit
 					var u = new Unit(matrixes.UnitData.content[matrixes.ZoneTypeToUnitType.content[zones[i].zoneDesc.type]]);
-					affectUnitToZone(u,zones[i],zones[i].zoneDesc);
 					// affect to player
 					var p = players[zones[i].units[0].player];
 					u.player = p._id;
+					affectUnitToZone(u,zones[i],zones[i].zoneDesc);
+					
 					p.units.push(u._id);
 
 					zones[i].save();

@@ -149,6 +149,10 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			});
 		};
 
+		$scope.buyUnit = function(newUnitTypeN){
+			$scope.buy($scope.game.selectedZone._id, $scope.player._id, newUnitTypeN);
+		};
+
 		$scope.buy = function(zoneId, playerId, newUnitTypeN){
 			console.log('Buying');
 			var dto = {

@@ -25,15 +25,18 @@
 	<br/>
 
 	<div class="input-group">
-	<span class="input-group-addon" id="basic-addon1">Starting time :</span>
-	<select ng-model="startTime" class="form-control">
-		<option ng-repeat="hour in hours">{{hour.num}}</option>
-	</select>
-	<br />
-	<span ng-show="errDate">Starting hour is too early</span>
+		<span class="input-group-addon" id="basic-addon1">Starting time :</span>
+		<select ng-model="startTime" class="form-control">
+			<option ng-repeat="hour in hours">{{hour.num}}</option>
+		</select>
 	</div>
-
-	<br/>
+	<div ng-show="errDate" class="alert alert-danger" role="alert">
+		Starting hour is too early !
+		<br/> 
+	</div>
+	<div ng-show="!errDate"> 
+		<br/> 
+	</div>
 
 	<div class="input-group">
 		<span class="input-group-addon" id="basic-addon1">Minimum number of players :</span>
@@ -60,18 +63,17 @@
 	
 	<div id="confirmationOfHosting" ng-if="partyNotHost"> We fail to host your game !</div>
 
-	<div id="warning" ng-if="b_lastGameHasSameName">
-		You created two games in a row with the name "{{lastTitleGame}}" but...
+	<div id="warning" ng-if="b_lastGameHasSameName" class="alert alert-warning" role="alert">
+		You created two games in a row with the name "{{lastTitleGame}}" !
 	</div> 
 
-	<div id="textSuccess" ng-if="partyHost && !b_lastGameHasSameName"> 
+	<div id="textSuccess" ng-if="partyHost && !b_lastGameHasSameName" class="alert alert-success" role="alert"> 
 		Your game "{{lastTitleGame}}" has been succesfully hosted !
 	</div> 
 
-	<br/>
-	<div id="textSuccess" ng-if="partyHost"> 
-	You can <span ng-if="b_lastGameHasSameName"> still </span> <a class="internsLinks" href="/#!/host"> create an other games</a>, 
-	<a class="internsLinks" href="/#!/perso">join your games</a> or <a class="internsLinks" href="/#!/join"> join other games</a>. </div>
+	<div id="textSuccess" ng-if="partyHost" class="alert alert-info" role="alert">
+	You can <span ng-if="b_lastGameHasSameName"> still </span> <a class="alert-link" href="/#!/host"> create an other games</a>, 
+	<a class="alert-link" href="/#!/perso">join your games</a> or <a class="alert-link" href="/#!/join"> join other games</a>. </div>
 	</div>
 
 </form>

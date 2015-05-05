@@ -73,6 +73,7 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 		$scope.b_lastGameHasSameName = false;
 
 		$scope.createGame = function(){
+			$scope.partyHost = false;
 			$scope.b_lastGameHasSameName = false;
 			$scope.errDate=false;
 			var _time=$scope.startTime.split(':');

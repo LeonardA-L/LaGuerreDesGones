@@ -18,7 +18,6 @@
 
 	#warning{
 		font-weight: bold;
-		color: red;
 	}
 
 	#warningNext {
@@ -29,22 +28,12 @@
 		font-weight: bold;
 	}
 
-	.internsLinks{
-		color : green;
-		font-weight: bold;
-	}
-
-	.internsLinks:hover, .internsLinks:focus {
-	  	text-decoration: none;
-	}
-	
 	.title {
 		text-align : center;
 		margin-left: auto;
 		margin-right: auto;
 		width: 50%;
 	}
-
 }
 
 

@@ -72,4 +72,5 @@ var GameSchema = new Schema({
 	}
 });
 
+
 mongoose.model('Game', GameSchema);

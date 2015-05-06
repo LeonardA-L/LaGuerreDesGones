@@ -236,7 +236,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 					var marker = new google.maps.Marker({
 					      position: new google.maps.LatLng(zd.y,zd.x),
 					      map: map,
-					      icon: 'https://cdn3.iconfinder.com/data/icons/personal-business-finance-1/380/Bank-24.png'
+					      icon: 'static/zone_'+zd.type+'.png'
 					  });
 					marker.zoneId = game.zones[i]._id;
 					marker.zoneDescId = game.zones[i].zoneDesc;

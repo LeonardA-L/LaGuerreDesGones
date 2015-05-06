@@ -45,6 +45,8 @@ var baseDispPoints = 2;
 var baseWarPoints = 4;
 var winPoints = 11;
 
+var hopPointPerAdjacence = 5;
+
 var victoryPoint = 300;
 
 var hopMoney = 100;
@@ -501,6 +503,8 @@ var processHop = function(a){
 					if(zones[i].zoneDesc.type === 'bank'){
 						p.money+=bankBonus;
 					}
+					// Zones give points
+					p.point+=hopPointPerAdjacence*zones[i].zoneDesc.adjacentZones.length;
 					zones[i].save();
 					u.save();
 					p.save();

@@ -540,7 +540,7 @@ exports.firstUseFillBDD = function(req,res){
 				defence:2,
 				point:2,
 				price:20,
-				name:'Hippie'
+				name:'Joggeur'
 			},
 			{
 				type:4,
@@ -602,7 +602,7 @@ exports.firstUseFillBDD = function(req,res){
 			station : 1,
 			airport : 1,
 			city_hall:0,
-			square:4,
+			square:0,
 			shopping_centre:0,
 			bank:7
 		}});

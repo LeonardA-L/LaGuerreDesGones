@@ -11,9 +11,10 @@ var init = require('./config/init')(),
 	http = require('http'),
 	path = require('path');
 
+var startDate = undefined;
 
 var debug=config.debug;
-var state=true;
+var state=false;
 
 // Action model
 var Action = undefined;
@@ -781,6 +782,7 @@ var execute = function(){
 	    		else{
 	    			// Stopping since not needed
 	    			console.log('Stopping');
+	    			console.log('Elapsed :'+ ((new Date().getTime())-startDate));
 	    			state = false;
 	    		}
 	    	});
@@ -854,6 +856,7 @@ app.get('/', function(req, res){
 	if(!state){
 		res.send('Going to work');
 		console.log('Forced wake up');
+		startDate = (new Date()).getTime();
 		state=true;
 		execute();
 	}
@@ -865,10 +868,13 @@ app.listen(process.argv[4]||7878);
 console.log('Action processor started');
 
 var autoWakeUp = function(){
-	console.log('Auto wakeup');
-	state=true;
-	execute();
+	if(!state){
+		console.log('Auto wakeup');
+		startDate = (new Date()).getTime();
+		state=true;
+		execute();
+	}
 	setTimeout(function(){
-		autoWakeUp();
-	},config.autoWakeupInterval);
+			autoWakeUp();
+		},config.autoWakeupInterval);
 };

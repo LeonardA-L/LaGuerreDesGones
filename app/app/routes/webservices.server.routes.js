@@ -24,6 +24,7 @@ module.exports = function(app) {
 	app.route('/services/api/generateHop/:gameId').get(webservices.generateHop);
 	app.route('/services/api/cleanAll').get(webservices.cleanAll);
 	app.route('/services/api/cleanZoneDesc').get(webservices.cleanZoneDesc);
+	app.route('/services/api/fillLoad').get(webservices.fillLoad);
 
 	app.route('/services/play/:gameId/start').get(webservices.startPlay);
 

@@ -14,8 +14,7 @@ var registerAction=function(newAction){
 		console.log(data);
 	});
 };
-
-exports.cleanAll = function(req, res) {
+var doClean = function(){
 	var Game = mongoose.model('Game');
 	var Player = mongoose.model('Player');
 	var Zone = mongoose.model('Zone');
@@ -29,7 +28,88 @@ exports.cleanAll = function(req, res) {
 	Unit.remove({},function(){});
 	Action.remove({},function(){});
 	TravelTime.remove({}, function(){});
+}
 
+exports.cleanAll =  function(req, res) {
+	doClean();
+	var ret = {
+		result:'ok'
+	};
+	res.json(ret);
+};
+
+
+exports.fillLoad = function(req, res) {
+	var Game = mongoose.model('Game');
+	var Player = mongoose.model('Player');
+	var Action = mongoose.model('Action');
+
+	doClean();
+
+	var syncCallback = 2;
+
+	var g = new Game({
+		'title':'GameCharge',
+		'nMaxPlayerUnit':40,
+		'nMinPlayer':2,
+		'nMaxPlayer':4,
+		'isInit':false,
+		'startTime':new Date()
+	});
+
+	var sCallBack = function(){
+		
+		Player.find({'game':g._id}, function (err, docs) {
+			console.log(docs);
+		  if (err)
+	            res.send(err);
+
+	        g.players = [docs[0]._id, docs[1]._id];
+	        docs[0].game = g._id;
+	        docs[1].game = g._id;
+	        docs[0].save();
+	        docs[1].save();
+
+	        g.save(function(){
+	        	for(var i =0; i<100;i++)
+				{
+				Game.find({}, function (err, docs) {
+				  if (err)
+			            res.send(err);
+
+			       var b = new Action({
+						type:5,
+						game:docs[0]._id,
+						date:new Date()
+					});
+					b.save();
+			    });
+				}
+	        });
+    	});
+	};
+
+	var player = new Player({
+			name: 'Joueur1',
+			game: g._id,
+			isAdmin: true,
+	});
+	player.save(function(err){
+		if(--syncCallback === 0){
+			sCallBack();
+		}
+	});
+	player = new Player({
+			name: 'Joueur2',
+			game: g._id,
+			isAdmin: true,
+	});
+	player.save(function(err){
+		if(--syncCallback === 0){
+			sCallBack();
+		}
+	});
+	
 	var ret = {
 		result:'ok'
 	};

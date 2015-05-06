@@ -1,8 +1,8 @@
 'use strict';
 
 module.exports = {
-	db: process.env.MONGOHQ_URL || process.env.MONGOLAB_URI || 'mongodb://' + (process.env.DB_1_PORT_27017_TCP_ADDR || 'localhost') + '/pldapp',
-	dbname: 'pldapp',
+	db: process.env.MONGOHQ_URL || process.env.MONGOLAB_URI || 'mongodb://' + (process.env.DB_1_PORT_27017_TCP_ADDR || 'localhost') + '/pldapp-dev',
+	dbname: 'pldapp-dev',
 	pollingInterval:4,
 	defaultPort:27017,
 	defaultHost:'localhost',

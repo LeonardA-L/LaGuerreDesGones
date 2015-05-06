@@ -299,14 +299,17 @@ exports.unjoinGame = function(req, res) {
 	var Game = mongoose.model('Game');
 	var Player = mongoose.model('Player');
 	// TODO possibly optimizable
+	var sent = false;
 	Game.findOne({'_id':req.params.gameId}).populate('players').exec(function(err,game){
 
 		var destroyCallback = function(err){
-			if(err){
+			if(err && !sent){
 				res.send(err);
+				sent = true;
 			}
-			else{
+			else if(!sent){
 				res.json(result);
+				sent = true;
 			}
 		};
 

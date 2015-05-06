@@ -46,7 +46,7 @@ exports.fillLoad = function(req, res) {
 
 	doClean();
 
-	for(var i =0; i<10;i++)
+	for(var i =0; i<55;i++)
 	{
         	var g = new Game({
 			'title':'GameCharge',
@@ -72,7 +72,7 @@ exports.fillLoad = function(req, res) {
 			});
 			console.log('Registering init action');
 			registerAction(initAction);
-			for(var j =0; j<20;j++)
+			for(var j =0; j<55;j++)
 			{
        			var b = new Action({
 					type:5,

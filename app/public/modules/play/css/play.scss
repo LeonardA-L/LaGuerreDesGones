@@ -33,7 +33,6 @@
 
 	#game-left-panel {
 		background-color: #ecf0f1;
-		overflow-y: scroll;
 	}
 
 	#game-main-panel {
@@ -133,5 +132,13 @@
 		margin-top: 10px;
 	}
 	/* useless row-unit-number-label; row-unit-number; */
+
+	.accordion-item{
+		margin-top: 0px !important;
+	}
+
+	.panel-body{
+		overflow-y: scroll;
+	}
 
 }

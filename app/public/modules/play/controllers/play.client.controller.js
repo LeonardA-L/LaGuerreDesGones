@@ -6,6 +6,10 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 	function($scope, Authentication, $http, $stateParams, $document, Socket, $timeout) {
 		// This provides Authentication context.
 		$scope.authentication = Authentication;
+		$scope.startError=false;
+		$scope.moveError=false;
+		$scope.sellError=false;
+		$scope.buyError=false;
 
 		$scope.game = {
 			'title':'Loading...'
@@ -107,6 +111,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		  }).
 		  error(function(data) {
 		    console.log('error');
+			$scope.startError=true;
 		});
 
 		$scope.listUnitsByType = function(us){
@@ -136,6 +141,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		  	}).
 			error(function(data) {
 		    	console.log('error');
+			$scope.moveError=true;
 			});
 		};
 
@@ -147,7 +153,9 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
   				'game':gameId
   			};
   			console.log(dto);
-  			$scope.lessUnitToDisplace(unitType); // à mettre dans le succes mais ça marchait pas :/
+  			if($scope.mode=='displacement'&&$scope.unitsByTypeForZone[unitType].length <= $scope.disp.unitTypes[unitType]) {
+  				$scope.lessUnitToDisplace(unitType); // à mettre dans le succes mais ça marchait pas :/
+  			}
 			$http.post('/services/action/sell',dto).
 			//success(function(data, status, headers, config) {
 			success(function(data) {
@@ -155,6 +163,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		  	}).
 			error(function(data) {
 		    	console.log('error');
+			$scope.sellError=true;
 			});
 		};
 
@@ -178,6 +187,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		  	}).
 			error(function(data) {
 		    	console.log('error');
+			$scope.buyError=true;
 			});
 		};
 
@@ -222,6 +232,19 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 					allPolygons[polygon.zoneDescId] = polygon;
 
 					polygon.setMap(map);
+					var zd = game.zonesDesc[game.zones[i].zoneDesc];
+					var marker = new google.maps.Marker({
+					      position: new google.maps.LatLng(zd.y,zd.x),
+					      map: map,
+					      icon: 'static/zone_'+zd.type+'.png'
+					  });
+					marker.zoneId = game.zones[i]._id;
+					marker.zoneDescId = game.zones[i].zoneDesc;
+
+					google.maps.event.addListener(marker, 'click', function() {
+						//console.log(this);
+					    onZoneClicked(this);
+					});
 				}
 				// Add zones Polygons to Game variable
 				$scope.zonesPolygons = allPolygons;
@@ -356,16 +379,24 @@ var unitType=undefined;
 
 		$scope.onDraggedZone = function (polygon) {
 			var zoneDragged = $scope.game.zones[polygon.zoneId];
+			var errorMess = "";
             if(zoneDragged===$scope.selectedZone) {
-				alert("Vos unités se trouvent déjà sur cette zone !");
+				errorMess+="- Vos unités se trouvent déjà sur cette zone !"+"\n";
             }
-            else if($scope.disp.zone && $scope.disp.zone!=zoneDragged) {
-            	alert("Une zone à la fois !");
+            if ($scope.game.zonesDesc[$scope.selectedZone.zoneDesc].adjacentZones.indexOf(zoneDragged.zoneDesc) === -1) {
+            	errorMess+="- Les déplacements ne se font que sur les zones frontalières à celle sélectionnée !"+"\n";
             }
-            else {
+            if($scope.disp.zone && $scope.disp.zone!=zoneDragged) {
+            	errorMess+="- Une zone à la fois !"+"\n";
+            }
+            
+            if (""==errorMess) {
             	$scope.disp.zone=zoneDragged;
             	$scope.plusUnitToDisplace(unitType);
             	colorMap();
+            }
+            else {
+            	alert(errorMess);
             }
 		};
 
@@ -377,7 +408,8 @@ var unitType=undefined;
 		};
 
 		$scope.lessUnitToDisplace = function (idType) {
-			if($scope.mode=='deplacement') {
+			if($scope.mode=='displacement') {
+				console.log('lolilol');
 				if($scope.disp.unitTypes[idType] > 0) {
 					$scope.disp.unitTypes[idType]--;
 				}

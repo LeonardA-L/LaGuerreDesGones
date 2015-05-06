@@ -2,6 +2,19 @@
 	<div class="playSection">
 		<div class="container-fluid">
 			<div id="game-wrap-panels" class="row">
+				<div ng-if="startError" class="alert alert-danger" style="margin-bottom:1px">
+					Erreur : impossible de lancer la partie
+				</div>
+				<div ng-if="moveError" class="alert alert-danger" style="margin-bottom:1px">
+					Erreur : impossible d'effectuer le déplacement
+				</div>
+				<div ng-if="sellError" class="alert alert-danger" style="margin-bottom:1px">
+					Erreur : impossible d'effectuer la vente
+				</div>
+				<div ng-if="buyError" class="alert alert-danger" style="margin-bottom:1px">
+					Erreur : impossible d'effectuer l'achat
+				</div>
+
 				<accordion id="game-left-panel" class="col-md-3 game-panel nopadding" ng-if="game" close-others="true">
 
 					<accordion-group heading="Informations générales" class="accordion-item" initially-open="true">
@@ -12,6 +25,12 @@
 					</accordion-group>
 					<accordion-group heading="Information Zone sélectionnée" class="accordion-item">
 
+
+				<div id="game-left-panel" class="col-md-3 game-panel">
+					<h1>{{game.title}}</h1>
+					<hr />
+					<div class="row">
+
 						<div class="col-md-6 center-content">
 							<button class="btn btn-primary full-width" ng-click="mode==='displacement' ? resetMode() : prepareDisp()">Déplacement</button>
 						</div>
@@ -20,7 +39,7 @@
 						</div>
 						<div class="col-md-12 separator"></div>
 						<div class="col-md-12 center-content">
-							<label ng-repeat="p in game.players">{{p.money}} gaunettes</label>
+							<label ng-repeat="p in game.players">{{p.money}} Gonettes</label>
 						</div>
 						<div class="col-md-12 separator"></div>
 						<div class="col-md-12 center-content">
@@ -100,7 +119,6 @@
 							</div>
 						</div>
 
-
 						<div ng-if="mode==='displacement'">
 							<h2>Displacement</h2>
 								<h3>Add units</h3>
@@ -116,8 +134,6 @@
 								<button class="btn btn-primary" ng-click="validateDisp()">Validate</button> <button class="btn btn-danger" ng-click="resetMode()">Cancel</button>
 							</div>
 						</div>
-
-
 					</accordion-group>
 				</accordion>
 				<div id="game-main-panel" class="col-md-9 game-panel">

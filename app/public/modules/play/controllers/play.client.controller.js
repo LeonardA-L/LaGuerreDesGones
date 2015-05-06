@@ -263,7 +263,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 				var vStrokeWeight = 1;
 
 				if(reachableZoneDescId){
-					console.log(reachableZoneDescId.indexOf(zone.zoneDesc));
+					//console.log(reachableZoneDescId.indexOf(zone.zoneDesc));
 				}
 
 				if ($scope.disp.zone&&$scope.disp.zone===zone) {
@@ -405,16 +405,27 @@ var unitType=undefined;
 					}
 				}
 				if (isEndDisplacement) {
-					$scope.endDisplacement();
+					$scope.cancelDisplacement();
 				}
 			}
 		};
  
- 		$scope.endDisplacement = function () {
+ 		$scope.cancelDisplacement = function () {
  			$scope.prepareDispDrag();
  			$scope.mode='';
  			$scope.disp.zone=undefined;
  			colorMap();
+ 		}
+
+ 		$scope.validateDisplacement = function () {
+ 			var listUnits=[];
+ 			for (var i=0 ; i < $scope.disp.unitTypes ; i++) {
+ 				for (var j = 0 ; j < $scope.disp.unitTypes[i] ; j++) {
+ 					listUnits.push($scope.unitsByTypeForZone[i][j]._id);
+ 				}
+ 			}
+ 			$scope.move($scope.selectedZone,$scope.disp.zone,listUnits);
+ 			$scope.cancelDisplacement();
  		}
  
 		$scope.onUnitIconDrag = function (event, ui) {

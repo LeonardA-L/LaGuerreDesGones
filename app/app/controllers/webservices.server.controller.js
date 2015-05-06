@@ -28,7 +28,7 @@ var doClean = function(){
 	Unit.remove({},function(){});
 	Action.remove({},function(){});
 	TravelTime.remove({}, function(){});
-}
+};
 
 exports.cleanAll =  function(req, res) {
 	doClean();
@@ -46,52 +46,47 @@ exports.fillLoad = function(req, res) {
 
 	doClean();
 
-	var syncCallback = 2;
+	for(var i =0; i<10;i++)
+	{
+        	var g = new Game({
+			'title':'GameCharge',
+			'nMaxPlayerUnit':40,
+			'nMinPlayer':2,
+			'nMaxPlayer':4,
+			'isInit':false,
+			'startTime':new Date()
+			});
+			var player = new Player({
+			name: 'Joueur1',
+			isAdmin: true,
+			});
+			g.players = [player];
+	        player.game = g._id;
+	        player.save();
+	        g.save();
+	        var initAction = new Action({
+				type:2,
+				date:req.body.startTime,	//TODO set in future
+				status:0,
+				game:g._id
+			});
+			console.log('Registering init action');
+			registerAction(initAction);
+			for(var j =0; j<20;j++)
+			{
+       			var b = new Action({
+					type:5,
+					game:g,
+					date:new Date()
+				});
+				b.save();
+			}
+	}
 
-	var g = new Game({
-		'title':'GameCharge',
-		'nMaxPlayerUnit':40,
-		'nMinPlayer':2,
-		'nMaxPlayer':4,
-		'isInit':false,
-		'startTime':new Date()
-	});
-
-	var sCallBack = function(){
-		
-		Player.find({'game':g._id}, function (err, docs) {
-			console.log(docs);
-		  if (err)
-	            res.send(err);
-
-	        g.players = [docs[0]._id, docs[1]._id];
-	        docs[0].game = g._id;
-	        docs[1].game = g._id;
-	        docs[0].save();
-	        docs[1].save();
-
-	        g.save(function(){
-	        	for(var i =0; i<100;i++)
-				{
-				Game.find({}, function (err, docs) {
-				  if (err)
-			            res.send(err);
-
-			       var b = new Action({
-						type:5,
-						game:docs[0]._id,
-						date:new Date()
-					});
-					b.save();
-			    });
-				}
-	        });
-    	});
-	};
+/*	var syncCallback = 2;
 
 	var player = new Player({
 			name: 'Joueur1',
-			game: g._id,
 			isAdmin: true,
 	});
 	player.save(function(err){
@@ -101,7 +96,6 @@ exports.fillLoad = function(req, res) {
 	});
 	player = new Player({
 			name: 'Joueur2',
-			game: g._id,
 			isAdmin: true,
 	});
 	player.save(function(err){
@@ -109,7 +103,53 @@ exports.fillLoad = function(req, res) {
 			sCallBack();
 		}
 	});
-	
+
+	var sCallBack = function(){
+		
+		Player.find({}, function (err, docs) {
+			console.log(docs);
+		  if (err)
+	            res.send(err);
+
+        	for(var i =0; i<10;i++)
+			{
+			  if (err){
+		            res.send(err)};
+
+		        	var g = new Game({
+					'title':'GameCharge',
+					'nMaxPlayerUnit':40,
+					'nMinPlayer':2,
+					'nMaxPlayer':4,
+					'isInit':false,
+					'startTime':new Date()
+					});
+					g.players = [docs[0]._id, docs[1]._id];
+			        docs[0].game = g._id;
+			        docs[1].game = g._id;
+			        docs[0].save();
+			        docs[1].save();
+			        g.save();
+			        var initAction = new Action({
+						type:2,
+						date:req.body.startTime,	//TODO set in future
+						status:0,
+						game:g._id
+					});
+					console.log('Registering init action');
+					registerAction(initAction);
+					for(var j =0; j<20;j++)
+					{
+		       			var b = new Action({
+							type:5,
+							game:g,
+							date:new Date()
+						});
+						b.save();
+					}
+			}
+    	});
+	};	*/
 	var ret = {
 		result:'ok'
 	};

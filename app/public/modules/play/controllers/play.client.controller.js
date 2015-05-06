@@ -222,6 +222,12 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 					allPolygons[polygon.zoneDescId] = polygon;
 
 					polygon.setMap(map);
+					var zd = game.zonesDesc[game.zones[i].zoneDesc];
+					var marker = new google.maps.Marker({
+					      position: new google.maps.LatLng(zd.y,zd.x),
+					      map: map,
+					      icon: 'http://liris.cnrs.fr/vasile-marian.scuturici/files/marian.jpg'
+					  });
 				}
 				// Add zones Polygons to Game variable
 				$scope.zonesPolygons = allPolygons;

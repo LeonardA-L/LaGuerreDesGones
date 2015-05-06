@@ -10,8 +10,7 @@ angular.module('scoreBoard').config(['$stateProvider', '$urlRouterProvider',
 		$stateProvider.
 		state('scoreBoard', {
 			url: '/scoreBoard/:gameId',
-			templateUrl: 'modules/scoreBoard/views/scoreBoard.client.view.html',
-			controller: 'ScoreBoardController'
+			templateUrl: 'modules/scoreBoard/views/scoreBoard.client.view.html'
 		});
 	}
 ]);

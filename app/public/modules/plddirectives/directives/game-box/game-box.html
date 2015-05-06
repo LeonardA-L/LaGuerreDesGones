@@ -4,7 +4,6 @@
 
 	<div class="row">
 		<p class="col-md-4">créé par {{data.creator.username}}</p> 
-
 		<button class="col-md-1 btn btn-default" ng-if="joinok && !load" ng-click="joinGame(data._id)">Rejoindre</button>
 		<button class="col-md-1 btn btn btn-disabled" ng-if="load">Chargement...</button>
 		<button class="col-md-1 btn btn-default" aria-valuenow="60" aria-valuemax="100" ng-if="play" href="/#!/play/{{data._id}}">Jouer</button> 

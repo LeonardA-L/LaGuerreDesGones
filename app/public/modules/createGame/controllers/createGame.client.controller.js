@@ -9,14 +9,10 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 		$scope.errDate=false;		
 
 		var _date=new Date();
-		_date.setHours(_date.getHours()+1);
-		if(_date.getMinutes()<15 || _date.getMinutes()>45){
-			_date.setMinutes(0);		
-		}else{
-			_date.setMinutes(30);
-		}
+		_date.setMinutes((_date.getMinutes()+15)-(_date.getMinutes()+15)%10);
 
-		$scope.startTime=$filter('date')(_date,'HH:mm');
+		$scope.startHour=$filter('date')(_date,'HH');
+		$scope.startTime=$filter('date')(_date,'mm');
 		$scope.startDay=new Date();
 
 		$scope.newGame = {
@@ -57,28 +53,35 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 		$scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
 		$scope.format = $scope.formats[0];
 		
-		$scope.hours = [{'num':'1'},{'num':'2'}];
-		for(var i=0; i<24; i++){
+		$scope.hours = [];
+		var i=0;
+		for(i=0; i<24; i++){
 			 if(i<10){
-				$scope.hours[2*i]={'num':'0'+i+':00'};
-				$scope.hours[2*i+1]={'num':'0'+i+':30'};	
+				$scope.hours[i]={'num':'0'+i};
 			}else{
-				$scope.hours[2*i]={'num':i+':00'};
-				$scope.hours[2*i+1]={'num':i+':30'};
+				$scope.hours[i]={'num':i};
 			}
-				
 		}
+		$scope.minutes = [];
+		for(i=0; i<60; i++){
+			 if(i<10){
+				$scope.minutes[i]={'num':'0'+i};
+			}else{
+				$scope.minutes[i]={'num':i};
+			}
+		}
+
+
 		
-		$scope.lastTitleGame = "";
+		$scope.lastTitleGame = '';
 		$scope.b_lastGameHasSameName = false;
 
 		$scope.createGame = function(){
 			$scope.partyHost = false;
 			$scope.b_lastGameHasSameName = false;
 			$scope.errDate=false;
-			var _time=$scope.startTime.split(':');
-			$scope.startDay.setHours(_time[0]);
-			$scope.startDay.setMinutes(_time[1]);
+			$scope.startDay.setHours($scope.startHour);
+			$scope.startDay.setMinutes($scope.startTime);
 			$scope.startDay.setSeconds(0);
 			$scope.newGame.startTime=$scope.startDay;
 
@@ -91,7 +94,7 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 			//success(function(data, status, headers, config) {
 			success(function(data) {
 				$scope.partyHost = true;
-				if ($scope.lastTitleGame == $scope.newGame.title){
+				if ($scope.lastTitleGame === $scope.newGame.title){
 					$scope.b_lastGameHasSameName = true;			
 				}
 				$scope.lastTitleGame = $scope.newGame.title;

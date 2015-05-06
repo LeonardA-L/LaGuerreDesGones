@@ -12,13 +12,17 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		};
 		$scope.listUnitType = false;
 	    var gameId = $stateParams.gameId;
+
 		var map;
+		var isMapInit = false;
+
 		console.log($stateParams);
 
 		var generationInterval = 120000;
+		$scope.maxUnitPerZone = 8;
 
 
-		var countdownForGenerationDestroy = undefined;
+		var countdownForGenerationDestroy;
 		var countdownForGeneration = function(){
 			return $timeout(function(){
 				var remainingS = Math.floor(($scope.game.nextRefresh - (new Date().getTime()))/1000);
@@ -41,9 +45,9 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 
 
 		var processGameState = function(game){
-			var selectedZone = $scope.game.selectedZone;
+			var selectedZone = $scope.selectedZone;
 			$scope.game = game;
-			$scope.game.selectedZone = selectedZone;
+			$scope.selectedZone = selectedZone;
 			var i=0;
 			var j=0;
 			// Connection between player and hash
@@ -80,9 +84,9 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			console.log('New diff');
 			console.log($scope.game);
 
-			console.log($scope.game.selectedZone);
-			if($scope.game.selectedZone !== undefined){
-				$scope.listUnitsByType($scope.game.zones[$scope.game.selectedZone._id].units);
+			console.log($scope.selectedZone);
+			if($scope.selectedZone !== undefined){
+				$scope.listUnitsByType($scope.game.zones[$scope.selectedZone._id].units);
 			}
 
 		};
@@ -90,6 +94,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 
 		Socket.on(gameId+'.diff', function(diff) {
 		    processGameState(diff.success);
+		    colorMap();
 		});
 
 		$http.get('/services/play/'+gameId+'/start').
@@ -97,6 +102,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		  success(function(data) {
 		  	processGameState(data.success);
 			drawZoneMap($scope.game);
+			//colorMap();
 			console.log($scope);
 		  }).
 		  error(function(data) {
@@ -133,13 +139,17 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			});
 		};
 
-		$scope.sell = function(zoneId,unitId,playerId){
+		$scope.sell = function(unitId,unitType){
   			var dto = {
-  				'zone':$scope.game.units[0].zone,
-  				'unit':$scope.game.units[0]._id,
-  				'player':$scope.game.units[0].player,
+  				'zone':$scope.selectedZone._id,
+  				'unit':unitId,
+  				'player':$scope.player._id,
   				'game':gameId
   			};
+  			console.log(dto);
+  			if($scope.mode=='displacement'&&$scope.unitsByTypeForZone[unitType].length <= $scope.disp.unitTypes[unitType]) {
+  				$scope.lessUnitToDisplace(unitType); // à mettre dans le succes mais ça marchait pas :/
+  			}
 			$http.post('/services/action/sell',dto).
 			//success(function(data, status, headers, config) {
 			success(function(data) {
@@ -151,7 +161,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		};
 
 		$scope.buyUnit = function(newUnitTypeN){
-			$scope.buy($scope.game.selectedZone._id, $scope.player._id, newUnitTypeN);
+			$scope.buy($scope.selectedZone._id, $scope.player._id, newUnitTypeN);
 		};
 
 		$scope.buy = function(zoneId, playerId, newUnitTypeN){
@@ -162,6 +172,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
   				'newUnitType':newUnitTypeN,
   				'game':gameId
   			};
+
 			$http.post('/services/action/buy',dto).
 			//success(function(data, status, headers, config) {
 			success(function(data) {
@@ -185,68 +196,110 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 
 		function drawZoneMap(game) {
 			initMap();
-			var allPolygons = [];
-			var zoomBordr = new google.maps.LatLngBounds();
-			for (var i = 0; i < game.zones.length; i++) { 
-				var border = game.zonesDesc[game.zones[i].zoneDesc].border;
-				var borderCoords = [ ];
-				for (var j = 0; j < border.length; j++) { 
-					var point = new google.maps.LatLng(border[j][1], border[j][0]);
-					borderCoords.push(point);
-					zoomBordr.extend(point);
-				}
-				// Close border
-				borderCoords.push(borderCoords[0]);
-				// Create the polygon
-				var borderPolygon = new google.maps.Polygon({
-					paths: borderCoords,
-					strokeColor: '#333333',
-					strokeOpacity: 0.65,
-					strokeWeight: 2,
-					fillColor: '#333333',
-					fillOpacity: 0.35
-				});
-				borderPolygon.zoneId = game.zones[i]._id;
-				borderPolygon.zoneDescId = game.zones[i].zoneDesc;
-				allPolygons[borderPolygon.zoneId] = borderPolygon;
-				// Listener on click
-				google.maps.event.addListener(borderPolygon, 'click', onZoneClicked);
-				borderPolygon.setMap(map);
-			}
-			// Add zones Polygons to Game variable
-			game.zonesPolygons = allPolygons;
-			// Center the map
-			map.setCenter(zoomBordr.getCenter());
-			map.fitBounds(zoomBordr); 
+			if(!isMapInit) {
+				var allPolygons = {};
+				var zoomBordr = new google.maps.LatLngBounds();
+				for (var i = 0; i < game.zones.length; i++) { 
+					var border = game.zonesDesc[game.zones[i].zoneDesc].border;
+					var borderCoords = [ ];
+					for (var j = 0; j < border.length; j++) { 
+						var point = new google.maps.LatLng(border[j][1], border[j][0]);
+						borderCoords.push(point);
+						zoomBordr.extend(point);
+					}
+					// Close border
+					borderCoords.push(borderCoords[0]);
+					// Create the polygon
+					var polygon = new google.maps.Polygon({
+						paths: borderCoords,
+						strokeColor: '#333333',
+						strokeOpacity: 0.65,
+						strokeWeight: 2,
+						fillColor: '#333333',
+						fillOpacity: 0.35,
+						clickable:false
+					});
+					polygon.zoneId = game.zones[i]._id;
+					polygon.zoneDescId = game.zones[i].zoneDesc;
+					allPolygons[polygon.zoneDescId] = polygon;
 
-			colorMap();
+					polygon.setMap(map);
+				}
+				// Add zones Polygons to Game variable
+				$scope.zonesPolygons = allPolygons;
+				// Center the map
+				map.setCenter(zoomBordr.getCenter());
+				map.fitBounds(zoomBordr); 
+
+				colorMap();
+			}
 		}
 
-		function colorMap(){	// TODO Creation color => Grey / color
+
+		/**
+		 *	Update all the colors on the map and the hightlight
+		 */
+		function colorMap(){
+			var selectedZoneDescId;
+			var reachableZoneDescId;
+			if($scope.selectedZone){
+				selectedZoneDescId = $scope.selectedZone.zoneDesc;
+				reachableZoneDescId = $scope.game.zonesDesc[selectedZoneDescId].adjacentZones;
+			}
+
 			for (var i = 0; i < $scope.game.zones.length; i++) { 
 				var zone = $scope.game.zones[i];
-				var polygon = $scope.game.zonesPolygons[zone._id];
+				var polygon = $scope.zonesPolygons[zone.zoneDesc];
+				var initColor;
+
 				if(zone.owner){
-					
-					var color = $scope.game.players[zone.owner].color.toString(16);	//TODO Color
-					polygon.setOptions({
-						strokeColor: '#'+color,
-						fillColor: '#'+color
-					});
+					initColor = $scope.game.players[zone.owner].color;
+				} else {
+					initColor = 3355443;
 				}
+				var color = initColor.toString(16);
+				var vStrokeOpacity = 0.65;
+				var vFillOpacity = 0.3;
+				var vStrokeWeight = 1;
+
+				if(reachableZoneDescId){
+					console.log(reachableZoneDescId.indexOf(zone.zoneDesc));
+				}
+
+				if ($scope.disp.zone&&$scope.disp.zone===zone) {
+					initColor = 2212212;
+					color = initColor.toString(16);
+					vStrokeWeight = 4;
+					vFillOpacity = 0.7;
+				} else if(selectedZoneDescId && zone.zoneDesc === selectedZoneDescId){
+					vStrokeWeight = 4;
+					vFillOpacity = 0.7;
+				} else if(reachableZoneDescId && reachableZoneDescId.indexOf(zone.zoneDesc) !== -1){
+					vFillOpacity = 0.5;
+				}
+
+				polygon.setOptions({
+					strokeColor: '#'+color,
+					fillColor: '#'+color,
+					strokeOpacity: vStrokeOpacity,
+					strokeWeight: vStrokeWeight,
+					fillOpacity: vFillOpacity
+				});
+
 			}
 		}
 
 		$scope.resetMode=function(){
 			$scope.mode = '';
 			$scope.disp = {};
+			$scope.dispDrag = {};
 		};
 
 		$scope.prepareDisp = function(){
 			$scope.resetMode();
-			$scope.mode='displacement';
+			$scope.mode = 'displacement';
 			$scope.disp = {
-				'zoneAId':$scope.game.selectedZone._id,
+				'zoneAId':$scope.selectedZone._id,
 				'unitIds':[],
 				'step':0
 			};
@@ -262,8 +315,8 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			$scope.resetMode();
 		};
 
-		function onZoneClicked(event){
-			var that = this;
+		function onZoneClicked(polygon){
+			var that = polygon;
 			$scope.$apply(function(){
 				if($scope.mode === 'displacement' && $scope.disp.step>=1){
 					$scope.disp.zoneBId = that.zoneId;
@@ -271,9 +324,11 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 				}
 				else{
 					$scope.resetMode();
-					$scope.game.selectedZone = $scope.game.zones[that.zoneId];	// TODO Fix this
-					//console.log($scope.game);
+					$scope.selectedZone = $scope.game.zones[that.zoneId];	// TODO Fix this
+
 					$scope.listUnitsByType($scope.game.zones[that.zoneId].units);
+					//console.log($scope);
+					colorMap();
 				}
 			});
 		}
@@ -283,16 +338,126 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			$('#game-wrap-panels').css({'height':(($(window).height())-$('header').height())+'px'});
 		});
 
+var isDragging=false;
+var unitType=undefined;
+
 		$document.ready(function() {
-			//window.jQuery = jQuery;
 			initMap();
+
+			google.maps.event.addDomListener(map, 'click', function (event) {
+				for (var i in $scope.zonesPolygons) {
+					var polygon=$scope.zonesPolygons[i];
+        			if(google.maps.geometry.poly.containsLocation(event.latLng, polygon)) {
+        				if(! isDragging) {
+            				onZoneClicked(polygon);
+            				break;
+            			}
+            			else {
+            				$scope.onDraggedZone(polygon);
+            			}
+            			break;
+        			}
+    			}
+			});
 		});
 
-		// Mathou stuff
-		 $scope.list1 = {title: 'AngularJS - Drag Me'};
-  		$scope.list2 = {};
-		
+		$scope.onDraggedZone = function (polygon) {
+			var zoneDragged = $scope.game.zones[polygon.zoneId];
+			var errorMess = "";
+            if(zoneDragged===$scope.selectedZone) {
+				errorMess+="- Vos unités se trouvent déjà sur cette zone !"+"\n";
+            }
+            if ($scope.game.zonesDesc[$scope.selectedZone.zoneDesc].adjacentZones.indexOf(zoneDragged.zoneDesc) === -1) {
+            	errorMess+="- Les déplacements ne se font que sur les zones frontalières à celle sélectionnée !"+"\n";
+            }
+            if($scope.disp.zone && $scope.disp.zone!=zoneDragged) {
+            	errorMess+="- Une zone à la fois !"+"\n";
+            }
+            
+            if (""==errorMess) {
+            	$scope.disp.zone=zoneDragged;
+            	$scope.plusUnitToDisplace(unitType);
+            	colorMap();
+            }
+            else {
+            	alert(errorMess);
+            }
+		};
 
+		$scope.plusUnitToDisplace = function (idType) {
+			if($scope.disp.unitTypes[idType] < $scope.unitsByTypeForZone[idType].length) {
+				$scope.disp.unitTypes[idType]++;
+				$scope.mode='displacement';
+			}
+		};
+
+		$scope.lessUnitToDisplace = function (idType) {
+			if($scope.mode=='displacement') {
+				console.log('lolilol');
+				if($scope.disp.unitTypes[idType] > 0) {
+					$scope.disp.unitTypes[idType]--;
+				}
+				var isEndDisplacement = true;
+				for (var i = 0 ; i < $scope.disp.unitTypes.length ; ++i) {
+					if ($scope.disp.unitTypes[i]>0) {
+						isEndDisplacement=false;
+						break;
+					}
+				}
+				if (isEndDisplacement) {
+					$scope.endDisplacement();
+				}
+			}
+		};
+ 
+ 		$scope.endDisplacement = function () {
+ 			$scope.prepareDispDrag();
+ 			$scope.mode='';
+ 			$scope.disp.zone=undefined;
+ 			colorMap();
+ 		}
+ 
+		$scope.onUnitIconDrag = function (event, ui) {
+			if (''==$scope.mode) {
+				$scope.prepareDispDrag();
+			}
+			unitType=ui.helper.attr("data-unit-type");
+			isDragging=true;
+		};
+
+  		$scope.onUnitIconDrop = function (event, ui) {
+			simulateClick(event.pageX, event.pageY);
+			isDragging=false;
+  		};
+
+  		$scope.prepareDispDrag = function () {
+			$scope.resetMode();
+			$scope.disp = {
+				'zone':undefined,
+				'unitTypes':[],
+				//'step':0
+			};
+			for (var type in $scope.game.matrixes.UnitData.content) {
+				$scope.disp.unitTypes[type]=0;
+			}
+  		};
+
+  		function simulateClick(x, y) {
+    		var clickEvent= document.createEvent('MouseEvents');
+    		clickEvent.initMouseEvent(
+    			'click', true, true, window, 0,
+    			0, 0, x, y, false, false,
+    			false, false, 0, null
+    		);
+    		document.elementFromPoint(x, y).dispatchEvent(clickEvent);
+		}
+		
 		$scope.resetMode();
+		window.scrollTo(0,0);
+		$('body').css('overflow-y','hidden');
+
+		$scope.$on('$destroy', function(){
+        	$('body').css('overflow-y','auto');
+    	});
 	}
 ]);

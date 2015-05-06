@@ -21,12 +21,6 @@ var validateMaxPlayer = function(maxPlayer) {
 	return (maxPlayer >= 2 && maxPlayer <= 8);
 };
 
-/**
- * A Validation function for Date properties
- */
-var validateDate = function(date) {
-	return (new Date(date).getTime() >= DELAY_TIMESTAMP + Date.now());
-};
 
 /**
  * Game Schema
@@ -55,8 +49,7 @@ var GameSchema = new Schema({
 		default: false,
 	},
 	startTime: {
-		type: Date,
-		validate: [validateDate, 'The game must set in the future']
+		type: Date
 	},
 	zones: [{
 		type: Schema.Types.ObjectId,
@@ -69,6 +62,10 @@ var GameSchema = new Schema({
 	creator:{
 		type: Schema.Types.ObjectId,
 		ref: 'User'
+	},
+	winner:{
+		type: Schema.Types.ObjectId,
+		ref: 'Player'
 	}
 });
 

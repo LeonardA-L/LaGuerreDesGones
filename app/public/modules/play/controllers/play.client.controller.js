@@ -57,7 +57,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			// Connection between player and hash
 			for(i=0;i<$scope.game.players.length;i++){
 				$scope.game.players[$scope.game.players[i]._id] = $scope.game.players[i];
-				if($scope.game.players[i].user === $scope.authentication.user._id){
+				if($scope.game.players[i].user._id === $scope.authentication.user._id){
 					$scope.player = $scope.game.players[i];
 				}
 				if($scope.game.players[i].user._id === $scope.game.creator){
@@ -130,12 +130,13 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			$scope.listUnitType = true;
 		};
 
-  		$scope.move = function(zoneAId,zoneBId,listUnits){
+  		$scope.move = function(zoneAId,zoneBId,listUnits, travelMode){
   			var dto = {
   				'gameId':gameId,
   				'zoneAId':zoneAId,
   				'zoneBId':zoneBId,
-  				'unitIds':listUnits
+  				'unitIds':listUnits,
+  				'travelMode':travelMode
   			};
 			$http.post('/services/action/disp',dto).
 			//success(function(data, status, headers, config) {
@@ -326,6 +327,10 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			};
 		};
 
+		$scope.setTravelMode = function(mode){
+			$scope.disp.travelMode = mode;
+		};
+
 		$scope.addUnitToDisp = function(unitId){
 			$scope.disp.unitIds.push(unitId);
 			$scope.disp.step = 1;
@@ -446,7 +451,7 @@ var unitType;
  					listUnits.push($scope.unitsByTypeForZone[i][j]._id);
  				}
  			}
- 			$scope.move($scope.selectedZone._id,$scope.disp.zone._id,listUnits);
+ 			$scope.move($scope.selectedZone._id,$scope.disp.zone._id,listUnits, $scope.disp.travelMode);
  			$scope.cancelDisplacement();
  		};
  

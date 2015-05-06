@@ -293,8 +293,8 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 	  				'message': message,
 					'date' : tmpDate
 				};
-			  	console.log('Success posting chat message333');
-				$scope.messageForChat = '';
+			  	console.log('Success posting chat message');
+				$scope.messageForChat = ''; //initialize chat message
 
 				$http.post('/services/chat/send', chatMessage)
 				//success(function(data, status, headers, config) {
@@ -305,6 +305,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			  		console.log(data);
 			 	});
 		};		
+
 
 		$('#game-wrap-panels').css({'height':(($(window).height())-$('header').height())+'px'});
 		$(window).resize(function() {

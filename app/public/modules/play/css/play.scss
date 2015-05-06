@@ -48,17 +48,18 @@
 
 		body {height:100px}
 
+		$chatInputHeight:25px;
+		$chatHeight:400px;
 		.chat-box {
-		overflow: auto;
 		font:normal normal 11px/1.4 Tahoma,Verdana,Sans-Serif;
 		color:#333;
-		max-height: 250px;
+		height: $chatHeight;
 		min-width: 250px;
 		width:20%; /* Chatbox width */
 		border:1px solid #344150;
 		border-bottom:none;
 		background-color:white;
-		position:fixed;
+		position:absolute;
 		right:10px;
 		bottom:0;
 		z-index:9999;
@@ -95,9 +96,26 @@
 
 		.chat-box > label:before {content:attr(data-collapsed)}
 
+		.chat-box-content {
+		overflow-y: scroll;
+		height: calc(100% - #{$chatInputHeight} );
+		}
+
 		.chat-box .chat-box-content {
 		padding:0px;
-		display:none;
+		//display:none;
+		}
+		
+		.chatInput{
+		
+		}
+
+		.chatBox{
+			height:$chatHeight;
+		}
+
+		.chatBoxTitle{
+			margin:0;
 		}
 
 		/* hover state */

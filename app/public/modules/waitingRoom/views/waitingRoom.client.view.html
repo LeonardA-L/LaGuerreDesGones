@@ -3,7 +3,7 @@
 		<h1>Rejoindre une partie</h1>
 		<p>Voici les parties que tu peux rejoindre : </p>
 		<p ng-if="!listAvailable">La liste est en train de charger. Un peu de patience...</p>
-		<game-box ng-if="listAvailable.length == 0">Il n'y a aucune partie disponible. Tu peux <a href="#!/host">en créer une</a> et attendre que d'autres joueurs te rejoignent !</game-box>
+		<p ng-if="listAvailable.length == 0">Il n'y a aucune partie disponible. Tu peux <a href="#!/host">en créer une</a> et attendre que d'autres joueurs te rejoignent !</p>
 		<game-box ng-repeat="data in listAvailable" data="data" join="true" user="authentication.user"></game-box>
 		<div ng-if="error" class="alert alert-danger">Erreur lors du chargement de la liste. Si l'erreur persiste, contacte un administrateur !</div>
 	</div>

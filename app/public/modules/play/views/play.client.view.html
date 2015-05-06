@@ -94,13 +94,6 @@
 
 					
 					<div style="background-color:red;">
-						<form>
-						<input type="text" id="messageForChat" placeholder="Enter your nice message here" ng-model="messageForChat"></input>
-						<button type="reset" ng-click="sendMessage(messageForChat)">Envoyer</button>‏
-						</form>
-						<div id="chat" ng-repeat="i in game.chatMessages"> 
-							{{game.players[player._id].name}}  : {{i.message}} 
-						</div>
 						<br />
 						<!--temporaire-->
 						<span ng-click="move(game.zones[0]._id,game.zones[1]._id,[game.units[0]._id])">CLICK ME To Move</span>| <span ng-click="buy(game.units[0].zone,game.units[0].player,7)">CLICK ME To buy scientist</span>
@@ -112,6 +105,23 @@
 						<!--/temporaire-->
 					</div>
 				</div>
+	
+				<div class="chat-box">
+   				<input type="checkbox" />
+    			<label data-expanded="Réduire le chat" data-collapsed="Ouvrir le chat"></label>
+    			<div class="chat-box-content">
+					<div id="chat" ng-repeat="i in game.chatMessages"> 
+						{{game.players[i.player].name}}  : {{i.message}} 
+					</div>
+					<form name="chatForm" ui-keypress="{13:'sendMessage(messageForChat)'}">
+						<div class="input-group input-group-sm">
+							<span class="input-group-addon" id="btn_sendChatMessage" ng-click='sendMessage(messageForChat)'>></span>
+							<input type="text" id="messageForChat" class="form-control" placeholder="..." aria-describedby="basic-addon1" ng-model="messageForChat">
+						</div>
+					</form>
+				</div>
+				</div>
+
 				<div id="game-main-panel" class="col-md-9 game-panel">
 
 				</div>

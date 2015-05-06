@@ -293,14 +293,16 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 	  				'message': message,
 					'date' : tmpDate
 				};
+			  	console.log('Success posting chat message333');
+				$scope.messageForChat = '';
 
 				$http.post('/services/chat/send', chatMessage)
 				//success(function(data, status, headers, config) {
 				.success(function(data) {	
-			  		console.log('Success posting chat message');							
+			  		console.log(data);
 			 	})
 				.error(function(data) {
-			  		console.log('Error in posting chat message');
+			  		console.log(data);
 			 	});
 		};		
 

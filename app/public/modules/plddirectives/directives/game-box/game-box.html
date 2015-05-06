@@ -1,21 +1,26 @@
-<div class="gameBox list-group-item container-fluid">
-
-	<h2> {{data.title}}</h2> 
-
-	<div class="row">
-		<p class="col-md-4">créée par {{data.creator.username}}</p> 
-		<button class="col-md-1 btn btn-default" ng-if="joinok && !load" ng-click="joinGame(data._id)">Rejoindre</button>
-		<button class="col-md-1 btn btn btn-disabled" ng-if="load && !unjoinError && !joinError" disabled="disabled">Chargement...</button>
-		<a href="/#!/play/{{data._id}}"><button class="col-md-1 btn btn-default" aria-valuenow="60" aria-valuemax="100" ng-if="play && !data.winner">Jouer</button> </a>
-		<a href="/#!/scoreBoard/{{data._id}}"><button class="col-md-1 btn btn-default" aria-valuenow="60" aria-valuemax="100" ng-if="data.winner">Statistiques</button> </a>
-		<button class="col-md-1 btn btn btn-default" ng-if="unsub" ng-click="unjoinGame(data._id)">Se désinscrire</button>
-		<span class="alert alert-success" ng-if="gamejoined"> Tu as rejoint la partie !</span>
-		<span class="alert alert-success" ng-if="gameunsub"> Tu es bien désinscrit !</span>
-		<span class="alert alert-danger" ng-if="joinError"> Erreur : impossible de rejoindre la partie</span>
-		<span class="alert alert-danger" ng-if="unjoinError"> Erreur : impossible de se désinscrire de la partie</span>
+<div class="gameBox panel  panel-primary">
+  <div class="panel-heading">
+    <h3 class="panel-title">{{data.title}}</h3>
+  </div>
+  <div class="panel-body">
+    	<div class="col-md-6">
+		<div class="row">
+			<p>créée par {{data.creator.username}}</p>
+		</div>
+		<div class="row">
+			<p>Début : {{data.startTime}}</p>
+		</div>
 	</div>
-
-	<div >
-		<p>Début : {{data.startTime}}</p>
+	<div class="col-md-6">
+		<button class="col-md-8 btn btn-default" ng-if="joinok && !load" ng-click="joinGame(data._id)">Rejoindre</button>
+		<button class="col-md-8 btn btn btn-disabled" ng-if="load && !unjoinError && !joinError" disabled="disabled">Chargement...</button>
+		<a href="/#!/play/{{data._id}}"><button class="col-md-8 btn btn-default" aria-valuenow="60" aria-valuemax="100" ng-if="play && !data.winner">Jouer</button> </a>
+		<a href="/#!/scoreBoard/{{data._id}}"><button class="col-md-8 btn btn-default" aria-valuenow="60" aria-valuemax="100" ng-if="data.winner">Statistiques</button> </a>
+		<button class="col-md-8 btn btn btn-default" ng-if="unsub" ng-click="unjoinGame(data._id)">Se désinscrire</button>
+		<span class="alert alert-success col-md-8" ng-if="gamejoined"> Tu as rejoint la partie !</span>
+		<span class="alert alert-success col-md-8" ng-if="gameunsub"> Tu es bien désinscrit !</span>
+		<span class="alert alert-danger col-md-8" ng-if="joinError"> Erreur : impossible de rejoindre la partie</span>
+		<span class="alert alert-danger col-md-8" ng-if="unjoinError"> Erreur : impossible de se désinscrire de la partie</span>
 	</div>
+  </div>
 </div>

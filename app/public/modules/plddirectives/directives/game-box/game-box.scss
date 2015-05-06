@@ -1,4 +1,5 @@
 .gameBox{
-	background:#FFF;
-	border:solid 1px;
+	$w:33%;
+	width:$w;
+	display:inline-block;
 }

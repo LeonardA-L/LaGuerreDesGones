@@ -8,8 +8,8 @@ import urllib
 import urllib2
 
 
-kml_file = "map_lyon_20150505_1836.kml"	
-json_file = "map_lyon_20150505_1836.json"
+kml_file = "map_lyon_20150506_1716.kml"	
+json_file = "map_lyon_20150506_1716.json"
 
 ####
 # CONST
@@ -25,7 +25,7 @@ map_type[7] = "square"
 map_type[8] = "bank"
 map_type[9] = "airport"
 map_type[10] = "shopping_centre"
-map_type[11] = "woodstock"
+map_type[11] = "woodstock" # RIP
 map_type[12] = "station"
 namespace = {'ns': 'http://www.opengis.net/kml/2.2'}
 headers = { 'User-Agent' : 'TCL Android (API 8+)' }
@@ -97,16 +97,23 @@ print("\t"+str(len(listeZone))+"/"+str(i)+" zones traitees")
 
 print("--- Calcul des centres ---")
 for zone in listeZone:
-	lat = 0
-	lon = 0
+	min_lat = zone["border"][0][1]
+	max_lat = zone["border"][0][1]
+	min_lon = zone["border"][0][0]
+	max_lon = zone["border"][0][0]
+
 	length = len(zone["border"])
 	for coord in zone["border"]:
-		lat = lat + coord[1]
-		lon = lon + coord[0]
-	lat = lat / length
-	lon = lon / length
-	zone["y"] = lat
-	zone["x"] = lon
+		if  coord[1] < min_lat:
+			min_lat = coord[1]
+		if  coord[1] > max_lat:
+			max_lat = coord[1]
+		if  coord[0] < min_lon:
+			min_lon = coord[0]
+		if  coord[0] > max_lon:
+			max_lon = coord[0]
+	zone["y"] = (min_lat + max_lat)/2
+	zone["x"] = (min_lon + max_lon)/2
 
 print("--- Requete des infos TCL ---")
 for zone in listeZone:

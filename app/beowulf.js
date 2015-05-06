@@ -737,7 +737,6 @@ actionHandlers.push(processEndCheck);
 
 // TODO
  var processAction = function(a){
-
  	actionHandlers[a.type](a);
  };
 

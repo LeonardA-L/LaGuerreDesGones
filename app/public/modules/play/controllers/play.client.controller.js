@@ -226,7 +226,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 					var marker = new google.maps.Marker({
 					      position: new google.maps.LatLng(zd.y,zd.x),
 					      map: map,
-					      icon: 'http://liris.cnrs.fr/vasile-marian.scuturici/files/marian.jpg'
+					      icon: 'https://cdn3.iconfinder.com/data/icons/personal-business-finance-1/380/Bank-24.png'
 					  });
 				}
 				// Add zones Polygons to Game variable

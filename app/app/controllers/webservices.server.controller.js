@@ -238,7 +238,7 @@ exports.getWaiting = function(req, res) {
 exports.getSubscribed = function(req,res){
 	var Game = mongoose.model('Game');
 
-    Game.find({}).populate('players').populate('creator', 'username').exec(function (err, docs) {
+    Game.find({}).populate('players').populate('creator', 'username').sort('winner -isInit -startTime').exec(function (err, docs) {
 	  if (err)
             res.send(err);
         var accurate = [];

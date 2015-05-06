@@ -147,7 +147,9 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
   				'game':gameId
   			};
   			console.log(dto);
-  			$scope.lessUnitToDisplace(unitType); // à mettre dans le succes mais ça marchait pas :/
+  			if($scope.mode=='displacement'&&$scope.unitsByTypeForZone[unitType].length <= $scope.disp.unitTypes[unitType]) {
+  				$scope.lessUnitToDisplace(unitType); // à mettre dans le succes mais ça marchait pas :/
+  			}
 			$http.post('/services/action/sell',dto).
 			//success(function(data, status, headers, config) {
 			success(function(data) {
@@ -382,7 +384,8 @@ var unitType=undefined;
 		};
 
 		$scope.lessUnitToDisplace = function (idType) {
-			if($scope.mode=='deplacement') {
+			if($scope.mode=='displacement') {
+				console.log('lolilol');
 				if($scope.disp.unitTypes[idType] > 0) {
 					$scope.disp.unitTypes[idType]--;
 				}

@@ -134,11 +134,10 @@
 	/* useless row-unit-number-label; row-unit-number; */
 
 	.accordion-item{
-		margin-top: 0px;
+		margin-top: 0px !important;
 	}
 
 	.panel-body{
-		height:100;
 		overflow-y: scroll;
 	}
 

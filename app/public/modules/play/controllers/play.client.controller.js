@@ -332,13 +332,6 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			$('#game-wrap-panels').css({'height':(($(window).height())-$('header').height())+'px'});
 		});
 
-$("#game-wrap-panels").accordion({ 
-autoHeight: true,
-active: false,
-collapsible: true,
-autoHeight: true
-});
-
 var isDragging=false;
 var unitType=undefined;
 

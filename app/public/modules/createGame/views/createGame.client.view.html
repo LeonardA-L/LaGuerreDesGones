@@ -1,21 +1,21 @@
 <section class="createGameSection" data-ng-controller="CreateGameController">
 
 <br/>
-<h1 class="title">Create a new game</h1>
+<h1 class="title">Créer une nouvelle partie</h1>
 
 <div class="form">
 
 <form name="myForm" class="createGameForm" novalidate>
 
 	<div class="input-group">
-		<span class="input-group-addon" id="basic-addon1">Party Name</span>
-		<input type="text" class="form-control" placeholder="New Game" aria-describedby="basic-addon1" ng-model="newGame.title" required>
+		<span class="input-group-addon" id="basic-addon1">Nom du jeu</span>
+		<input type="text" class="form-control" placeholder="Partie de {{authentication.user.displayName}}" aria-describedby="basic-addon1" ng-model="newGame.title" required>
 	</div>
 	
 	<br/>
 
 	<div class="input-group">
-		<span class="input-group-addon" id="basic-addon1">Choose the day of your fight !</span>
+		<span class="input-group-addon" id="basic-addon1">Jour de la bataille</span>
 		<input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="startDay" is-open="opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close"/>
 		<span class="input-group-btn">
 		<button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
@@ -25,7 +25,7 @@
 	<br/>
 
 	<div class="input-group">
-		<span class="input-group-addon" id="basic-addon1">Starting time :</span>
+		<span class="input-group-addon" id="basic-addon1">Heure de début</span>
 
 		<select ng-model="startHour" class="hourSelect form-control">
 			<option ng-repeat="hour in hours">{{hour.num}}</option>
@@ -36,7 +36,7 @@
 		
 	</div>
 	<div ng-show="errDate" class="alert alert-danger" role="alert">
-		Starting hour is too early !
+		La partie ne va pas commencer dans le passé !
 		<br/> 
 	</div>
 	<div ng-show="!errDate"> 
@@ -44,7 +44,7 @@
 	</div>
 
 	<div class="input-group">
-		<span class="input-group-addon" id="basic-addon1">Minimum number of players :</span>
+		<span class="input-group-addon" id="basic-addon1">Nombre minimum de joueurs</span>
 		<select ng-model="newGame.nMinPlayer" class="form-control">
 			<option value="2"> 2 </option>
 			<option ng-repeat="i in [3,4,5,6,7,8]" ng-show="newGame.nMaxPlayer >= i" value="{{i}}"> {{i}} </option>
@@ -54,7 +54,7 @@
 	<br/>
 
 	<div class="input-group">
-		<span class="input-group-addon" id="basic-addon1">Maximum number of players :</span>
+		<span class="input-group-addon" id="basic-addon1">Nombre maximum de joueurs :</span>
 			<select ng-model="newGame.nMaxPlayer" class="form-control">
 				<option ng-repeat="i in [2,3,4,5,6,7]" ng-show="newGame.nMinPlayer <= i" value="{{i}}"> {{i}} </option>
 				<option value="8"> 8 </option>
@@ -62,23 +62,23 @@
 	</div>
 	
 	<br/>
-	<button id="btnHosting" type="submit" class="btn btn-default" ng-disabled="myForm.$invalid" ng-click="createGame()"> Host your party ! </button>
+	<button id="btnHosting" type="submit" class="btn btn-default" ng-disabled="myForm.$invalid" ng-click="createGame()"> Crée ta partie ! </button>
 	<br/>
 	<br/>
 	
-	<div id="confirmationOfHosting" ng-if="partyNotHost"> We fail to host your game !</div>
+	<div id="confirmationOfHosting" ng-if="partyNotHost"> Impossible de créer la partie !</div>
 
 	<div id="warning" ng-if="b_lastGameHasSameName" class="alert alert-warning" role="alert">
-		You created two games in a row with the name "{{lastTitleGame}}" !
+		Tu as créé 2 parties à la suite avec le nom "{{lastTitleGame}}" !
 	</div> 
 
 	<div id="textSuccess" ng-if="partyHost && !b_lastGameHasSameName" class="alert alert-success" role="alert"> 
-		Your game "{{lastTitleGame}}" has been succesfully hosted !
+		Ta partie "{{lastTitleGame}}" a été créée avec succès !
 	</div> 
 
 	<div id="textSuccess" ng-if="partyHost" class="alert alert-info" role="alert">
-	You can <span ng-if="b_lastGameHasSameName"> still </span> <a class="alert-link" href="/#!/host"> create an other games</a>, 
-	<a class="alert-link" href="/#!/perso">see your games</a> or <a class="alert-link" href="/#!/join"> join other games</a>. </div>
+	Tu peux <span ng-if="b_lastGameHasSameName"> toujours </span> <a class="alert-link" href="/#!/host"> créer d'autres parties</a>, 
+	<a class="alert-link" href="/#!/perso">voir tes parties</a> ou <a class="alert-link" href="/#!/join"> rejoindre d'autres parties</a>. </div>
 	</div>
 
 </form>

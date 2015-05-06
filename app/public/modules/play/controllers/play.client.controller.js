@@ -6,6 +6,10 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 	function($scope, Authentication, $http, $stateParams, $document, Socket, $timeout) {
 		// This provides Authentication context.
 		$scope.authentication = Authentication;
+		$scope.startError=false;
+		$scope.moveError=false;
+		$scope.sellError=false;
+		$scope.buyError=false;
 
 		$scope.game = {
 			'title':'Loading...'
@@ -107,6 +111,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		  }).
 		  error(function(data) {
 		    console.log('error');
+			$scope.startError=true;
 		});
 
 		$scope.listUnitsByType = function(us){
@@ -136,6 +141,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		  	}).
 			error(function(data) {
 		    	console.log('error');
+			$scope.moveError=true;
 			});
 		};
 
@@ -147,7 +153,9 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
   				'game':gameId
   			};
   			console.log(dto);
-  			//$scope.lessUnitToDisplace(this.unitType); // à mettre dans le succes mais ça marchait pas :/
+  			if($scope.mode=='displacement'&&$scope.unitsByTypeForZone[unitType].length <= $scope.disp.unitTypes[unitType]) {
+  				$scope.lessUnitToDisplace(unitType); // à mettre dans le succes mais ça marchait pas :/
+  			}
 			$http.post('/services/action/sell',dto).
 			//success(function(data, status, headers, config) {
 			success(function(data) {
@@ -155,6 +163,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		  	}).
 			error(function(data) {
 		    	console.log('error');
+			$scope.sellError=true;
 			});
 		};
 
@@ -178,6 +187,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		  	}).
 			error(function(data) {
 		    	console.log('error');
+			$scope.buyError=true;
 			});
 		};
 
@@ -245,16 +255,17 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		 */
 		function colorMap(){
 			var selectedZoneDescId;
-			var toDisplaceZoneDescId=$scope.disp.zoneDesc;
 			var reachableZoneDescId;
 			if($scope.selectedZone){
 				selectedZoneDescId = $scope.selectedZone.zoneDesc;
 				reachableZoneDescId = $scope.game.zonesDesc[selectedZoneDescId].adjacentZones;
 			}
+
 			for (var i = 0; i < $scope.game.zones.length; i++) { 
 				var zone = $scope.game.zones[i];
 				var polygon = $scope.zonesPolygons[zone.zoneDesc];
 				var initColor;
+
 				if(zone.owner){
 					initColor = $scope.game.players[zone.owner].color;
 				} else {
@@ -265,15 +276,22 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 				var vFillOpacity = 0.3;
 				var vStrokeWeight = 1;
 
-				if(selectedZoneDescId && zone.zoneDesc === selectedZoneDescId){
+				if(reachableZoneDescId){
+					console.log(reachableZoneDescId.indexOf(zone.zoneDesc));
+				}
+
+				if ($scope.disp.zone&&$scope.disp.zone===zone) {
+					initColor = 2212212;
+					color = initColor.toString(16);
+					vStrokeWeight = 4;
+					vFillOpacity = 0.7;
+				} else if(selectedZoneDescId && zone.zoneDesc === selectedZoneDescId){
 					vStrokeWeight = 4;
 					vFillOpacity = 0.7;
 				} else if(reachableZoneDescId && reachableZoneDescId.indexOf(zone.zoneDesc) !== -1){
 					vFillOpacity = 0.5;
-				} else if (toDisplaceZoneDescId && zone.zoneDesc === selectedZoneDescId) {
-					vStrokeWeight = 4;
-					vFillOpacity = 0.7;
 				}
+
 				polygon.setOptions({
 					strokeColor: '#'+color,
 					fillColor: '#'+color,
@@ -349,7 +367,7 @@ var unitType=undefined;
             				break;
             			}
             			else {
-            				$scope.plusUnitToDisplace(unitType);
+            				$scope.onDraggedZone(polygon);
             			}
             			break;
         			}
@@ -357,33 +375,60 @@ var unitType=undefined;
 			});
 		});
 
+		$scope.onDraggedZone = function (polygon) {
+			var zoneDragged = $scope.game.zones[polygon.zoneId];
+			var errorMess = "";
+            if(zoneDragged===$scope.selectedZone) {
+				errorMess+="- Vos unités se trouvent déjà sur cette zone !"+"\n";
+            }
+            if ($scope.game.zonesDesc[$scope.selectedZone.zoneDesc].adjacentZones.indexOf(zoneDragged.zoneDesc) === -1) {
+            	errorMess+="- Les déplacements ne se font que sur les zones frontalières à celle sélectionnée !"+"\n";
+            }
+            if($scope.disp.zone && $scope.disp.zone!=zoneDragged) {
+            	errorMess+="- Une zone à la fois !"+"\n";
+            }
+            
+            if (""==errorMess) {
+            	$scope.disp.zone=zoneDragged;
+            	$scope.plusUnitToDisplace(unitType);
+            	colorMap();
+            }
+            else {
+            	alert(errorMess);
+            }
+		};
+
 		$scope.plusUnitToDisplace = function (idType) {
 			if($scope.disp.unitTypes[idType] < $scope.unitsByTypeForZone[idType].length) {
 				$scope.disp.unitTypes[idType]++;
 				$scope.mode='displacement';
-				//vérifier pas pas même que celle où on est
-				//$scope.disp.zoneDesc=$scope.selectedZone.zoneDesc;
 			}
 		};
 
 		$scope.lessUnitToDisplace = function (idType) {
-			if($scope.disp.unitTypes[idType] > 0) {
-				$scope.disp.unitTypes[idType]--;
-			}
-			var isEndDisplacement = true;
-			for (var i = 0 ; i < $scope.disp.unitTypes.length ; ++i) {
-				if ($scope.disp.unitTypes[i]>0) {
-					isEndDisplacement=false;
-					break;
+			if($scope.mode=='displacement') {
+				console.log('lolilol');
+				if($scope.disp.unitTypes[idType] > 0) {
+					$scope.disp.unitTypes[idType]--;
 				}
-			}
-			if (isEndDisplacement) {
-				$scope.endDisplacement();
+				var isEndDisplacement = true;
+				for (var i = 0 ; i < $scope.disp.unitTypes.length ; ++i) {
+					if ($scope.disp.unitTypes[i]>0) {
+						isEndDisplacement=false;
+						break;
+					}
+				}
+				if (isEndDisplacement) {
+					$scope.endDisplacement();
+				}
 			}
 		};
  
  		$scope.endDisplacement = function () {
+ 			$scope.prepareDispDrag();
  			$scope.mode='';
+ 			$scope.disp.zone=undefined;
+ 			colorMap();
  		}
  
 		$scope.onUnitIconDrag = function (event, ui) {
@@ -402,7 +447,7 @@ var unitType=undefined;
   		$scope.prepareDispDrag = function () {
 			$scope.resetMode();
 			$scope.disp = {
-				'zoneDesc':undefined,
+				'zone':undefined,
 				'unitTypes':[],
 				//'step':0
 			};

@@ -203,7 +203,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		}
 
 		function drawZoneMap(game) {
-			initMap();/*
+			initMap();
 			if(!isMapInit) {
 				var allPolygons = {};
 				var zoomBordr = new google.maps.LatLngBounds();
@@ -254,7 +254,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 
 				colorMap();
 			}
-			*/
+			
 		}
 
 

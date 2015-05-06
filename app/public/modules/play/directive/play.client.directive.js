@@ -1,4 +1,5 @@
 'use strict';
+/* global $ */
 
 angular.module('play')
 	.directive('accordion', function ($rootScope) {
@@ -10,7 +11,7 @@ angular.module('play')
 					var height = $('#game-wrap-panels').innerHeight() - tabsHeight;
 					var body = $('.panel-body');
 					body.css({'height':(height - 1)+'px'});
-				}
+				};
 				$(window).resize(resizeFct);
 				resizeFct();
 		    }

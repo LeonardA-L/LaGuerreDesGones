@@ -25,12 +25,6 @@
 					</accordion-group>
 					<accordion-group heading="Information Zone sélectionnée" class="accordion-item">
 
-						<div class="col-md-6 center-content">
-							<button class="btn btn-primary full-width" ng-click="mode==='displacement' ? resetMode() : prepareDisp()">Déplacement</button>
-						</div>
-						<div class="col-md-6 center-content">
-							<button class="btn btn-primary full-width">Attaque</button>
-						</div>
 						<div class="col-md-12 separator"></div>
 						<div class="col-md-12 center-content">
 							<label ng-repeat="p in game.players">{{p.money}} Gonettes</label>
@@ -45,13 +39,6 @@
 						</div>
 
 						<hr />
-
-						<div ng-if="selectedZone" class="center-content">
-							<h2>{{game.zonesDesc[game.zones[selectedZone._id].zoneDesc].name}}</h2>
-							<h3 ng-if="game.zones[selectedZone._id].owner">Possédée par {{game.players[game.zones[selectedZone._id].owner].name}}</h3>
-							<div class="row">
-							</div>
-						</div>
 
 						<div ng-if="selectedZone" class="center-content">
 							<h2>{{game.zonesDesc[game.zones[selectedZone._id].zoneDesc].name}}</h2>

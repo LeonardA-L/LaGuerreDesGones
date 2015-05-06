@@ -134,6 +134,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
   				'zoneBId':zoneBId,
   				'unitIds':listUnits
   			};
+  			$scope.showDisplacement(zoneAId,zoneBId,'foot',$scope.player._id); // put real params !
 			$http.post('/services/action/disp',dto).
 			//success(function(data, status, headers, config) {
 			success(function(data) {
@@ -154,7 +155,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
   			};
   			console.log(dto);
   			if($scope.mode==='displacement'&&$scope.unitsByTypeForZone[unitType].length <= $scope.disp.unitTypes[unitType]) {
-  				$scope.lessUnitToDisplace(unitType); // à mettre dans le succes mais ça marchait pas :/
+  				$scope.lessUnitToDisplace(unitType);
   			}
 			$http.post('/services/action/sell',dto).
 			//success(function(data, status, headers, config) {
@@ -439,6 +440,41 @@ var unitType;
 					$scope.cancelDisplacement();
 				}
 			}
+		};
+
+		$scope.showDisplacement = function (zoneAId,zoneBId,transport,player) {
+			var duration= 10000;
+			var step 	= 1000;
+			var destination=new google.maps.LatLng($scope.game.zonesDesc[$scope.game.zones[zoneBId].zoneDesc].y,$scope.game.zonesDesc[$scope.game.zones[zoneBId].zoneDesc].x);
+
+			var imgDisplacement = 'static/zones/zone_station.png';
+			var marker = new google.maps.Marker({
+				position: new google.maps.LatLng($scope.game.zonesDesc[$scope.game.zones[zoneAId].zoneDesc].y,$scope.game.zonesDesc[$scope.game.zones[zoneAId].zoneDesc].x),
+				destination: new google.maps.LatLng($scope.game.zonesDesc[$scope.game.zones[zoneBId].zoneDesc].y,$scope.game.zonesDesc[$scope.game.zones[zoneBId].zoneDesc].x),
+				currentTime:0,
+				map: map,
+				icon: imgDisplacement
+			});
+
+			var threadShowDisplacement = function(){
+				return $timeout(function(){
+					if (marker.currentTime<duration) {
+						var ratio = duration-marker.currentTime;
+						marker.currentTime+=step;
+						marker.setPosition(new google.maps.LatLng(
+							marker.getPosition().lat()+marker.currentTime *  (destination.lat()-marker.getPosition().lat())/(duration),
+							marker.getPosition().lng()+marker.currentTime *  (destination.lng()-marker.getPosition().lng())/(duration)
+						));
+						
+						threadShowDisplacement();
+					}
+					else {
+						marker.setMap(null);
+					}
+				},step);
+			};
+
+			threadShowDisplacement();
 		};
  
  		$scope.cancelDisplacement = function () {

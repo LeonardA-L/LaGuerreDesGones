@@ -195,8 +195,8 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			if (typeof map === 'undefined') {
 				console.log('Init Map');
 				var mapOptions = {
-					zoom: 8,
-					center: new google.maps.LatLng(45.753516, 4.909520)
+					zoom: 12,
+					center: new google.maps.LatLng(45.751330, 4.935312)
 				};
 				map = new google.maps.Map(document.getElementById('game-main-panel'), mapOptions);
 			}
@@ -254,6 +254,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 
 				colorMap();
 			}
+			
 		}
 
 
@@ -282,10 +283,6 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 				var vStrokeOpacity = 0.65;
 				var vFillOpacity = 0.3;
 				var vStrokeWeight = 1;
-
-				if(reachableZoneDescId){
-					//console.log(reachableZoneDescId.indexOf(zone.zoneDesc));
-				}
 
 				if ($scope.disp.zone&&$scope.disp.zone===zone) {
 					initColor = 2212212;
@@ -354,7 +351,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			});
 		}
 
-		$('#game-wrap-panels').css({'height':(($(window).height())-$('header').height())+'px'});
+		$('#game-wrap-panels').css({'height':(($(window).height())-$('header').height())+'px'});	
 		$(window).resize(function() {
 			$('#game-wrap-panels').css({'height':(($(window).height())-$('header').height())+'px'});
 		});
@@ -372,8 +369,7 @@ var unitType;
         				if(! isDragging) {
             				onZoneClicked(polygon);
             				break;
-            			}
-            			else {
+            			} else {
             				$scope.onDraggedZone(polygon);
             			}
             			break;

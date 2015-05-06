@@ -39,8 +39,6 @@ var updateInterval = 180000;
 var updateVelovInterval = 300000;
 var updateTCLInterval = 3600000;
 
-var updateMoney = 0;
-
 var pointBuyFactor = 0.5;
 var pointSellFactor = 0.5;
 var baseDispPoints = 2;
@@ -53,6 +51,7 @@ var hopMoney = 100;
 var winMoney = 100;
 var loseMoney = 100;
 var dispMoney = 10;
+var bankBonus = 20;
 
 // green, purple, dark blue, red, light blue, yellow, orange, brown
 var colorPlayer = [5025616, 10233776, 4149685, 16007990, 48340, 16771899, 16733986, 7951688];
@@ -498,6 +497,10 @@ var processHop = function(a){
 					
 					p.units.push(u._id);
 					p.money += hopMoney;
+					// Banks give more money
+					if(zones[i].zoneDesc.type === 'bank'){
+						p.money+=bankBonus;
+					}
 					zones[i].save();
 					u.save();
 					p.save();

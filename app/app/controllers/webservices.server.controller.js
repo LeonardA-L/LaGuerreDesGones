@@ -524,7 +524,7 @@ exports.firstUseFillBDD = function(req,res){
 				defence:2,
 				point:2,
 				price:20,
-				name:'Cycliste'
+				name:'Touriste'
 			},
 			{
 				type:2,

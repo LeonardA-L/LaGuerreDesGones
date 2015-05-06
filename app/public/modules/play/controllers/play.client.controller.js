@@ -281,16 +281,18 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		// Chat Messages
 		$scope.sendMessage = function(message){
 				console.log('Controller Sending Messages');
-
+				
+				var tmpDate = new Date();
 				var chatMessage = {
 	  				'game': gameId,
+	  				'player': $scope.player._id,
 	  				'message': message,
-	  				'player': '1'//TODO $scope.player._id‏
+					'date' : tmpDate
 				};
 
-				$http.post('/services/chat/send', chatMessage).
+				$http.post('/services/chat/send', chatMessage)
 				//success(function(data, status, headers, config) {
-				success(function(data) {	
+				.success(function(data) {	
 			  		console.log('Success posting chat message');							
 			 	})
 				.error(function(data) {

@@ -623,9 +623,9 @@ exports.sendMessage = function(req,res){
 		game: req.body.game,
 		player:req.body.player,
 		message:req.body.message,
-		date:new Date()
+		date:req.body.date
     });
-	console.log('chatMessage = ' + cm + '##### END OF MESSAGE');
+	console.log('chatMessage = ' + cm + '\n##### END OF MESSAGE #####');
 
 	cm.save();
 };

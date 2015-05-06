@@ -8,8 +8,8 @@ import urllib
 import urllib2
 
 
-kml_file = "map_lyon_20150503_2239.kml"
-json_file = "map_lyon_20150503_2239.json"
+kml_file = "map_lyon_20150505_1836.kml"	
+json_file = "map_lyon_20150505_1836.json"
 
 ####
 # CONST

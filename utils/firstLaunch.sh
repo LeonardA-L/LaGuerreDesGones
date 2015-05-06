@@ -1,7 +1,8 @@
 #!/bin/bash
 #Should have grunt running
 
-ps -el | grep "grunt"
+#ps -el | grep -E 'grunt|server.js'
+pgrep -f 'grunt|server.js'
 
 if test $? = 0
 then

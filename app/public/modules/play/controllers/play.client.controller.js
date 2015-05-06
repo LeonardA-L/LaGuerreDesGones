@@ -378,6 +378,18 @@ var unitType;
 			});
 		});
 
+		// icons for unit
+		$scope.iconByUnitType = {
+			'0':'fa fa-male fa-4x',
+			'1':'fa fa-camera fa-4x',
+			'2':'fa fa-book fa-4x',
+			'3':'fa fa-trophy fa-4x',
+			//'4':'fa-trophy',
+			'5':'fa fa-user-md fa-4x',
+			'6':'fa fa-plus fa-4x',
+			'7':'fa fa-bicycle fa-4x'
+		};
+
 		$scope.onDraggedZone = function (polygon) {
 			var zoneDragged = $scope.game.zones[polygon.zoneId];
 			var errorMess = '';

@@ -53,11 +53,18 @@
 							</div>
 						</div>
 
+						<div ng-if="selectedZone" class="center-content">
+							<h2>{{game.zonesDesc[game.zones[selectedZone._id].zoneDesc].name}}</h2>
+							<h3 ng-if="game.zones[selectedZone._id].owner">Possédée par {{game.players[game.zones[selectedZone._id].owner].name}}</h3>
+							<div class="row">
+							</div>
+						</div>
+
 						<div class="row">
 							<div class="col-md-12 {{(mode==='displacement') ? 'show' : 'hide'}}">
 								<label>Déplacement vers : {{game.zonesDesc[disp.zone.zoneDesc].name}}</label>
-								<button class="btn btn-primary pull-right">Déplacer</button>
-								<button class="btn btn-primary btn-danger pull-right" ng-click="endDisplacement()">Annuler</button>
+								<button class="btn btn-primary pull-right"  ng-click="validateDisplacement()">Déplacer</button>
+								<button class="btn btn-primary btn-danger pull-right" ng-click="cancelDisplacement()">Annuler</button>
 							</div>
 						</div>
 

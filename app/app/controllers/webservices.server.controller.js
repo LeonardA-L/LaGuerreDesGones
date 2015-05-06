@@ -718,6 +718,7 @@ exports.sendMessage = function(req,res){
 			socketio.sockets.emit(req.body.game+'.chat', chatMessages); // emit an event for all connected clients
 		});		
 	});
+};
 
 //Display game scoreboard 
 exports.displayScoreBoard = function(req, res) {

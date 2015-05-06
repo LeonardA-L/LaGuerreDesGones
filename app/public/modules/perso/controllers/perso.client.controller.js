@@ -5,7 +5,7 @@ angular.module('perso').controller('PersoController', ['$scope','Authentication'
 	function($scope, Authentication, $http, $timeout) {
 		// This provides Authentication context.
 		$scope.authentication = Authentication;
-
+		$scope.error=false;
 		var refreshRate = 10*1000;
 		var timerToDestroy;
 		var retrieveAvailable = function(){
@@ -19,6 +19,7 @@ angular.module('perso').controller('PersoController', ['$scope','Authentication'
 			  }).
 			  error(function(data) {
 			    console.log('error');
+				$scope.error=true;
 			});
 		};
 

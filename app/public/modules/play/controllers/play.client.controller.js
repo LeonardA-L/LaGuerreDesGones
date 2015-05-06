@@ -6,6 +6,10 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 	function($scope, Authentication, $http, $stateParams, $document, Socket, $timeout) {
 		// This provides Authentication context.
 		$scope.authentication = Authentication;
+		$scope.startError=false;
+		$scope.moveError=false;
+		$scope.sellError=false;
+		$scope.buyError=false;
 
 		$scope.game = {
 			'title':'Loading...'
@@ -107,6 +111,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		  }).
 		  error(function(data) {
 		    console.log('error');
+			$scope.startError=true;
 		});
 
 		$scope.listUnitsByType = function(us){
@@ -136,6 +141,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		  	}).
 			error(function(data) {
 		    	console.log('error');
+			$scope.moveError=true;
 			});
 		};
 
@@ -157,6 +163,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		  	}).
 			error(function(data) {
 		    	console.log('error');
+			$scope.sellError=true;
 			});
 		};
 
@@ -180,6 +187,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		  	}).
 			error(function(data) {
 		    	console.log('error');
+			$scope.buyError=true;
 			});
 		};
 

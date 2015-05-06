@@ -10,6 +10,8 @@
 		<button class="col-md-1 btn btn btn-default" ng-if="unsub" ng-click="unjoinGame(data._id)">Se désinscrire</button>
 		<span class="alert alert-success" ng-if="gamejoined"> Tu as rejoint la partie !</span>
 		<span class="alert alert-success" ng-if="gameunsub"> Tu es bien désinscrit !</span>
+		<span class="alert alert-danger" ng-if="joinError"> Erreur : impossible de rejoindre la partie</span>
+		<span class="alert alert-danger" ng-if="unjoinError"> Erreur : impossible de se désinscrire de la partie</span>
 	</div>
 
 	<div >

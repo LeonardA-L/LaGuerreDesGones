@@ -2,6 +2,19 @@
 	<div class="playSection">
 		<div class="container-fluid">
 			<div id="game-wrap-panels" class="row">
+				<div ng-if="startError" class="alert alert-danger" style="margin-bottom:1px">
+					Erreur : impossible de lancer la partie
+				</div>
+				<div ng-if="moveError" class="alert alert-danger" style="margin-bottom:1px">
+					Erreur : impossible d'effectuer le déplacement
+				</div>
+				<div ng-if="sellError" class="alert alert-danger" style="margin-bottom:1px">
+					Erreur : impossible d'effectuer la vente
+				</div>
+				<div ng-if="buyError" class="alert alert-danger" style="margin-bottom:1px">
+					Erreur : impossible d'effectuer l'achat
+				</div>
+
 				<div id="game-left-panel" class="col-md-3 game-panel">
 					<h1>{{game.title}}</h1>
 					<hr />
@@ -14,7 +27,7 @@
 						</div>
 						<div class="col-md-12 separator"></div>
 						<div class="col-md-12 center-content">
-							<label ng-repeat="p in game.players">{{p.money}} gaunettes</label>
+							<label ng-repeat="p in game.players">{{p.money}} Gonettes</label>
 						</div>
 						<div class="col-md-12 separator"></div>
 						<div class="col-md-12 center-content">

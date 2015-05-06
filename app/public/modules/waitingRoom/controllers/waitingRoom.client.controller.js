@@ -8,7 +8,7 @@ angular.module('waitingRoom').controller('WaitingRoomController', ['$scope',
 	function($scope, Authentication, $http, $timeout) {
 		// This provides Authentication context.
 		$scope.authentication = Authentication;
-
+		$scope.error=false;
 		var refreshRate = 10*1000;
 		
 		/*
@@ -38,6 +38,7 @@ angular.module('waitingRoom').controller('WaitingRoomController', ['$scope',
 			  }).
 			  error(function(data) {
 			    console.log('error');
+				$scope.error=true;
 			  });
 		};
 

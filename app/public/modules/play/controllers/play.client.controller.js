@@ -327,10 +327,17 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			});
 		}
 
-		$('#game-wrap-panels').css({'height':(($(window).height())-$('header').height())+'px'});
+		$('#game-wrap-panels').css({'height':(($(window).height())-$('header').height())+'px'});	
 		$(window).resize(function() {
 			$('#game-wrap-panels').css({'height':(($(window).height())-$('header').height())+'px'});
 		});
+
+$("#game-wrap-panels").accordion({ 
+autoHeight: true,
+active: false,
+collapsible: true,
+autoHeight: true
+});
 
 var isDragging=false;
 var unitType=undefined;
@@ -345,15 +352,13 @@ var unitType=undefined;
         				if(! isDragging) {
             				onZoneClicked(polygon);
             				break;
-            			}
-            			else {
+            			} else {
             				$scope.onDraggedZone(polygon);
             			}
             			break;
         			}
     			}
 			});
-//			$('.scroll-pane').jScrollPane();
 		});
 
 		$scope.onDraggedZone = function (polygon) {

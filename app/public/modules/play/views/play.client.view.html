@@ -2,9 +2,9 @@
 	<div class="playSection">
 		<div class="container-fluid">
 			<div id="game-wrap-panels" class="row">
-				<accordion id="game-left-panel" class="col-md-3 game-panel nopadding" ng-if="game" close-others="true" ng-if="game">
+				<accordion id="game-left-panel" class="col-md-3 game-panel nopadding" ng-if="game" close-others="true">
 
-					<accordion-group heading="Informations générales" class="accordion-item">
+					<accordion-group heading="Informations générales" class="accordion-item" initially-open="true">
 						{{game.title}}
 					</accordion-group>
 					<accordion-group heading="Joueurs" class="accordion-item">
@@ -12,25 +12,23 @@
 					</accordion-group>
 					<accordion-group heading="Information Zone sélectionnée" class="accordion-item">
 
-						<div class="row">
-							<div class="col-md-6 center-content">
-								<button class="btn btn-primary full-width" ng-click="mode==='displacement' ? resetMode() : prepareDisp()">Déplacement</button>
-							</div>
-							<div class="col-md-6 center-content">
-								<button class="btn btn-primary full-width">Attaque</button>
-							</div>
-							<div class="col-md-12 separator"></div>
-							<div class="col-md-12 center-content">
-								<label ng-repeat="p in game.players">{{p.money}} gaunettes</label>
-							</div>
-							<div class="col-md-12 separator"></div>
-							<div class="col-md-12 center-content">
-								<label>Nouvelles unités dans {{remaining}}</label>
-							</div>
-							<div class="col-md-12 separator"></div>
-							<div class="col-md-12 center-content" >
-								<label>Points {{player.point}}</label>
-							</div>
+						<div class="col-md-6 center-content">
+							<button class="btn btn-primary full-width" ng-click="mode==='displacement' ? resetMode() : prepareDisp()">Déplacement</button>
+						</div>
+						<div class="col-md-6 center-content">
+							<button class="btn btn-primary full-width">Attaque</button>
+						</div>
+						<div class="col-md-12 separator"></div>
+						<div class="col-md-12 center-content">
+							<label ng-repeat="p in game.players">{{p.money}} gaunettes</label>
+						</div>
+						<div class="col-md-12 separator"></div>
+						<div class="col-md-12 center-content">
+							<label>Nouvelles unités dans {{remaining}}</label>
+						</div>
+						<div class="col-md-12 separator"></div>
+						<div class="col-md-12 center-content" >
+							<label>Points {{player.point}}</label>
 						</div>
 
 						<hr />
@@ -118,7 +116,6 @@
 								<button class="btn btn-primary" ng-click="validateDisp()">Validate</button> <button class="btn btn-danger" ng-click="resetMode()">Cancel</button>
 							</div>
 						</div>
-
 
 
 					</accordion-group>

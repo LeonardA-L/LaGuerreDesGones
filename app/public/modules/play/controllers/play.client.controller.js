@@ -390,6 +390,9 @@ var unitType;
             if($scope.disp.zone && $scope.disp.zone!==zoneDragged) {
             	errorMess+='- Une zone à la fois !'+'\n';
             }
+            if ($scope.unitsByTypeForZone[unitType].length<1) {
+				errorMess+='- Vous n\'avez pas d\'unité sur la zone sélectionnée !'+'\n';
+            }
             
             if (''===errorMess) {
             	$scope.disp.zone=zoneDragged;

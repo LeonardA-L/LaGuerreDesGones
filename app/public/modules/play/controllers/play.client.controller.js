@@ -147,7 +147,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
   				'game':gameId
   			};
   			console.log(dto);
-  			//$scope.lessUnitToDisplace(this.unitType); // à mettre dans le succes mais ça marchait pas :/
+  			$scope.lessUnitToDisplace(unitType); // à mettre dans le succes mais ça marchait pas :/
 			$http.post('/services/action/sell',dto).
 			//success(function(data, status, headers, config) {
 			success(function(data) {
@@ -382,18 +382,20 @@ var unitType=undefined;
 		};
 
 		$scope.lessUnitToDisplace = function (idType) {
-			if($scope.disp.unitTypes[idType] > 0) {
-				$scope.disp.unitTypes[idType]--;
-			}
-			var isEndDisplacement = true;
-			for (var i = 0 ; i < $scope.disp.unitTypes.length ; ++i) {
-				if ($scope.disp.unitTypes[i]>0) {
-					isEndDisplacement=false;
-					break;
+			if($scope.mode=='deplacement') {
+				if($scope.disp.unitTypes[idType] > 0) {
+					$scope.disp.unitTypes[idType]--;
 				}
-			}
-			if (isEndDisplacement) {
-				$scope.endDisplacement();
+				var isEndDisplacement = true;
+				for (var i = 0 ; i < $scope.disp.unitTypes.length ; ++i) {
+					if ($scope.disp.unitTypes[i]>0) {
+						isEndDisplacement=false;
+						break;
+					}
+				}
+				if (isEndDisplacement) {
+					$scope.endDisplacement();
+				}
 			}
 		};
  

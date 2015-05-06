@@ -1,14 +1,25 @@
 <section class="rulesSection" data-ng-controller="rulesController">
 	<div  class="rulesSection  container-fluid">
-		<h1>Rules</h1>
+		<h1>Règles du jeu</h1>
 		<div class="panel panel-default">
 			<div class="panel-heading">
-				<h2 class="panel-title">Core rules</h2>
+				<h2 class="panel-title">Règles de base</h2>
 			</div>
 			<ul>
-	  			<li>3 to 6 players wants to conquer Lyon.</li>
-	  			<li>They have 1 week to show their power.</li>
-	  			<li>The winner is the one with more points at the end. </li>
+	  			<li>3 à 6 joueurs veulent conquérir Lyon.</li>
+	  			<li>Ils ont 1 semaine pour se départager.</li>
+	  			<li>Celui qui a le plus de points en fin de partie gagne. </li>
+			</ul>
+		</div>
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h2 class="panel-title">Points</h2>
+			</div>
+			<ul>
+	  			<li>Une victoire rapporte 1 point.</li>
+	  			<li>Chaque zone sous contrôle à la fin du jeu rapporte 1 point.</li>
+	  			<li>Une prime de 15 points est obtenue quand un objectif est atteint, chaque joueur ayant son propre objectif.</li>
+	  			<li>Une prime supplémentaire de 15 points est obtenue si l'objectif est toujours atteint à la fin du jeu. </li>
 			</ul>
 		</div>
 		<div class="panel panel-default">
@@ -16,61 +27,147 @@
 				<h2 class="panel-title">Actions</h2>
 			</div>
 			<ul>
-	  			<li>Units can travel by car, metro, bike or walking.</li>
-	  			<li>A player can attack a border zone with a chosen number of units.</li>
-	  			<li>An attack requires travel and at least one unit must stay in the departure zone.</li>
-	  			<li>Units can be bought and sold using the local money : the Gonette.</li>
-	  			<li>A unit can be put in regeneration mode. In this mode, it can't attack but it can still defend.</li>
+	  			<li>Les unités peuvent se déplacer en voiture, métro, vélo et à pied. Ces déplacements sont soumis au traffic en temps réel.</li>
+	  			<li>Un joueur peut attaquer une zone adjacente avec un nombre d'unités choisi.</li>  			
+	  			<li>Les unités peuvent être achetées et vendues en utilisant la monnaie locale : la Gonette.</li>
+	  			<li>Une unité peut être mise en regénération. Elle ne peut plus attaquer mais peut toujours défendre.</li>
 			</ul>
 		</div>
 		<div class="panel panel-default">
 			<div class="panel-heading">
-				<h2 class="panel-title">Attacks</h2>
+				<h2 class="panel-title">Attaques</h2>
 			</div>
 			<ul>
-	  			<li>The winner is set depending on the number and the abilities of the fighting units.</li>
-	  			<li>The winner becomes the zone's master and gain 1 point for its victory as well as 10 Gonettes.</li>
-	  			<li>The loser looses all its special units that fought.</li>
-	  			<li>The loser keeps half of its fighting Lyonnais and and allocates them to other zones.</li>
-		</ul>
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				<h2 class="panel-title">Points</h2>
-			</div>
-			<ul>
-	  			<li>A victory gives 1 point.</li>
-	  			<li>Each zone under control at the end gives 1 point.</li>
-	  			<li>A bonus of 15 points is gained when a goal is reached.</li>
-	  			<li>Another bonus of 15 points is gained if the goal is still achieved at the end. </li>
+				<li>Une attaque nécessite de se déplacer et prend donc du temps.</li>
+				<li>Au moins une unité doit rester dans la zone de départ.</li>
+	  			<li>Le gagnant est désigné en fonction du nombre d'unités combattantes et de leurs capacités spécifiques.</li>
+	  			<li>Le gagnant devient maître de la zone et gagne 1 point de victoire ainsi que 10 Gonettes.</li>
+	  			<li>Le perdant perd toutes ses unités spéciales qui ont combattu.</li>
+	  			<li>Le perdant conserve la moitié de ses Lyonnais combattants et les réparti dans ses autres zones.</li>
 			</ul>
 		</div>
 		<div class="panel panel-default">
 			<div class="panel-heading">
-				<h2 class="panel-title">Units</h2>
+				<h2 class="panel-title">Zones</h2>
 			</div>
 			<ul>
-	  			<li>Bikers : biking really fast !</li>
-				<li>Students : powerful but can't travel by day (in class) nor thursday nights (partying).</li>
-				<li>Hippies : don't pay tax to malls, got higher defense in parks. </li>
-				<li>Joggers : walking really fast !</li>
-				<li>Doctors : very good in defense and can heal.</li>
-				<li>Preasts : can convert one adverse unit during attack.</li>
-				<li>Scientists : really smart during fights ! </li>
+				<li>Chaque zone est limité à une capacité 8 en unités, chaque unité comptant pour sa valeur.</li>
+	  			<li>Chaque zone crée 1 unité toutes les 6h. Sauf cas spécial, il s'agit d'un Lyonnais.</li>
+				<li>Hopital : crée un médecin toutes les 6h (au lieu d'un Lyonnais).</li>
+				<li>Parc : crée (au choix) un joggeur ou un cycliste toutes les 6h (au lieu d'un Lyonnais).</li>
+				<li>Ecole : crée (au choix) un étudiant ou un scientifique toutes les 6h (au lieu d'un Lyonnais).</li>
+				<li>Eglise : crée un prêtre toutes les 6h (au lieu d'un Lyonnais).</li>
+				<li>Woodstock : crée un hyppie toutes les 6h (au lieu d'un Lyonnais).</li>
+				<li>Gare : augmente la rapidité de déplacement en transport en commun.</li>
+				<li>Aéroport : déplacement dans n’importe quelle zone d’une partie des unités disponibles (3 max) et s’il fait beau. </li>
+				<li>Mairie : augmente de 1 la capacité en unités des zones adjacentes appartenant au même joueur.</li>
+				<li>Place : capacité d'unités sur la zone augmentée de 1.</li>
+				<li>Banque : rapporte 2 Gonettes toutes les 6h à son propriétaire.</li>
+				<li>Centre commercial : taxe les zones adverses adjacentes de 2 Gonettes toutes les 6h.</li>
 			</ul>
 		</div>
 		<div class="panel panel-default">
 			<div class="panel-heading">
-				<h2 class="panel-title">Money</h2>
+				<h2 class="panel-title">Unités</h2>
 			</div>
 			<ul>
-	  			<li>Banks create 2 Gonettes each 6th hour.</li>
-	  			<li>Malls tax 2 Gonnette from each border zone each 6th hour.</li>
-	  			<li>A victory gives 10 Gonettes.</li>
-	  			<li>A defeat gives 5 Gonettes. </li>
-	  			<li>Each type of unit has a price in Gonettes.</li>
+	  			<li>Cyclistes : ils se déplacent plus vite en vélo.</li>
+				<li>Etudiants : puissants mais ils ne peuvent pas se déplace la journée (en cours) ni les jeudis soirs (soirées étudiantes).</li>
+				<li>Hippies : ils ne paient pas de taxes aux centres commerciaux et ont une défense plus élevée dans les parcs. </li>
+				<li>Joggeurs : ils se déplacent plus vite à pied.</li>
+				<li>Docteurs : très bonne défense et capacité de soigner.</li>
+				<li>Prêtres : ils peuvent convertir une unité adverse (de valeur 1) en phase d'attaque.</li>
+				<li>Scientifiques : ils possèdent une grande intelligece de combat. </li>
+			</ul>
+			<div class="container-fluid">
+				<table class="table table-striped  table-bordered">
+		  			<tr>
+						<th>Unité</th>
+						<th>Capacité d'attaque</th>
+						<th>Capacité de défense</th>
+						<th>Valeur</th>
+						<th>Prix</th>
+					</tr>
+					<tr>
+						<td>Lyonnais</td>
+						<td>1</td>
+						<td>1</td>
+						<td>1</td>
+						<td>10</td>
+					</tr>
+					<tr>
+						<td>Cyclistes</td>
+						<td>1</td>
+						<td>2</td>
+						<td>2</td>
+						<td>20</td>
+					</tr>
+					<tr>
+						<td>Etudiants</td>
+						<td>4</td>
+						<td>1</td>
+						<td>3</td>
+						<td>40</td>
+					</tr>
+					<tr>
+						<td>Hippies</td>
+						<td>1</td>
+						<td>2 (ou 3 dans les parcs)</td>
+						<td>2</td>
+						<td>20</td>
+					</tr>
+					<tr>
+						<td>Joggeurs</td>
+						<td>2</td>
+						<td>1</td>
+						<td>2</td>
+						<td>20</td>
+					</tr>
+					<tr>
+						<td>Médecins</td>
+						<td>1</td>
+						<td>4</td>
+						<td>3</td>
+						<td>40</td>
+					</tr>
+					<tr>
+						<td>Prêtres</td>
+						<td>1</td>
+						<td>1</td>
+						<td>2</td>
+						<td>30</td>
+					</tr>
+					<tr>
+						<td>Scientifiques</td>
+						<td>3</td>
+						<td>2</td>
+						<td>3</td>
+						<td>45</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h2 class="panel-title">Monnaie</h2>
+			</div>
+			<ul>
+	  			<li>Les banques génèrent 2 Gonettes toutes les 6 heures.</li>
+	  			<li>Les centres commerciaux taxent 2 Gonnettes à chaque zone adverse adjacente toutes les 6 heures.</li>
+	  			<li>Une victoire rapporte 10 Gonettes.</li>
+	  			<li>Une défaite rapporte 5 Gonettes. </li>
+	  			<li>Chaque type d'unité a un prix en Gonettes.</li>
 			</ul>
 		</div>
-		
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h2 class="panel-title">Départ</h2>
+			</div>
+			<ul>
+	  			<li>Chaque joueur a 4 zones.</li>
+	  			<li>Chaque zone est peuplée de 2 Lyonnais et d'1 unité spéciale (au choix parmi celles créées par la zone).</li>
+	  			<li>Les zones qui ne créent pas d'unité spéciale ne sont peuplées que par 2 Lyonnais.</li>
+			</ul>
 		</div>
 	</div>
 </section>

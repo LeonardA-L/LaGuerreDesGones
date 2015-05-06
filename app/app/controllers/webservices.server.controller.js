@@ -349,6 +349,10 @@ var getPlay = function(gameId, callback, res){
 			res.send(err);
 		result.success.title = game.title;
 		result.success.winner = game.winner;
+		result.success.creator = game.creator;
+		result.success.startTime = game.startTime;
+		result.success.nMaxPlayerUnit = game.nMaxPlayerUnit;
+
 		if(--syncCallback === 0){
 			callback(result);
 		}
@@ -380,7 +384,7 @@ var getPlay = function(gameId, callback, res){
 			callback(result);
 		}
 	});
-	Player.find({'game':gameId}, function(err,players){
+	Player.find({'game':gameId}).populate('user', 'avatarUrl').sort('-point').exec(function(err,players){
 		if(res && err)
 			res.send(err);
 		result.success.players = players;

@@ -8,7 +8,7 @@ angular.module('play')
 	 		link: function(scope, element, attr) {
 				var resizeFct = function(){
 					var tabsHeight = $('.panel-heading').outerHeight() * $('.panel-heading').length;
-					var height = $('#game-wrap-panels').innerHeight() - tabsHeight;
+					var height = $('#game-wrap-panels').innerHeight() - tabsHeight - $('#remaining-time').outerHeight();
 					var body = $('.panel-body');
 					body.css({'height':(height - 1)+'px'});
 				};
@@ -17,3 +17,6 @@ angular.module('play')
 		    }
 		};
 	});
+
+
+

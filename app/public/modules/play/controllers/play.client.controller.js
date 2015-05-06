@@ -60,6 +60,9 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 				if($scope.game.players[i].user === $scope.authentication.user._id){
 					$scope.player = $scope.game.players[i];
 				}
+				if($scope.game.players[i].user._id === $scope.game.creator){
+					$scope.creatorPlayerId = $scope.game.players[i]._id; 
+				}
 			}
 			// Connection between zone and hash
 			for(j=0;j<$scope.game.zones.length;j++){
@@ -189,7 +192,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		    	console.log('error');
 			$scope.buyError=true;
 			});
-		};
+		}; 
 
 		function initMap() {
 			if (typeof map === 'undefined') {

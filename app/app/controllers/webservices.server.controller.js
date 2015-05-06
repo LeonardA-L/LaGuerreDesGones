@@ -625,8 +625,15 @@ exports.sendMessage = function(req,res){
 		message:req.body.message,
 		date:req.body.date
     });
-	console.log('chatMessage = ' + cm + '\n##### END OF MESSAGE #####');
+	console.log('###### New Message #####\n' + cm + '\n##### END OF MESSAGE #####');
+	cm.save(function(err,data){
+		ChatMessage.find({'game':req.body.game}, function(err,chatMessages){
+			var socketio = req.app.get('socketio'); // take out socket instance from the app container
+			socketio.sockets.emit(req.body.game+'.chat', chatMessages); // emit an event for all connected clients
+		});		
+	});
 
-	cm.save();
+
+
 };
 

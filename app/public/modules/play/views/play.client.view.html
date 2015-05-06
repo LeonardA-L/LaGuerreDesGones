@@ -77,6 +77,8 @@
 									<div style="height:50%; text-align:center;">
 										<span>{{unitsByTypeForZone[i.type].length}}</span>
 									</div>
+
+
 								</div>
 								<div class="col-md-3 nopadding" style="margin-top: 27px;  text-align:center;">
 									<button class="btn btn-primary btn-success" ng-if="game.zones[game.selectedZone._id].owner === player._id" ng-click="buyUnit(i.type)">+</button>
@@ -92,8 +94,10 @@
 
 					
 					<div style="background-color:red;">
+						<form>
 						<input type="text" id="messageForChat" placeholder="Enter your nice message here" ng-model="messageForChat"></input>
-						<button ng-click="sendMessage(messageForChat)">Envoyer</button>‏
+						<button type="reset" ng-click="sendMessage(messageForChat)">Envoyer</button>‏
+						</form>
 						<div id="chat" ng-repeat="i in game.chatMessages"> 
 							{{game.players[player._id].name}}  : {{i.message}} 
 						</div>

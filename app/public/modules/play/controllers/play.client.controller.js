@@ -92,6 +92,10 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		    processGameState(diff.success);
 		});
 
+		Socket.on(gameId+'.chat', function(chat) {
+		    $scope.game.chatMessages = chat;
+		});
+
 		$http.get('/services/play/'+gameId+'/start').
 		  //success(function(data, status, headers, config) {
 		  success(function(data) {

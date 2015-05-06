@@ -54,6 +54,9 @@ var winMoney = 100;
 var loseMoney = 100;
 var dispMoney = 10;
 
+// green, purple, dark blue, red, light blue, yellow, orange, brown
+var colorPlayer = [5025616, 10233776, 4149685, 16007990, 48340, 16771899, 16733986, 7951688];
+
 var odds = 25;
 var baseHP = 40;
 
@@ -87,7 +90,7 @@ var syncEndProcess = function(action, failed){
 		console.log('Action failed');
 	}
 	action.save();
-	//console.log('End action '+action._id);
+
 	if(action.game){
 		if(action.type === 8){
 			if(action.game.winner){
@@ -122,9 +125,25 @@ var affectUnitToZone = function(u,z,zd){
 };
 
 var processDisplacement = function(a){
-
+	
 	var syncFunction=function(){
 		var duration = 10000;
+		var isAdjacent = false;
+		console.log(a.zoneA);
+		console.log(a.zoneB);
+		for(var j=0;j<a.zoneA.zoneDesc.adjacentZones.length;j++){
+			console.log(a.zoneA.zoneDesc.adjacentZones[j] +'-'+ a.zoneB.zoneDesc._id);
+			if(''+a.zoneA.zoneDesc.adjacentZones[j] === ''+a.zoneB.zoneDesc._id){
+				isAdjacent = true;
+				break;
+			}
+		}
+		if(!isAdjacent){
+			if(debug) console.log('Non authorized displacement aborted');
+			syncEndProcess(a,true);
+			return;
+		}
+		
 		for (var i=0 ; i < a.units.length ; ++i) {
 	 		var u = a.units[i];
 	 		u.available=false;
@@ -158,14 +177,16 @@ var processDisplacement = function(a){
 	
 	var syncCount = 2;
  	if(debug) console.log('Processing displacement action');
- 	Zone.findById(a.game.zoneA).populate('zoneDesc').exec(function(err,zo){
+ 	Zone.findById(a.zoneA._id).populate('zoneDesc').exec(function(err,zo){
  		a.game.zoneA = zo;
+		a.zoneA = zo;
  		if(--syncCount === 0){
  			syncFunction();
  		}
  	});
- 	Zone.findById(a.game.zoneB).populate('zoneDesc').exec(function(err,zo){
+ 	Zone.findById(a.zoneB._id).populate('zoneDesc').exec(function(err,zo){
  		a.game.zoneB = zo;
+		a.zoneB = zo;
  		if(--syncCount === 0){
  			syncFunction();
  		}
@@ -206,7 +227,6 @@ var processEndDisplacement = function(a){
 			u.save();
  		}
 		
-		// TODO Battle
 		if(''+firstID !== ''+secondID && firstID !== undefined){
 			Player.find({'_id':{$in:[firstID,secondID]}},function(err,players){
 				
@@ -361,6 +381,8 @@ var processInit = function(a){
 				var idx = Math.floor(Math.random() * neutralZones.length);
 				var nz = neutralZones[idx];
 				var nzd = neutralZonesDesc[idx];
+				neutralZones.splice(idx,1);
+				neutralZonesDesc.splice(idx,1);
 				for(var j=0;j<initPlayers;j++){
 					var u = new Unit(matrixes.UnitData.content[0]);
 
@@ -379,6 +401,7 @@ var processInit = function(a){
 					nz.save();
 				}
 				//console.log(players[i]);
+				players[i].color = colorPlayer[i];
 				players[i].money = initMoney;
 				players[i].save();
 			}	
@@ -714,7 +737,7 @@ actionHandlers.push(processEndCheck);
 
 // TODO
  var processAction = function(a){
-	//console.log('Start action '+a._id);
+
  	actionHandlers[a.type](a);
  };
 

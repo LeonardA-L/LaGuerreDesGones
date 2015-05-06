@@ -16,6 +16,10 @@ angular.module('plddirectives').directive('gameBox', ['$http', '$filter',
 				scope.joinok = scope.join;
 				scope.gamejoined=false;
 				scope.gameunsub=false;
+
+				scope.joinError=false;
+				scope.unjoinError=false;
+
 scope.data.startTime=$filter('date')(scope.data.startTime,'dd/MM/yyyy HH:mm');
 
 				scope.play = scope.playp && scope.data.isInit;
@@ -36,6 +40,7 @@ scope.data.startTime=$filter('date')(scope.data.startTime,'dd/MM/yyyy HH:mm');
 					  }).
 					  error(function(data) {
 					    console.log('error');
+						scope.joinError=true;
 					  });
 				};
 
@@ -56,6 +61,7 @@ scope.data.startTime=$filter('date')(scope.data.startTime,'dd/MM/yyyy HH:mm');
 					  }).
 					  error(function(data) {
 					    console.log('error');
+						scope.unjoinError=true;
 					  });
 				};
 			}

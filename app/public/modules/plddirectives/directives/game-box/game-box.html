@@ -5,11 +5,13 @@
 	<div class="row">
 		<p class="col-md-4">créé par {{data.creator.username}}</p> 
 		<button class="col-md-1 btn btn-default" ng-if="joinok && !load" ng-click="joinGame(data._id)">Rejoindre</button>
-		<button class="col-md-1 btn btn btn-disabled" ng-if="load">Chargement...</button>
-		<button class="col-md-1 btn btn-default" aria-valuenow="60" aria-valuemax="100" ng-if="play" href="/#!/play/{{data._id}}">Jouer</button> 
+		<button class="col-md-1 btn btn btn-disabled" ng-if="load && !unjoinError && !joinError">Chargement...</button>
+		<a href="/#!/play/{{data._id}}"><button class="col-md-1 btn btn-default" aria-valuenow="60" aria-valuemax="100" ng-if="play">Jouer</button> </a>
 		<button class="col-md-1 btn btn btn-default" ng-if="unsub" ng-click="unjoinGame(data._id)">Se désinscrire</button>
 		<span class="alert alert-success" ng-if="gamejoined"> Tu as rejoint la partie !</span>
 		<span class="alert alert-success" ng-if="gameunsub"> Tu es bien désinscrit !</span>
+		<span class="alert alert-danger" ng-if="joinError"> Erreur : impossible de rejoindre la partie</span>
+		<span class="alert alert-danger" ng-if="unjoinError"> Erreur : impossible de se désinscrire de la partie</span>
 	</div>
 
 	<div >

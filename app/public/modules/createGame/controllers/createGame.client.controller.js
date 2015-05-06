@@ -17,7 +17,7 @@ angular.module('createGame').controller('CreateGameController', ['$scope','Authe
 
 		$scope.newGame = {
 			'startTime' : '',
-			'title':'Partie de '+$scope.authentication.user.displayName,
+			'title':'Partie de '+$scope.authentication.user.username,
 			'nMinPlayer' : 2,
 			'nMaxPlayer' : 8			
 		};

@@ -1,0 +1,32 @@
+
+<section>
+	<div class="scoreBoardSection" ng-controller="ScoreBoardController">
+		<h2 class="title_score">ScoreBoard</h2>
+	  <tabset justified="true" class="contentScoreBoard">
+	  	<tab heading="Points">
+	    	<table class="table table-bordered">
+			    <thead>
+			      <tr>
+			        <th>Rank</th>
+			        <th>Player name</th>
+			        <th>Money</th>
+			        <th>Points</th>
+			      </tr>
+			    </thead>
+			    <tbody>
+			      <tr ng-repeat="player in scoreBoard">
+			        <td>{{$index + 1}}</td>
+			        <td>{{player.username}}</td>
+			        <td>{{player.money}}</td>
+			        <td>{{player.point}}</td>
+			      </tr>
+			    </tbody>
+	  		</table>
+	    </tab>
+	    <tab heading="Kills">Coming soon...</tab>
+	    <tab heading="Survivors">Coming soon...</tab>
+	    <tab heading="Zones">Coming soon...</tab>
+	    <tab heading="Objectives">Coming soon...</tab>
+	  </tabset>
+	</div>
+</section>

@@ -166,6 +166,7 @@ exports.createGame = function(req, res) {
 	var Game = mongoose.model('Game');
 	var Player = mongoose.model('Player');
 	var Action = mongoose.model('Action');
+	var ScoreBoard = mongoose.model('ScoreBoard');
 	console.log(req.body);
 	var g = new Game({
 		'title':req.body.title,
@@ -182,6 +183,10 @@ exports.createGame = function(req, res) {
 			user: req.user._id,
 			game: g._id 
 	});
+	var scoreBoard = new ScoreBoard({
+			game: g._id,
+			player: player._id
+	});
 	g.players = [player._id];
 	g.creator = req.user._id;
 	player.save(function(err){
@@ -191,6 +196,11 @@ exports.createGame = function(req, res) {
 	});
 	g.save(function(err,data){
 		/*if (err) {
+            res.send(err);
+        }*/
+	});
+	scoreBoard.save(function(err){
+		/*if (err){
             res.send(err);
         }*/
 	});
@@ -238,7 +248,7 @@ exports.getWaiting = function(req, res) {
 exports.getSubscribed = function(req,res){
 	var Game = mongoose.model('Game');
 
-    Game.find({}).populate('players').populate('creator', 'username').exec(function (err, docs) {
+    Game.find({}).populate('players').populate('creator', 'username').sort('winner -isInit -startTime').exec(function (err, docs) {
 	  if (err)
             res.send(err);
         var accurate = [];
@@ -285,6 +295,15 @@ exports.joinGame = function(req, res) {
        	console.log(err);
       }
     });
+    var ScoreBoard = mongoose.model('ScoreBoard');
+    var scoreBoardPl = new ScoreBoard({
+    	game: gameId,
+    	player: playerID
+    });
+    scoreBoardPl.save(function(err){
+		if (err)
+            res.send(err);
+	});
 	console.log('Player '+player.name+' wants to join game n°'+req.params.gameId);
 console.log('Id user joined = '+player.user);
 	res.json(result);
@@ -298,15 +317,19 @@ exports.unjoinGame = function(req, res) {
 	console.log('Unsubscribe');
 	var Game = mongoose.model('Game');
 	var Player = mongoose.model('Player');
+	var ScoreBoard = mongoose.model('ScoreBoard');
 	// TODO possibly optimizable
+	var sent = false;
 	Game.findOne({'_id':req.params.gameId}).populate('players').exec(function(err,game){
 
 		var destroyCallback = function(err){
-			if(err){
+			if(err && !sent){
 				res.send(err);
+				sent = true;
 			}
-			else{
+			else if(!sent){
 				res.json(result);
+				sent = true;
 			}
 		};
 
@@ -317,6 +340,7 @@ exports.unjoinGame = function(req, res) {
 			if(''+p.user === ''+req.user._id){
 				game.players.splice(i, 1);
 				Player.findByIdAndRemove(p._id,destroyCallback);
+				ScoreBoard.findOneAndRemove({'player':p._id},destroyCallback);
 				if(game.players.length > 0){
 					game.save(destroyCallback);
 				}
@@ -332,7 +356,7 @@ var getPlay = function(gameId, callback, res){
 	var result = {
 		success:{}
 	};
-	var syncCallback = 7;
+	var syncCallback = 8;
 	var Game = mongoose.model('Game');
 	var Player = mongoose.model('Player');
 	var Zone = mongoose.model('Zone');
@@ -340,6 +364,7 @@ var getPlay = function(gameId, callback, res){
 	var Action = mongoose.model('Action');
 	var Matrix = mongoose.model('Matrix');
 	var ZoneDesc = mongoose.model('ZoneDescription');
+	var ChatMessage = mongoose.model('ChatMessage');
 
 	console.log(gameId);
 	Game.findOne({'_id':gameId}, function(err,game){
@@ -408,6 +433,18 @@ var getPlay = function(gameId, callback, res){
 		for(var i=0;i<matrixes.length;i++){
 			result.success.matrixes[matrixes[i].name] = matrixes[i];
 		}
+		if(--syncCallback === 0){
+			callback(result);
+		}
+	});
+	
+	ChatMessage.find({'game':gameId}, function(err,chatMessages){
+		console.log('################## Chat Message #################');
+		console.log(chatMessages);
+		console.log('################## Fin Chat Message #################');
+		if(res && err)
+			res.send(err);
+		result.success.chatMessages = chatMessages;
 		if(--syncCallback === 0){
 			callback(result);
 		}
@@ -525,7 +562,7 @@ exports.firstUseFillBDD = function(req,res){
 				defence:2,
 				point:2,
 				price:20,
-				name:'Cycliste'
+				name:'Touriste'
 			},
 			{
 				type:2,
@@ -541,7 +578,7 @@ exports.firstUseFillBDD = function(req,res){
 				defence:2,
 				point:2,
 				price:20,
-				name:'Hippie'
+				name:'Joggeur'
 			},
 			{
 				type:4,
@@ -603,7 +640,7 @@ exports.firstUseFillBDD = function(req,res){
 			station : 1,
 			airport : 1,
 			city_hall:0,
-			square:4,
+			square:0,
 			shopping_centre:0,
 			bank:7
 		}});
@@ -664,5 +701,67 @@ exports.actionCallback = function(req,res){
 		result:'ok'
 	};
 	res.json(ret);
+};
+
+// Chat message
+exports.sendMessage = function(req,res){
+	console.log('Sending a message in the chat');
+	
+	var ChatMessage = mongoose.model('ChatMessage');
+
+	var cm = new ChatMessage({
+		game: req.body.game,
+		player:req.body.player,
+		message:req.body.message,
+		date:req.body.date
+    });
+	console.log('###### New Message #####\n' + cm + '\n##### END OF MESSAGE #####');
+	cm.save(function(err,data){
+		ChatMessage.find({'game':req.body.game}, function(err,chatMessages){
+			var socketio = req.app.get('socketio'); // take out socket instance from the app container
+			socketio.sockets.emit(req.body.game+'.chat', chatMessages); // emit an event for all connected clients
+		});		
+	});
+};
+
+//Display game scoreboard 
+exports.displayScoreBoard = function(req, res) {
+	// TODO rules
+	var ScoreBoard = mongoose.model('ScoreBoard');
+	var Player = mongoose.model('Player');
+	var Matrix = mongoose.model('Matrix'),
+	unitDataMatrix = Matrix.findOne({'name':'UnitData'});
+	var gameId = req.params.gameId;
+	var nbUnitTypes = 8;
+	var scoreBoard = [];
+	ScoreBoard.find({game : gameId}).populate('player zones objectives').exec(function(err, docs){
+		// if (err)
+		// 	res.send(err);
+		docs.sort(function(pl1,pl2){
+			return pl2.money - pl1.money;
+		});
+		docs.sort(function(pl1,pl2){
+			return pl2.point - pl1.point;
+		});
+		for (var i=0; i<docs.length; i++){
+			var player = {};
+			player.username = docs[i].player.name;
+			player.point = docs[i].player.point;
+			player.money = docs[i].player.money;
+			// player.zones = docs[i].zones;
+			// player.objectives = docs[i].objectives;
+			// var unitTypes = [];
+			// for (var j=0; j< nbUnitTypes; j++){
+			// 	var units = {};
+			// 	units.nbKills = docs[i].getKillsByUnitType(j);
+			// 	units.nbSurvivors = docs[i].getSurvivorsByUnitType(j);
+			// 	units.name = unitDataMatrix.content[j].name;
+			// 	unitTypes.push(units);
+			// }
+			// player.unitTypes=unitTypes;
+			scoreBoard.push(player);
+		}
+		res.json({'success':scoreBoard});
+	});
 };
 

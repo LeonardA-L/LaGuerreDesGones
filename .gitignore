@@ -87,6 +87,7 @@ mongod
 *.swp
 logs/
 build/
+.node*
 
 # Python
 # ======

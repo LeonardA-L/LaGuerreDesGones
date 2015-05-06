@@ -17,7 +17,6 @@ module.exports = {
 				'public/lib/bootstrap/dist/css/bootstrap-theme.css',
 				'public/lib/angular-material/angular-material.css',
 				'public/lib/fontawesome/css/font-awesome.min.css'
-
 			],
 			js: [
 				'public/lib/jquery/dist/jquery.js',

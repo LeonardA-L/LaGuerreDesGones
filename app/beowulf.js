@@ -39,13 +39,13 @@ var updateInterval = 180000;
 var updateVelovInterval = 300000;
 var updateTCLInterval = 3600000;
 
-var updateMoney = 0;
-
 var pointBuyFactor = 0.5;
 var pointSellFactor = 0.5;
 var baseDispPoints = 2;
 var baseWarPoints = 4;
 var winPoints = 11;
+
+var hopPointPerAdjacence = 5;
 
 var victoryPoint = 300;
 
@@ -53,14 +53,16 @@ var hopMoney = 100;
 var winMoney = 100;
 var loseMoney = 100;
 var dispMoney = 10;
+var bankBonus = 20;
+
+var squareCapBonus = 2;
 
 // green, purple, dark blue, red, light blue, yellow, orange, brown
 var colorPlayer = [5025616, 10233776, 4149685, 16007990, 48340, 16771899, 16733986, 7951688];
 
 var odds = 25;
-var baseHP = 40;
+var baseHP = 50;
 
-var maxUnitPerZone = 8;
 
 var notifyServer = function(gameId){
 	var options = {
@@ -247,10 +249,10 @@ var processEndDisplacement = function(a){
 
 				// Start by giving everyone HPs
 				for(i=0;i<firstUnits.length;i++){
-					firstUnits[i].hp = baseHP * secondUnits.length;
+					firstUnits[i].hp = baseHP;
 				}
 				for(i=0;i<secondUnits.length;i++){
-					secondUnits[i].hp = baseHP * firstUnits.length;
+					secondUnits[i].hp = baseHP;
 				}
 
 				// While there is still two team
@@ -368,6 +370,11 @@ var processInit = function(a){
 				zoneDesc : zd
 			});
 			
+			// Square zone has increased capacity
+			if(zd.type === 'square'){
+				z.nbUnitMax += squareCapBonus;
+			}
+
 			zoneIdList.push(z._id);
 			if(zd.type === NEUTRAL){
 				neutralZones.push(z);
@@ -429,7 +436,7 @@ var processInit = function(a){
 var processBuy = function(a){
 	if(debug) console.log('Processing buy action');
 	if(debug) console.log('Units on zone '+a.zone.units.length);
-	if(a.zone.units.length < maxUnitPerZone){
+	if(a.zone.units.length < a.zone.nbUnitMax){
 		var price = matrixes.UnitData.content[a.newUnitType].price;
 		a.player.money -= price;
 		a.player.point += price*pointBuyFactor;
@@ -488,7 +495,7 @@ var processHop = function(a){
 
 		Zone.find({'_id':{$in:a.game.zones}}).populate('zoneDesc units').exec(function(err,zones){
 			for(var i=0;i<zones.length;i++){
-				if(zones[i].owner && zones[i].units.length < maxUnitPerZone){
+				if(zones[i].owner && zones[i].units.length < zones[i].nbUnitMax){
 					// Generate Unit
 					var u = new Unit(matrixes.UnitData.content[matrixes.ZoneTypeToUnitType.content[zones[i].zoneDesc.type]]);
 					// affect to player
@@ -498,6 +505,12 @@ var processHop = function(a){
 					
 					p.units.push(u._id);
 					p.money += hopMoney;
+					// Banks give more money
+					if(zones[i].zoneDesc.type === 'bank'){
+						p.money+=bankBonus;
+					}
+					// Zones give points
+					p.point+=hopPointPerAdjacence*zones[i].zoneDesc.adjacentZones.length;
 					zones[i].save();
 					u.save();
 					p.save();

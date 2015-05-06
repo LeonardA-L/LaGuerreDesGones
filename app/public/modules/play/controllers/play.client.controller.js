@@ -104,6 +104,10 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		    colorMap();
 		});
 
+		Socket.on(gameId+'.chat', function(chat) {
+		    $scope.game.chatMessages = chat;
+		});
+
 		$http.get('/services/play/'+gameId+'/start').
 		  //success(function(data, status, headers, config) {
 		  success(function(data) {
@@ -138,6 +142,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
   				'unitIds':listUnits,
   				'travelMode':travelMode
   			};
+  			$scope.showDisplacement(zoneAId,zoneBId,'foot',$scope.player._id); // put real params !
 			$http.post('/services/action/disp',dto).
 			//success(function(data, status, headers, config) {
 			success(function(data) {
@@ -158,7 +163,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
   			};
   			console.log(dto);
   			if($scope.mode==='displacement'&&$scope.unitsByTypeForZone[unitType].length <= $scope.disp.unitTypes[unitType]) {
-  				$scope.lessUnitToDisplace(unitType); // à mettre dans le succes mais ça marchait pas :/
+  				$scope.lessUnitToDisplace(unitType);
   			}
 			$http.post('/services/action/sell',dto).
 			//success(function(data, status, headers, config) {
@@ -240,7 +245,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 					var marker = new google.maps.Marker({
 					      position: new google.maps.LatLng(zd.y,zd.x),
 					      map: map,
-					      icon: 'static/zone_'+zd.type+'.png'
+					      icon: 'static/zones/zone_'+zd.type+'.png'
 					  });
 					marker.zoneId = game.zones[i]._id;
 					marker.zoneDescId = game.zones[i].zoneDesc;
@@ -359,6 +364,30 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			});
 		}
 
+		// Chat Messages
+		$scope.sendMessage = function(message){
+				console.log('Controller Sending Messages');
+				
+				var tmpDate = new Date();
+				var chatMessage = {
+	  				'game': gameId,
+	  				'player': $scope.player._id,
+	  				'message': message,
+					'date' : tmpDate
+				};
+			  	console.log('Success posting chat message');
+				$scope.messageForChat = ''; //initialize chat message
+
+				$http.post('/services/chat/send', chatMessage)
+				//success(function(data, status, headers, config) {
+				.success(function(data) {	
+			  		console.log(data);
+			 	})
+				.error(function(data) {
+			  		console.log(data);
+			 	});
+		};		
+
 		$('#game-wrap-panels').css({'height':(($(window).height())-$('header').height())+'px'});	
 		$(window).resize(function() {
 			$('#game-wrap-panels').css({'height':(($(window).height())-$('header').height())+'px'});
@@ -385,6 +414,18 @@ var unitType;
     			}
 			});
 		});
+
+		// icons for unit
+		$scope.iconByUnitType = {
+			'0':'fa fa-male fa-4x',
+			'1':'fa fa-camera fa-4x',
+			'2':'fa fa-book fa-4x',
+			'3':'fa fa-trophy fa-4x',
+			//'4':'fa-trophy',
+			'5':'fa fa-user-md fa-4x',
+			'6':'fa fa-plus fa-4x',
+			'7':'fa fa-bicycle fa-4x'
+		};
 
 		$scope.onDraggedZone = function (polygon) {
 			var zoneDragged = $scope.game.zones[polygon.zoneId];
@@ -435,6 +476,41 @@ var unitType;
 					$scope.cancelDisplacement();
 				}
 			}
+		};
+
+		$scope.showDisplacement = function (zoneAId,zoneBId,transport,player) {
+			var duration= 10000;
+			var step 	= 1000;
+			var destination=new google.maps.LatLng($scope.game.zonesDesc[$scope.game.zones[zoneBId].zoneDesc].y,$scope.game.zonesDesc[$scope.game.zones[zoneBId].zoneDesc].x);
+
+			var imgDisplacement = 'static/zones/zone_station.png';
+			var marker = new google.maps.Marker({
+				position: new google.maps.LatLng($scope.game.zonesDesc[$scope.game.zones[zoneAId].zoneDesc].y,$scope.game.zonesDesc[$scope.game.zones[zoneAId].zoneDesc].x),
+				destination: new google.maps.LatLng($scope.game.zonesDesc[$scope.game.zones[zoneBId].zoneDesc].y,$scope.game.zonesDesc[$scope.game.zones[zoneBId].zoneDesc].x),
+				currentTime:0,
+				map: map,
+				icon: imgDisplacement
+			});
+
+			var threadShowDisplacement = function(){
+				return $timeout(function(){
+					if (marker.currentTime<duration) {
+						var ratio = duration-marker.currentTime;
+						marker.currentTime+=step;
+						marker.setPosition(new google.maps.LatLng(
+							marker.getPosition().lat()+marker.currentTime *  (destination.lat()-marker.getPosition().lat())/(duration),
+							marker.getPosition().lng()+marker.currentTime *  (destination.lng()-marker.getPosition().lng())/(duration)
+						));
+						
+						threadShowDisplacement();
+					}
+					else {
+						marker.setMap(null);
+					}
+				},step);
+			};
+
+			threadShowDisplacement();
 		};
  
  		$scope.cancelDisplacement = function () {

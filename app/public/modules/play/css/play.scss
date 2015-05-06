@@ -1,133 +1,316 @@
 .playSection{
-		background: #FEE;
+	
+	$winnerOverlayWidth:40%;
+	$winnerOverlayHeight:40%;
 
-		.nestedClass{
-			background:#F00;
-		}
+	background: #FEE;
+	height: calc(100% - #{$top-margin} );
+	
+	.nestedClass{
+		background:#F00;
+	}
 
-		.zoneBox{
-			height:100px;
-			width:100px;
-			background-color:#FEE;
-			border: solid;
-			border-color: green;
-			display:inline-block;
-			vertical-align:top;
-		}
+	.zoneBox{
+		height:100px;
+		width:100px;
+		background-color:#FEE;
+		border: solid;
+		border-color: green;
+		display:inline-block;
+		vertical-align:top;
+	}
 
-		#game-wrap-panels {
-			background-color: #ecf0f1;
-			border-bottom: 4px;
-			border-bottom-color: #3C3C3C;
-			border-bottom-style: solid;
-		}
+	#game-wrap-panels {
+		background-color: #ecf0f1;
+		border-bottom: 4px;
+		border-bottom-color: #3C3C3C;
+		border-bottom-style: solid;
+	}
 
-		.game-panel {
-			height:100%;
-		}
+	.game-panel {
+		height:100%;
+	}
 
-		#game-left-panel {
-			background-color: #ecf0f1;
-			overflow-y: scroll;
-		}
+	#game-left-panel {
+		background-color: #ecf0f1;
+	}
 
-		#game-left-panel hr {
-			border-color:#3C3C3C;
-		}
+	#game-main-panel {
 
-		.nopadding {
-			padding: 0;// !important;
-			margin: 0;// !important;
-		}
+	}
 
-		.separator {
-			margin-top: 10px;
-			margin-bottom: 10px;
-		}
+	#game-left-panel hr {
+		border-color:#3C3C3C;
+	}
 
+	.nopadding {
+   		padding: 0;// !important;
+   		margin: 0;// !important;
+	}
 
-		body {height:100px}
+	.separator {
+		margin-top: 10px;
+		margin-bottom: 10px;
+	}
 
-		$chatInputHeight:25px;
-		$chatHeight:400px;
-		.chat-box {
-		font:normal normal 11px/1.4 Tahoma,Verdana,Sans-Serif;
-		color:#333;
-		height: $chatHeight;
-		min-width: 250px;
-		width:20%; /* Chatbox width */
-		border:1px solid #344150;
-		border-bottom:none;
-		background-color:white;
-		position:absolute;
-		right:10px;
-		bottom:0;
-		z-index:9999;
-		-webkit-box-shadow:1px 1px 5px rgba(0,0,0,.2);
-		-moz-box-shadow:1px 1px 5px rgba(0,0,0,.2);
-		box-shadow:1px 1px 5px rgba(0,0,0,.2);
-		}
+	.center-content {
+		text-align: center;
+	}
 
-		.chat-box > input[type="checkbox"] {
-		display:block;
-		margin:0 0;
-		padding:0 0;
+	.unit-icon {
+		margin-top:3px;
+		margin-bottom:3px;
+	}
+
+	.row-unit {
+		background-color: rgba(41, 128, 185, 0.1);
+	}
+
+	.row-unit-separator {
+		height:2px;
+		background-color:#3C3C3C;
+	}
+
+	#row-unit-number-label {
+		height:50%;
+		margin-top: 13px;
+		text-align:center;
+	}
+
+	#row-unit-name {
+		margin-top: 15px;
+	}
+
+	#row-unit-actions {
+		margin-top: 27px;
+	}
+
+	.full-width {
+		width: 100%;
+	}
+
+	.full-height {
+		height: calc(100% - #{$top-margin} );
+	}
+
+	#row-unit-number {
+		height:50%;
+		text-align:center;
+	}
+
+	.select-to-displace {
+		background-color: #3498db;
+	}
+
+	.row-unit-disp-selected {
+		
+	}
+
+	.row-unit-disp-not-selected {
+		display: none;
+	}
+
+	.overallWinner{
+		background: rgba(0,0,0,0.5);
+		width:100%;
+		height:100%;
 		position:absolute;
 		top:0;
-		right:0;
 		left:0;
-		width:100%;
-		height:26px;
-		z-index:4;
-		cursor:pointer;
-		opacity:0;
-		filter:alpha(opacity=0);
-		}
+	}
 
-		.chat-box > label {
-		display:block;
-		height:24px;
-		line-height:24px;
-		background-color:#344150;
-		color:white;
-		font-weight:bold;
-		padding:0 1em 1px;
-		}
+	.winnerDisplay{
+		background:#FFF;
+		width:$winnerOverlayWidth;
+		height:$winnerOverlayHeight;
+		padding:50px;
+		margin:0 auto;
+		position:relative;
+		top:calc( ( 100% - #{$winnerOverlayHeight} ) / 2 - #{$top-margin});
+	}
+	.row-unit-displacement {
+		margin-top: 10px;
+	}
+	/* useless row-unit-number-label; row-unit-number; */
 
-		.chat-box > label:before {content:attr(data-collapsed)}
+	.icon-on-drag {
+		opacity: 0.5!important;
+	}
 
-		.chat-box-content {
+	.accordion-item{
+		margin-top: 0px !important;
+	}
+
+	.panel-body{
 		overflow-y: scroll;
-		height: calc(100% - #{$chatInputHeight} );
-		}
+	}
 
-		.chat-box .chat-box-content {
-		padding:0px;
-		//display:none;
-		}
-		
-		.chatInput{
-		
-		}
+	body {height:100px}
 
-		.chatBox{
-			height:$chatHeight;
-		}
+	$chatInputHeight:25px;
+	$chatHeight:400px;
+	.chat-box {
+	font:normal normal 11px/1.4 Tahoma,Verdana,Sans-Serif;
+	color:#333;
+	height: $chatHeight;
+	min-width: 250px;
+	width:20%; /* Chatbox width */
+	border:1px solid #344150;
+	border-bottom:none;
+	background-color:white;
+	position:absolute;
+	right:10px;
+	bottom:0;
+	z-index:9999;
+	-webkit-box-shadow:1px 1px 5px rgba(0,0,0,.2);
+	-moz-box-shadow:1px 1px 5px rgba(0,0,0,.2);
+	box-shadow:1px 1px 5px rgba(0,0,0,.2);
+	}
 
-		.chatBoxTitle{
-			margin:0;
-		}
+	.chat-box > input[type="checkbox"] {
+	display:block;
+	margin:0 0;
+	padding:0 0;
+	position:absolute;
+	top:0;
+	right:0;
+	left:0;
+	width:100%;
+	height:26px;
+	z-index:4;
+	cursor:pointer;
+	opacity:0;
+	filter:alpha(opacity=0);
+	}
 
-		/* hover state */
-		.chat-box > input[type="checkbox"]:hover + label {background-color:#404D5A}
+	.chat-box > label {
+	display:block;
+	height:24px;
+	line-height:24px;
+	background-color:#344150;
+	color:white;
+	font-weight:bold;
+	padding:0 1em 1px;
+	}
 
-		/* checked state */
-		.chat-box > input[type="checkbox"]:checked + label {background-color:#212A35}
-		.chat-box > input[type="checkbox"]:checked + label:before {content:attr(data-expanded)}
-		.chat-box > input[type="checkbox"]:checked ~ .chat-box-content {display:block}
+	.chat-box > label:before {content:attr(data-collapsed)}
 
-		#btn_sendChatMessage:hover{
-		cursor:pointer;
-		}
+	.chat-box-content {
+	overflow-y: scroll;
+	height: calc(100% - #{$chatInputHeight} );
+	}
+
+	.chat-box .chat-box-content {
+	padding:0px;
+	//display:none;
+	}
+
+	.chatInput{
+
+	}
+
+	.chatBox{
+		height:$chatHeight;
+	}
+
+	.chatBoxTitle{
+		margin:0;
+	}
+
+	/* hover state */
+	.chat-box > input[type="checkbox"]:hover + label {background-color:#404D5A}
+
+	/* checked state */
+	.chat-box > input[type="checkbox"]:checked + label {background-color:#212A35}
+	.chat-box > input[type="checkbox"]:checked + label:before {content:attr(data-expanded)}
+	.chat-box > input[type="checkbox"]:checked ~ .chat-box-content {display:block}
+
+	#btn_sendChatMessage:hover{
+	cursor:pointer;
+	}
+
+	body {height:100px}
+
+	$chatInputHeight:25px;
+	$chatHeight:400px;
+	.chat-box {
+	font:normal normal 11px/1.4 Tahoma,Verdana,Sans-Serif;
+	color:#333;
+	height: $chatHeight;
+	min-width: 250px;
+	width:20%; /* Chatbox width */
+	border:1px solid #344150;
+	border-bottom:none;
+	background-color:white;
+	position:absolute;
+	right:10px;
+	bottom:0;
+	z-index:9999;
+	-webkit-box-shadow:1px 1px 5px rgba(0,0,0,.2);
+	-moz-box-shadow:1px 1px 5px rgba(0,0,0,.2);
+	box-shadow:1px 1px 5px rgba(0,0,0,.2);
+	}
+
+	.chat-box > input[type="checkbox"] {
+	display:block;
+	margin:0 0;
+	padding:0 0;
+	position:absolute;
+	top:0;
+	right:0;
+	left:0;
+	width:100%;
+	height:26px;
+	z-index:4;
+	cursor:pointer;
+	opacity:0;
+	filter:alpha(opacity=0);
+	}
+
+	.chat-box > label {
+	display:block;
+	height:24px;
+	line-height:24px;
+	background-color:#344150;
+	color:white;
+	font-weight:bold;
+	padding:0 1em 1px;
+	}
+
+	.chat-box > label:before {content:attr(data-collapsed)}
+
+	.chat-box-content {
+	overflow-y: scroll;
+	height: calc(100% - #{$chatInputHeight} );
+	}
+
+	.chat-box .chat-box-content {
+	padding:0px;
+	//display:none;
+	}
+	
+	.chatInput{
+	
+	}
+
+	.chatBox{
+		height:$chatHeight;
+	}
+
+	.chatBoxTitle{
+		margin:0;
+	}
+
+	/* hover state */
+	.chat-box > input[type="checkbox"]:hover + label {background-color:#404D5A}
+
+	/* checked state */
+	.chat-box > input[type="checkbox"]:checked + label {background-color:#212A35}
+	.chat-box > input[type="checkbox"]:checked + label:before {content:attr(data-expanded)}
+	.chat-box > input[type="checkbox"]:checked ~ .chat-box-content {display:block}
+
+	#btn_sendChatMessage:hover{
+	cursor:pointer;
+	}
 
 }

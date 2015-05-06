@@ -87,5 +87,11 @@ mongod
 *.swp
 logs/
 build/
+.node*
 
+# Python
+# ======
+*.pyc
+#=======
 *~
+.node-xmlhttprequest-sync-*

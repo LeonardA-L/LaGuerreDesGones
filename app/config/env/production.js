@@ -1,8 +1,8 @@
 'use strict';
 
 module.exports = {
-	db: process.env.MONGOHQ_URL || process.env.MONGOLAB_URI || 'mongodb://' + (process.env.DB_1_PORT_27017_TCP_ADDR || 'localhost') + '/pldapp',
-	dbname: 'pldapp',
+	db: process.env.MONGOHQ_URL || process.env.MONGOLAB_URI || 'mongodb://' + (process.env.DB_1_PORT_27017_TCP_ADDR || 'localhost') + '/pldapp-dev',
+	dbname: 'pldapp-dev',
 	pollingInterval:4,
 	defaultPort:27017,
 	defaultHost:'localhost',
@@ -13,15 +13,24 @@ module.exports = {
 	assets: {
 		lib: {
 			css: [
-				'public/lib/bootstrap/dist/css/bootstrap.min.css',
-				'public/lib/bootstrap/dist/css/bootstrap-theme.min.css',
+				'public/lib/bootstrap/dist/css/bootstrap.css',
+				'public/lib/bootstrap/dist/css/bootstrap-theme.css',
+				'public/lib/angular-material/angular-material.css',
+				'public/lib/fontawesome/css/font-awesome.css'
 			],
 			js: [
-				'public/lib/angular/angular.min.js',
+				'public/lib/jquery/dist/jquery.js',
+				'public/lib/jquery-ui/jquery-ui.min.js',
+				'public/lib/angular/angular.js',
 				'public/lib/angular-resource/angular-resource.js', 
-				'public/lib/angular-ui-router/release/angular-ui-router.min.js',
-				'public/lib/angular-ui-utils/ui-utils.min.js',
-				'public/lib/angular-bootstrap/ui-bootstrap-tpls.min.js'
+				'public/lib/angular-ui-router/release/angular-ui-router.js',
+				'public/lib/angular-ui-utils/ui-utils.js',
+				'public/lib/angular-bootstrap/ui-bootstrap-tpls.js',
+				'public/lib/angular-dragdrop/src/angular-dragdrop.js',
+				'public/lib/angular-animate/angular-animate.min.js',
+				'public/lib/angular-aria/angular-aria.min.js',
+				'public/lib/angular-material/angular-material.js',
+				'public/lib/angular-socket-io/socket.js'
 			]
 		},
 		css: 'public/dist/application.min.css',

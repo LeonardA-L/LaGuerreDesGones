@@ -259,10 +259,6 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 				var vFillOpacity = 0.3;
 				var vStrokeWeight = 1;
 
-				if(reachableZoneDescId){
-					console.log(reachableZoneDescId.indexOf(zone.zoneDesc));
-				}
-
 				if(selectedZoneDescId && zone.zoneDesc === selectedZoneDescId){
 					vStrokeWeight = 4;
 					vFillOpacity = 0.7;

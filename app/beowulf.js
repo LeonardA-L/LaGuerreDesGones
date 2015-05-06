@@ -54,6 +54,9 @@ var winMoney = 100;
 var loseMoney = 100;
 var dispMoney = 10;
 
+// green, purple, dark blue, red, light blue, yellow, orange, brown
+var colorPlayer = [5025616, 10233776, 4149685, 16007990, 48340, 16771899, 16733986, 7951688];
+
 var odds = 25;
 var baseHP = 40;
 
@@ -87,7 +90,7 @@ var syncEndProcess = function(action, failed){
 		console.log('Action failed');
 	}
 	action.save();
-	//console.log('End action '+action._id);
+
 	if(action.game){
 		if(action.type === 8){
 			if(action.game.winner){
@@ -379,6 +382,7 @@ var processInit = function(a){
 					nz.save();
 				}
 				//console.log(players[i]);
+				players[i].color = colorPlayer[i];
 				players[i].money = initMoney;
 				players[i].save();
 			}	
@@ -597,7 +601,7 @@ function getTCLTime(departureZone, arrivalZone, currentDate)
  * symetric : Should consider that the time from A to B is the same time that from B to A
  * modeNum : 3 TODO
  */
-function calculateTravelTime(modeNum, symetric) {
+function calculateTravelTime(modeNum, symetric, action) {
 	if(modeNum !== 3){
 		console.log('calculateTravelTime can only calculate TCL time');
 		return;
@@ -689,7 +693,7 @@ function calculateTravelTime(modeNum, symetric) {
 }
 
 var processTCLUpdate = function(a){
-	calculateTravelTime(3, true);
+	calculateTravelTime(3, true, a);
 	var b = new Action({
 			type:7,
 			date:new Date(new Date().getTime()+updateTCLInterval)
@@ -714,7 +718,7 @@ actionHandlers.push(processEndCheck);
 
 // TODO
  var processAction = function(a){
-	//console.log('Start action '+a._id);
+
  	actionHandlers[a.type](a);
  };
 

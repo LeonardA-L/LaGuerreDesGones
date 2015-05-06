@@ -18,14 +18,14 @@ var ScoreBoardSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: 'Game'
 	},
-	money: {
-		type: Number,
-		default: 0
-	},
-	point: {
-		type: Number,
-		default: 0
-	},
+	// money: {
+	// 	type: Number,
+	// 	default: 0
+	// },
+	// point: {
+	// 	type: Number,
+	// 	default: 0
+	// },
 	kills: [{
 		type: Schema.Types.ObjectId,
 		ref: 'Unit'
@@ -47,30 +47,30 @@ var ScoreBoardSchema = new Schema({
 /**
  * Calculate total player points 
  */
-ScoreBoardSchema.methods.calculatePoints= function(){
-	var Unit = mongoose.model('Unit');
-	var Zone = mongoose.model('Zone');
-	var Objective = mongoose.model('Objective');
-	this.point = 0;
-	var i;
-	var doc;
-	for (i=0;i<this.objectives.length; i++){
-		doc = Objective.findById(this.objectives[i]);
-		this.point +=doc.point; 
-	}
-	for (i=0; i<this.zones.length; i++){
-		doc = Zone.findById(this.zones[i]);
-		this.point +=doc.point;
-	}
-	for (i=0; i<this.survivors.length; i++){
-		doc =Unit.findById(this.survivors[i]);
-				this.point +=doc.point;
-	}
-	for (i=0; i<this.kills.length; i++){
-		doc = Unit.findById(this.kills[i]);
-		this.point +=doc.point;
-	}
-};
+// ScoreBoardSchema.methods.calculatePoints= function(){
+// 	var Unit = mongoose.model('Unit');
+// 	var Zone = mongoose.model('Zone');
+// 	var Objective = mongoose.model('Objective');
+// 	this.point = 0;
+// 	var i;
+// 	var doc;
+// 	for (i=0;i<this.objectives.length; i++){
+// 		doc = Objective.findById(this.objectives[i]);
+// 		this.point +=doc.point; 
+// 	}
+// 	for (i=0; i<this.zones.length; i++){
+// 		doc = Zone.findById(this.zones[i]);
+// 		this.point +=doc.point;
+// 	}
+// 	for (i=0; i<this.survivors.length; i++){
+// 		doc =Unit.findById(this.survivors[i]);
+// 				this.point +=doc.point;
+// 	}
+// 	for (i=0; i<this.kills.length; i++){
+// 		doc = Unit.findById(this.kills[i]);
+// 		this.point +=doc.point;
+// 	}
+// };
 
 /**
  * Get the number of kills by unit type 

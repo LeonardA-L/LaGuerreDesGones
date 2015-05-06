@@ -4,7 +4,7 @@
 angular.module('scoreBoard').config(['$stateProvider', '$urlRouterProvider',
 	function($stateProvider, $urlRouterProvider) {
 		// Redirect to home view when route not found
-		$urlRouterProvider.otherwise('/scoreBoard/:gameId');
+		$urlRouterProvider.otherwise('/');
 
 		// Home state routing
 		$stateProvider.

@@ -696,14 +696,6 @@ exports.displayScoreBoard = function(req, res) {
 	ScoreBoard.find({game : gameId}).populate('player zones objectives').exec(function(err, docs){
 		// if (err)
 		// 	res.send(err);
-		// docs[0].point = 100;
-		// docs[1].point = 130;
-		// docs[2].point = 100;
-		// docs[3].point = 150;
-		// docs[0].money = 100;
-		// docs[1].money = 130;
-		// docs[2].money = 80;
-		// docs[3].money = 10;
 		docs.sort(function(pl1,pl2){
 			return pl2.money - pl1.money;
 		});
@@ -713,19 +705,19 @@ exports.displayScoreBoard = function(req, res) {
 		for (var i=0; i<docs.length; i++){
 			var player = {};
 			player.username = docs[i].player.name;
-			player.point = docs[i].point;
-			player.zones = docs[i].zones;
-			player.money = docs[i].money;
-			player.objectives = docs[i].objectives;
-			var unitTypes = [];
-			for (var j=0; j< nbUnitTypes; j++){
-				var units = {};
-				units.nbKills = docs[i].getKillsByUnitType(j);
-				units.nbSurvivors = docs[i].getSurvivorsByUnitType(j);
-				//units.name = unitDataMatrix.content[j].name;
-				unitTypes.push(units);
-			}
-			player.unitTypes=unitTypes;
+			player.point = docs[i].player.point;
+			player.money = docs[i].player.money;
+			// player.zones = docs[i].zones;
+			// player.objectives = docs[i].objectives;
+			// var unitTypes = [];
+			// for (var j=0; j< nbUnitTypes; j++){
+			// 	var units = {};
+			// 	units.nbKills = docs[i].getKillsByUnitType(j);
+			// 	units.nbSurvivors = docs[i].getSurvivorsByUnitType(j);
+			// 	units.name = unitDataMatrix.content[j].name;
+			// 	unitTypes.push(units);
+			// }
+			// player.unitTypes=unitTypes;
 			scoreBoard.push(player);
 		}
 		res.json({'success':scoreBoard});

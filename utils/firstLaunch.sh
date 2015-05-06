@@ -1,3 +1,4 @@
+#!/bin/bash
 #Should have grunt running
 
 ps -el | grep "grunt"

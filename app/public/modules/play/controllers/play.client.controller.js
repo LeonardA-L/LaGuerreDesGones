@@ -353,6 +353,7 @@ var unitType=undefined;
         			}
     			}
 			});
+//			$('.scroll-pane').jScrollPane();
 		});
 
 		$scope.onDraggedZone = function (polygon) {

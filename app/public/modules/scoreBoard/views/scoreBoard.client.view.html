@@ -1,46 +1,32 @@
 
-<section class="scoreBoardSection" data-ng-controller="ScoreBoardController">
-	<div class="scoreBoardSection">
-		<h2>ScoreBoard</h2>
-		<div role="scoreBoard">
-
-  <!-- Nav tabs -->
-  <ul class="nav nav-tabs" role="tablist" id="tabStats">
-    <li role="header" class="active"><a href="#rank" aria-controls="rank" role="tab" data-toggle="tab">Rank</a></li>
-    <li role="header"><a href="#kills" aria-controls="kills" role="tab" data-toggle="tab">Kills</a></li>
-    <li role="header"><a href="#survivors" aria-controls="survivors" role="tab" data-toggle="tab">Survivors</a></li>
-    <li role="header"><a href="#zones" aria-controls="zones" role="tab" data-toggle="tab">Zones</a></li>
-    <li role="header"><a href="#objectives" aria-controls="objectives" role="tab" data-toggle="tab">Objectives</a></li>
-  </ul>
-
-  <!-- Tab panes -->
-  <div class="tab-content" ng-app="">
-    <div role="tabpanel" class="tab-pane fade in active" id="rank">
-    	<table class="table table-bordered">
-		    <thead>
-		      <tr>
-		        <th>Rank</th>
-		        <th>Player name</th>
-		        <th>Money</th>
-		        <th>Points</th>
-		      </tr>
-		    </thead>
-		    <tbody>
-		      <tr ng-repeat="player in scoreBoard">
-		        <td>{{$index + 1}}</td>
-		        <td>{{player.username}}</td>
-		        <td>{{player.money}}</td>
-		        <td>{{player.point}}</td>
-		      </tr>
-		    </tbody>
-  		</table>
-    </div>
-    <div role="tabpanel" class="tab-pane fade" id="kills">...</div>
-    <div role="tabpanel" class="tab-pane fade" id="survivors">...</div>
-    <div role="tabpanel" class="tab-pane fade" id="zones">...</div>
-    <div role="tabpanel" class="tab-pane fade" id="objectives">...</div>
-  </div>
-
-</div>
+<section>
+	<div class="scoreBoardSection" ng-controller="ScoreBoardController">
+		<h2 class="title_score">ScoreBoard</h2>
+	  <tabset justified="true" class="contentScoreBoard">
+	  	<tab heading="Points">
+	    	<table class="table table-bordered">
+			    <thead>
+			      <tr>
+			        <th>Rank</th>
+			        <th>Player name</th>
+			        <th>Money</th>
+			        <th>Points</th>
+			      </tr>
+			    </thead>
+			    <tbody>
+			      <tr ng-repeat="player in scoreBoard">
+			        <td>{{$index + 1}}</td>
+			        <td>{{player.username}}</td>
+			        <td>{{player.money}}</td>
+			        <td>{{player.point}}</td>
+			      </tr>
+			    </tbody>
+	  		</table>
+	    </tab>
+	    <tab heading="Kills">Coming soon...</tab>
+	    <tab heading="Survivors">Coming soon...</tab>
+	    <tab heading="Zones">Coming soon...</tab>
+	    <tab heading="Objectives">Coming soon...</tab>
+	  </tabset>
 	</div>
 </section>

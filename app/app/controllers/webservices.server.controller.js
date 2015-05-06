@@ -596,14 +596,29 @@ exports.displayScoreBoard = function(req, res) {
 	var gameId = req.params.gameId;
 	var nbUnitTypes = 8;
 	var scoreBoard = [];
-	ScoreBoard.find({game : gameId}).populate('player').exec(function(err, docs){
+	ScoreBoard.find({game : gameId}).populate('player zones objectives').exec(function(err, docs){
 		// if (err)
 		// 	res.send(err);
+		// docs[0].point = 100;
+		// docs[1].point = 130;
+		// docs[2].point = 100;
+		// docs[3].point = 150;
+		// docs[0].money = 100;
+		// docs[1].money = 130;
+		// docs[2].money = 80;
+		// docs[3].money = 10;
+		docs.sort(function(pl1,pl2){
+			return pl2.money - pl1.money;
+		});
+		docs.sort(function(pl1,pl2){
+			return pl2.point - pl1.point;
+		});
 		for (var i=0; i<docs.length; i++){
 			var player = {};
 			player.username = docs[i].player.name;
 			player.point = docs[i].point;
 			player.zones = docs[i].zones;
+			player.money = docs[i].money;
 			player.objectives = docs[i].objectives;
 			var unitTypes = [];
 			for (var j=0; j< nbUnitTypes; j++){
@@ -616,6 +631,6 @@ exports.displayScoreBoard = function(req, res) {
 			player.unitTypes=unitTypes;
 			scoreBoard.push(player);
 		}
-			res.json({'success':scoreBoard});
+		res.json({'success':scoreBoard});
 	});
 };

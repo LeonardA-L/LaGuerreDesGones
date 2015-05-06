@@ -1,7 +1,20 @@
 .scoreBoardSection{
-	background: black;
-	color: #686;
-	th, h2{
+	background: #666;
+	color: white;
+	th, td, h2{
 		text-align:center;
+	}
+	.title_score{
+		text-decoration:underline;
+	}
+	li.ng-isolate-scope:not(.active):hover{
+		cursor:pointer;
+	}
+	li.ng-isolate-scope>a{
+		color:black;
+	}
+	li.ng-isolate-scope.active>a, li.ng-isolate-scope:hover>a{
+		font-weight: bold;
+		color:black;
 	}
 }

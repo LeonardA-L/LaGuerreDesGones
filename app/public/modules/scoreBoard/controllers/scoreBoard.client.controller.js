@@ -16,5 +16,5 @@ angular.module('scoreBoard').controller('ScoreBoardController', ['$scope',
 			  error(function(data) {
 			    console.log('error');
 			  });
-	}
+		}
 ]);

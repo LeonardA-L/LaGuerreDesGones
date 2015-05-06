@@ -423,10 +423,7 @@ var unitType;
  					listUnits.push($scope.unitsByTypeForZone[i][j]._id);
  				}
  			}
- 			console.log('a deplacer : '+listUnits);
- 			console.log('zoneA : '+$scope.selectedZone._id);
- 			console.log('zoneB : '+$scope.disp.zone._id);
- 			$scope.move($scope.selectedZone,$scope.disp.zone,listUnits);
+ 			$scope.move($scope.selectedZone._id,$scope.disp.zone._id,listUnits);
  			$scope.cancelDisplacement();
  		};
  

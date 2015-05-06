@@ -55,13 +55,14 @@ var loseMoney = 100;
 var dispMoney = 10;
 var bankBonus = 20;
 
+var squareCapBonus = 2;
+
 // green, purple, dark blue, red, light blue, yellow, orange, brown
 var colorPlayer = [5025616, 10233776, 4149685, 16007990, 48340, 16771899, 16733986, 7951688];
 
 var odds = 25;
 var baseHP = 50;
 
-var maxUnitPerZone = 8;
 
 var notifyServer = function(gameId){
 	var options = {
@@ -369,6 +370,11 @@ var processInit = function(a){
 				zoneDesc : zd
 			});
 			
+			// Square zone has increased capacity
+			if(zd.type === 'square'){
+				z.nbUnitMax += squareCapBonus;
+			}
+
 			zoneIdList.push(z._id);
 			if(zd.type === NEUTRAL){
 				neutralZones.push(z);
@@ -430,7 +436,7 @@ var processInit = function(a){
 var processBuy = function(a){
 	if(debug) console.log('Processing buy action');
 	if(debug) console.log('Units on zone '+a.zone.units.length);
-	if(a.zone.units.length < maxUnitPerZone){
+	if(a.zone.units.length < a.zone.nbUnitMax){
 		var price = matrixes.UnitData.content[a.newUnitType].price;
 		a.player.money -= price;
 		a.player.point += price*pointBuyFactor;
@@ -489,7 +495,7 @@ var processHop = function(a){
 
 		Zone.find({'_id':{$in:a.game.zones}}).populate('zoneDesc units').exec(function(err,zones){
 			for(var i=0;i<zones.length;i++){
-				if(zones[i].owner && zones[i].units.length < maxUnitPerZone){
+				if(zones[i].owner && zones[i].units.length < zones[i].nbUnitMax){
 					// Generate Unit
 					var u = new Unit(matrixes.UnitData.content[matrixes.ZoneTypeToUnitType.content[zones[i].zoneDesc.type]]);
 					// affect to player

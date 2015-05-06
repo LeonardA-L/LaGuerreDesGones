@@ -691,11 +691,13 @@ exports.displayScoreBoard = function(req, res) {
 	// TODO rules
 	var ScoreBoard = mongoose.model('ScoreBoard');
 	var Player = mongoose.model('Player');
+	var Game = mongoose.model('Game');
 	var Matrix = mongoose.model('Matrix'),
 	unitDataMatrix = Matrix.findOne({'name':'UnitData'});
 	var gameId = req.params.gameId;
 	var nbUnitTypes = 8;
 	var scoreBoard = [];
+	/*
 	ScoreBoard.find({game : gameId}).populate('player zones objectives').exec(function(err, docs){
 		// if (err)
 		// 	res.send(err);
@@ -724,6 +726,18 @@ exports.displayScoreBoard = function(req, res) {
 			scoreBoard.push(player);
 		}
 		res.json({'success':scoreBoard});
+	});
+	*/
+	Game.findById(gameId,function(err,game){
+		Player.find({'game':gameId}).sort('-point').exec(function(err,players){
+			var ret = {
+				success:{
+					game:game
+				}
+			};
+			ret.success.players = players;
+			res.json(ret);
+		});
 	});
 };
 

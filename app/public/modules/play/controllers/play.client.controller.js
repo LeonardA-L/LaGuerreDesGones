@@ -238,6 +238,13 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 					      map: map,
 					      icon: 'https://cdn3.iconfinder.com/data/icons/personal-business-finance-1/380/Bank-24.png'
 					  });
+					marker.zoneId = game.zones[i]._id;
+					marker.zoneDescId = game.zones[i].zoneDesc;
+
+					google.maps.event.addListener(marker, 'click', function() {
+						//console.log(this);
+					    onZoneClicked(this);
+					});
 				}
 				// Add zones Polygons to Game variable
 				$scope.zonesPolygons = allPolygons;

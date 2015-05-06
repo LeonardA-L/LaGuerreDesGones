@@ -33,9 +33,9 @@ var ZoneSchema = new Schema({
 		type: Number,
 		default: DEFAULT_MAX_UNIT_NUMBER
 	},
-	point: {
-		type: Number,
-		default: 0
+	owner: {
+		type: Schema.Types.ObjectId,
+		ref: 'Player'
 	}
 });
 

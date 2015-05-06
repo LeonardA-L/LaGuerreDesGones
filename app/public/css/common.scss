@@ -1,1 +1,9 @@
 // Common SCSS style
+$top-margin:50px;
+body{
+	//overflow-y:hidden;
+}
+
+.rootSection{
+	margin-top:$top-margin;
+}

@@ -1,70 +1,126 @@
-<section style="background-color:yellow;">
+<section>
 	<div class="playSection">
 		<div class="container-fluid">
 			<div id="game-wrap-panels" class="row">
 				<div id="game-left-panel" class="col-md-3 game-panel">
-
-					
 					<h1>{{game.title}}</h1>
+					<hr />
+					<div class="row">
+						<div class="col-md-6 center-content">
+							<button class="btn btn-primary full-width" ng-click="mode==='displacement' ? resetMode() : prepareDisp()">Déplacement</button>
+						</div>
+						<div class="col-md-6 center-content">
+							<button class="btn btn-primary full-width">Attaque</button>
+						</div>
+						<div class="col-md-12 separator"></div>
+						<div class="col-md-12 center-content">
+							<label ng-repeat="p in game.players">{{p.money}} gaunettes</label>
+						</div>
+						<div class="col-md-12 separator"></div>
+						<div class="col-md-12 center-content">
+							<label>Nouvelles unités dans {{remaining}}</label>
+						</div>
+						<div class="col-md-12 separator"></div>
+						<div class="col-md-12 center-content" >
+							<label>Points {{player.point}}</label>
+						</div>
+					</div>
 
 					<hr />
 
-					<div ng-if="game.selectedZone">
-						<h2>Zone Sélectionnée</h2>
-
+					<div ng-if="selectedZone" class="center-content">
+						<h2>{{game.zonesDesc[game.zones[selectedZone._id].zoneDesc].name}}</h2>
+						<h3 ng-if="game.zones[selectedZone._id].owner">Possédée par {{game.players[game.zones[selectedZone._id].owner].name}}</h3>
 						<div class="row">
-							
 						</div>
 					</div>
-
-					<h2>Unités</h2>
 
 					<div class="row">
-						<div ng-repeat="i in game.matrixes.UnitData.content">
-							<div class="col-md-12" style="/*height:80px;*/ background-color: rgba(41, 128, 185, 0.1);">
-								<div class="col-md-3 nopadding">
-									<img src="http://liris.cnrs.fr/vasile-marian.scuturici/files/marian.jpg" height=74 width=74 style="margin-top:3px; margin-bottom:3px;" />
+						<div class="col-md-12 {{(mode==='displacement') ? 'show' : 'hide'}}">
+							<label>Déplacement vers : {{game.zonesDesc[disp.zone.zoneDesc].name}}</label>
+							<button class="btn btn-primary pull-right">Déplacer</button>
+							<button class="btn btn-primary btn-danger pull-right" ng-click="endDisplacement()">Annuler</button>
+						</div>
+					</div>
+
+					<div class="row" ng-if="listUnitType">
+						<div class="col-md-12 center-content">
+							<div class="col-md-3">
+								<span>Icone</span>
+							</div>
+							<div class="col-md-3">
+								<span>Nombre</span>
+							</div>
+							<div class="col-md-3">
+								<span>Achat/Vente</span>
+							</div>
+							<div class="col-md-3">
+								<span>Déplacement</span>
+							</div>
+						</div>
+						<div id="list-unit" ng-repeat="i in game.matrixes.UnitData.content">
+							<div class="col-md-12 row-unit {{(disp.unitTypes[i.type] > 0) ? 'select-to-displace' : ''}}">
+								<div class="col-md-3 nopadding center-content">
+									<img class="unit-icon" data-drag="true" data-unit-type="{{i.type}}" data-jqyoui-options="{revert: 'invalid', revertDuration: 100,appendTo: 'body', containment: 'window', scroll: false, helper: 'clone'}" jqyoui-draggable="{animate:true,onStart:'onUnitIconDrag', onStop:'onUnitIconDrop'}" src="http://liris.cnrs.fr/vasile-marian.scuturici/files/marian.jpg" height=74 width=74/>
 								</div>
-								<div class="col-md-3 nopadding" style="margin-top: 27px; text-align:center;">
+								<div id="row-unit-name" class="col-md-3 nopadding center-content">
 									<span>{{i.name}}</span>
+									<br/>
+									<span>{{unitsByTypeForZone[i.type].length}}</span>
 								</div>
-								<div class="col-md-3 nopadding" style="height:100%">
-									<div style="height:50%; margin-top: 13px; text-align:center;">
-										<span>Nombre</span>
-									</div>
-									<div style="height:50%; text-align:center;">
-										<span>{{unitsByType[i.type].length}}</span>
-									</div>
+								<div id="row-unit-actions" class="col-md-3 nopadding center-content">
+									<button class="btn btn-primary btn-success" ng-if="game.zones[selectedZone._id].units.length < maxUnitPerZone && game.zones[selectedZone._id].owner === player._id" ng-click="buyUnit(i.type)">+</button>
+									<button ng-if="unitsByTypeForZone[i.type].length > 0" class="btn btn-primary btn-danger" ng-click="sell(unitsByTypeForZone[i.type][0]._id, i.type)">-</button>
 								</div>
-								<div class="col-md-3 nopadding" style="margin-top: 27px;  text-align:center;">
-									<button class="btn btn-primary btn-success">+</button>
-									<button class="btn btn-primary btn-danger" ng-click="sell(unitsByType[i][0].zone,unitsByType[i][0]._id,unitsByType[i][0].player)">-</button>
+								<div class="col-md-3 nopadding full-height center-content">
+									<div class="row-unit-displacement full-height {{(disp.unitTypes[i.type] > 0) ? 'row-unit-disp-selected' : 'row-unit-disp-not-selected'}}">
+										<div>
+									        <a href="">
+									          <span class="glyphicon glyphicon-triangle-top" ng-click="plusUnitToDisplace(i.type)"></span>
+									        </a>
+									   	</div>
+									   	<div>
+											<span>{{disp.unitTypes[i.type]}}<span>
+										</div>
+										<div>
+											<a href="">
+												<span class="glyphicon glyphicon-triangle-bottom" ng-click="lessUnitToDisplace(i.type)"></span>
+											</a>
+										</div>
+									</div>
 								</div>
 							</div>
-							<div class="col-md-12" style="height:2px; background-color:#3C3C3C;">
+							<div class="col-md-12 row-unit-separator">
 							</div>
 						</div>
 					</div>
 
-					
 
-					
-					<div style="background-color:red;">
-						A supprimer :
-						<br />
-						<!--temporaire-->
-						<span ng-click="move(game.zones[0]._id,game.zones[1]._id,[game.units[0]._id])">CLICK ME To Move</span>| <span ng-click="buy(game.units[0].zone,game.units[0].player,7)">CLICK ME To buy scientist</span>
-
-						<label>Grosses unités</label>
-						<p ng-repeat="unit in game.units">{{game.matrixes.UnitData.content[unit.type].name}} - belongs to {{game.players[unit.player].name}} - is at {{game.zonesDesc[game.zones[unit.zone].zoneDesc].name}} ({{unit.x}},{{unit.y}}) <button ng-click="sell(unit.zone,unit._id,unit.player)">Sell</button></p>
-						<lavel>Players</label>
-						<p ng-repeat="p in game.players">{{p._id}} - {{p.name}} - {{p.money}}$</p>
-						<!--/temporaire-->
+					<div ng-if="mode==='displacement'">
+						<h2>Displacement</h2>
+							<h3>Add units</h3>
+							<p>Units on this zone are</p>
+							<p ng-repeat="i in selectedZone.units">{{i._id}} <button class="btn btn-primary" ng-click="addUnitToDisp(i._id)">Add2Disp</button></p>
+						<div ng-if="disp.step>0">
+							<h3>Choose a zone</h3>
+							Click on a zone you want to move to : {{game.zonesDesc[game.zones[disp.zoneBId].zoneDesc].name}}
+						</div>
+						<div ng-if="disp.step>1">
+							<h3>Validate displacement</h3>
+							Are you sure you want to move {{disp.unitIds.length}} to {{game.zonesDesc[game.zones[disp.zoneBId].zoneDesc].name}} ? <br />
+							<button class="btn btn-primary" ng-click="validateDisp()">Validate</button> <button class="btn btn-danger" ng-click="resetMode()">Cancel</button>
+						</div>
 					</div>
+
 				</div>
 				<div id="game-main-panel" class="col-md-9 game-panel">
-
 				</div>
+			</div>
+		</div>
+		<div ng-if="game.winner" class="overallWinner">
+			<div class="winnerDisplay">
+			    <h2>{{game.players[game.winner].name}} remporte la partie</h2>
+			    <p>{{game.players[game.winner].name}} remporte cette partie. Vous pouvez <a href="/#!/">revenir à l'accueil</a>, <a href="/#!/host">créer une autre partie</a> ou encore <a href="/#!/">accéder au leaderboard de la partie</a></p>
 			</div>
 		</div>
 	</div>

@@ -381,6 +381,8 @@ var processInit = function(a){
 				var idx = Math.floor(Math.random() * neutralZones.length);
 				var nz = neutralZones[idx];
 				var nzd = neutralZonesDesc[idx];
+				neutralZones.splice(idx,1);
+				neutralZonesDesc.splice(idx,1);
 				for(var j=0;j<initPlayers;j++){
 					var u = new Unit(matrixes.UnitData.content[0]);
 

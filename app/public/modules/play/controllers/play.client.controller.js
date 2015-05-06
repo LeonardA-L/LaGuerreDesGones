@@ -147,7 +147,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
   				'game':gameId
   			};
   			console.log(dto);
-  			if($scope.mode=='displacement'&&$scope.unitsByTypeForZone[unitType].length <= $scope.disp.unitTypes[unitType]) {
+  			if($scope.mode==='displacement'&&$scope.unitsByTypeForZone[unitType].length <= $scope.disp.unitTypes[unitType]) {
   				$scope.lessUnitToDisplace(unitType); // à mettre dans le succes mais ça marchait pas :/
   			}
 			$http.post('/services/action/sell',dto).
@@ -339,7 +339,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		});
 
 var isDragging=false;
-var unitType=undefined;
+var unitType;
 
 		$document.ready(function() {
 			initMap();
@@ -363,18 +363,18 @@ var unitType=undefined;
 
 		$scope.onDraggedZone = function (polygon) {
 			var zoneDragged = $scope.game.zones[polygon.zoneId];
-			var errorMess = "";
+			var errorMess = '';
             if(zoneDragged===$scope.selectedZone) {
-				errorMess+="- Vos unités se trouvent déjà sur cette zone !"+"\n";
+				errorMess+='- Vos unités se trouvent déjà sur cette zone !'+'\n';
             }
             if ($scope.game.zonesDesc[$scope.selectedZone.zoneDesc].adjacentZones.indexOf(zoneDragged.zoneDesc) === -1) {
-            	errorMess+="- Les déplacements ne se font que sur les zones frontalières à celle sélectionnée !"+"\n";
+            	errorMess+='- Les déplacements ne se font que sur les zones frontalières à celle sélectionnée !'+'\n';
             }
-            if($scope.disp.zone && $scope.disp.zone!=zoneDragged) {
-            	errorMess+="- Une zone à la fois !"+"\n";
+            if($scope.disp.zone && $scope.disp.zone!==zoneDragged) {
+            	errorMess+='- Une zone à la fois !'+'\n';
             }
             
-            if (""==errorMess) {
+            if (''===errorMess) {
             	$scope.disp.zone=zoneDragged;
             	$scope.plusUnitToDisplace(unitType);
             	colorMap();
@@ -392,8 +392,7 @@ var unitType=undefined;
 		};
 
 		$scope.lessUnitToDisplace = function (idType) {
-			if($scope.mode=='displacement') {
-				console.log('lolilol');
+			if($scope.mode==='displacement') {
 				if($scope.disp.unitTypes[idType] > 0) {
 					$scope.disp.unitTypes[idType]--;
 				}
@@ -415,24 +414,27 @@ var unitType=undefined;
  			$scope.mode='';
  			$scope.disp.zone=undefined;
  			colorMap();
- 		}
+ 		};
 
  		$scope.validateDisplacement = function () {
  			var listUnits=[];
- 			for (var i=0 ; i < $scope.disp.unitTypes ; i++) {
+ 			for (var i=0 ; i < $scope.disp.unitTypes.length ; i++) {
  				for (var j = 0 ; j < $scope.disp.unitTypes[i] ; j++) {
  					listUnits.push($scope.unitsByTypeForZone[i][j]._id);
  				}
  			}
+ 			console.log('a deplacer : '+listUnits);
+ 			console.log('zoneA : '+$scope.selectedZone._id);
+ 			console.log('zoneB : '+$scope.disp.zone._id);
  			$scope.move($scope.selectedZone,$scope.disp.zone,listUnits);
  			$scope.cancelDisplacement();
- 		}
+ 		};
  
-		$scope.onUnitIconDrag = function (event, ui) {
-			if (''==$scope.mode) {
+		$scope.onUnitIconDrag = function (event, ui) {	
+			if (''===$scope.mode) {
 				$scope.prepareDispDrag();
 			}
-			unitType=ui.helper.attr("data-unit-type");
+			unitType=ui.helper.attr('data-unit-type');
 			isDragging=true;
 		};
 

@@ -237,16 +237,17 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		 */
 		function colorMap(){
 			var selectedZoneDescId;
-			var toDisplaceZoneDescId=$scope.disp.zoneDesc;
 			var reachableZoneDescId;
 			if($scope.selectedZone){
 				selectedZoneDescId = $scope.selectedZone.zoneDesc;
 				reachableZoneDescId = $scope.game.zonesDesc[selectedZoneDescId].adjacentZones;
 			}
+
 			for (var i = 0; i < $scope.game.zones.length; i++) { 
 				var zone = $scope.game.zones[i];
 				var polygon = $scope.zonesPolygons[zone.zoneDesc];
 				var initColor;
+
 				if(zone.owner){
 					initColor = $scope.game.players[zone.owner].color;
 				} else {
@@ -261,15 +262,18 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 					console.log(reachableZoneDescId.indexOf(zone.zoneDesc));
 				}
 
-				if(selectedZoneDescId && zone.zoneDesc === selectedZoneDescId){
+				if ($scope.disp.zone&&$scope.disp.zone===zone) {
+					initColor = 2212212;
+					color = initColor.toString(16);
+					vStrokeWeight = 4;
+					vFillOpacity = 0.7;
+				} else if(selectedZoneDescId && zone.zoneDesc === selectedZoneDescId){
 					vStrokeWeight = 4;
 					vFillOpacity = 0.7;
 				} else if(reachableZoneDescId && reachableZoneDescId.indexOf(zone.zoneDesc) !== -1){
 					vFillOpacity = 0.5;
-				} else if (toDisplaceZoneDescId && zone.zoneDesc === selectedZoneDescId) {
-					vStrokeWeight = 4;
-					vFillOpacity = 0.7;
 				}
+
 				polygon.setOptions({
 					strokeColor: '#'+color,
 					fillColor: '#'+color,
@@ -343,7 +347,7 @@ var unitType=undefined;
             				break;
             			}
             			else {
-            				$scope.plusUnitToDisplace(unitType);
+            				$scope.onDraggedZone(polygon);
             			}
             			break;
         			}
@@ -351,12 +355,25 @@ var unitType=undefined;
 			});
 		});
 
+		$scope.onDraggedZone = function (polygon) {
+			var zoneDragged = $scope.game.zones[polygon.zoneId];
+            if(zoneDragged===$scope.selectedZone) {
+				alert("Vos unités se trouvent déjà sur cette zone !");
+            }
+            else if($scope.disp.zone && $scope.disp.zone!=zoneDragged) {
+            	alert("Une zone à la fois !");
+            }
+            else {
+            	$scope.disp.zone=zoneDragged;
+            	$scope.plusUnitToDisplace(unitType);
+            	colorMap();
+            }
+		};
+
 		$scope.plusUnitToDisplace = function (idType) {
 			if($scope.disp.unitTypes[idType] < $scope.unitsByTypeForZone[idType].length) {
 				$scope.disp.unitTypes[idType]++;
 				$scope.mode='displacement';
-				//vérifier pas pas même que celle où on est
-				//$scope.disp.zoneDesc=$scope.selectedZone.zoneDesc;
 			}
 		};
 
@@ -377,7 +394,10 @@ var unitType=undefined;
 		};
  
  		$scope.endDisplacement = function () {
+ 			$scope.prepareDispDrag();
  			$scope.mode='';
+ 			$scope.disp.zone=undefined;
+ 			colorMap();
  		}
  
 		$scope.onUnitIconDrag = function (event, ui) {
@@ -396,7 +416,7 @@ var unitType=undefined;
   		$scope.prepareDispDrag = function () {
 			$scope.resetMode();
 			$scope.disp = {
-				'zoneDesc':undefined,
+				'zone':undefined,
 				'unitTypes':[],
 				//'step':0
 			};

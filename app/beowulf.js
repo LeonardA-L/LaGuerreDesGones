@@ -58,7 +58,7 @@ var dispMoney = 10;
 var colorPlayer = [5025616, 10233776, 4149685, 16007990, 48340, 16771899, 16733986, 7951688];
 
 var odds = 25;
-var baseHP = 40;
+var baseHP = 50;
 
 var maxUnitPerZone = 8;
 
@@ -247,10 +247,10 @@ var processEndDisplacement = function(a){
 
 				// Start by giving everyone HPs
 				for(i=0;i<firstUnits.length;i++){
-					firstUnits[i].hp = baseHP * secondUnits.length;
+					firstUnits[i].hp = baseHP;
 				}
 				for(i=0;i<secondUnits.length;i++){
-					secondUnits[i].hp = baseHP * firstUnits.length;
+					secondUnits[i].hp = baseHP;
 				}
 
 				// While there is still two team

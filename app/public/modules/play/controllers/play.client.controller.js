@@ -6,6 +6,10 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 	function($scope, Authentication, $http, $stateParams, $document, Socket, $timeout) {
 		// This provides Authentication context.
 		$scope.authentication = Authentication;
+		$scope.startError=false;
+		$scope.moveError=false;
+		$scope.sellError=false;
+		$scope.buyError=false;
 
 		$scope.game = {
 			'title':'Loading...'
@@ -107,6 +111,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		  }).
 		  error(function(data) {
 		    console.log('error');
+			$scope.startError=true;
 		});
 
 		$scope.listUnitsByType = function(us){
@@ -136,6 +141,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		  	}).
 			error(function(data) {
 		    	console.log('error');
+			$scope.moveError=true;
 			});
 		};
 
@@ -157,6 +163,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		  	}).
 			error(function(data) {
 		    	console.log('error');
+			$scope.sellError=true;
 			});
 		};
 
@@ -180,6 +187,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		  	}).
 			error(function(data) {
 		    	console.log('error');
+			$scope.buyError=true;
 			});
 		};
 
@@ -224,6 +232,19 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 					allPolygons[polygon.zoneDescId] = polygon;
 
 					polygon.setMap(map);
+					var zd = game.zonesDesc[game.zones[i].zoneDesc];
+					var marker = new google.maps.Marker({
+					      position: new google.maps.LatLng(zd.y,zd.x),
+					      map: map,
+					      icon: 'static/zone_'+zd.type+'.png'
+					  });
+					marker.zoneId = game.zones[i]._id;
+					marker.zoneDescId = game.zones[i].zoneDesc;
+
+					google.maps.event.addListener(marker, 'click', function() {
+						//console.log(this);
+					    onZoneClicked(this);
+					});
 				}
 				// Add zones Polygons to Game variable
 				$scope.zonesPolygons = allPolygons;

@@ -363,16 +363,24 @@ var unitType=undefined;
 
 		$scope.onDraggedZone = function (polygon) {
 			var zoneDragged = $scope.game.zones[polygon.zoneId];
+			var errorMess = "";
             if(zoneDragged===$scope.selectedZone) {
-				alert("Vos unités se trouvent déjà sur cette zone !");
+				errorMess+="- Vos unités se trouvent déjà sur cette zone !"+"\n";
             }
-            else if($scope.disp.zone && $scope.disp.zone!=zoneDragged) {
-            	alert("Une zone à la fois !");
+            if ($scope.game.zonesDesc[$scope.selectedZone.zoneDesc].adjacentZones.indexOf(zoneDragged.zoneDesc) === -1) {
+            	errorMess+="- Les déplacements ne se font que sur les zones frontalières à celle sélectionnée !"+"\n";
             }
-            else {
+            if($scope.disp.zone && $scope.disp.zone!=zoneDragged) {
+            	errorMess+="- Une zone à la fois !"+"\n";
+            }
+            
+            if (""==errorMess) {
             	$scope.disp.zone=zoneDragged;
             	$scope.plusUnitToDisplace(unitType);
             	colorMap();
+            }
+            else {
+            	alert(errorMess);
             }
 		};
 

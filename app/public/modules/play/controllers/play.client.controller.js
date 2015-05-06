@@ -453,6 +453,7 @@ var unitType;
 				$scope.prepareDispDrag();
 			}
 			unitType=ui.helper.attr('data-unit-type');
+			ui.helper.css('opacity', '0.8'); // impossible with addClass ...
 			isDragging=true;
 		};
 

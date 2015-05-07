@@ -204,4 +204,19 @@
 		position:absolute;
 	}
 
+	.accordion-item{
+		a{
+			padding: 15px;
+			display: block;
+			cursor:pointer;
+		}
+		a:hover{
+			text-decoration:none;
+		}
+		.panel-heading{
+			padding:0;
+		}
+		
+	}
+
 }

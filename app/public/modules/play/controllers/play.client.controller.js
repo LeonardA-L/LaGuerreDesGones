@@ -518,8 +518,7 @@ var unitType;
 		};
 
 		$scope.showDisplacement = function (zoneAId,zoneBId,travelMode,player) {
-			//$scope.traveltimes[dep][arr][mode];
-			var duration= 10000;
+			var duration= $scope.traveltimes[$scope.game.zones[zoneAId].zoneDesc][$scope.game.zones[zoneBId].zoneDesc][travelMode]*1/1000;
 			var step 	= 100;
 			var destination=new google.maps.LatLng($scope.game.zonesDesc[$scope.game.zones[zoneBId].zoneDesc].y,$scope.game.zonesDesc[$scope.game.zones[zoneBId].zoneDesc].x);
 
@@ -606,7 +605,7 @@ var unitType;
 				return undefined;
 			} else {
 				if(mode === 1){
-					if(dep.velov === -1 || arr.velov === -1){
+					if($scope.game.zonesDesc[dep].velov === -1 || $scope.game.zonesDesc[arr].velov === -1){
 						return undefined;
 					}
 					console.log($scope.bikestations);

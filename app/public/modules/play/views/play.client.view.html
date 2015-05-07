@@ -24,6 +24,14 @@
 						<label>
 							<span ng-show="remaining">Nouvelles unités dans {{remaining}}</span>
 						</label>
+						<div class="row" style="background-color:#{{player.color.toString(16)}};">
+							<div class="col-md-6">
+								Gaunettes : {{player.money}}
+							</div>
+							<div class="col-md-5">
+								Points : {{player.point}}
+							</div>
+						</div>
 					</div>
 				
 					<accordion ng-if="game" close-others="true">

@@ -174,7 +174,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
   				'unitIds':listUnits,
   				'travelMode':travelMode
   			};
-  			$scope.showDisplacement(zoneAId,zoneBId,'foot',$scope.player._id); // put real params !
+  			$scope.showDisplacement(zoneAId,zoneBId,travelMode,$scope.player._id); // put real params !
 			$http.post('/services/action/disp',dto).
 			//success(function(data, status, headers, config) {
 			success(function(data) {
@@ -517,9 +517,10 @@ var unitType;
 			}
 		};
 
-		$scope.showDisplacement = function (zoneAId,zoneBId,transport,player) {
+		$scope.showDisplacement = function (zoneAId,zoneBId,travelMode,player) {
+			//$scope.traveltimes[dep][arr][mode];
 			var duration= 10000;
-			var step 	= 1000;
+			var step 	= 100;
 			var destination=new google.maps.LatLng($scope.game.zonesDesc[$scope.game.zones[zoneBId].zoneDesc].y,$scope.game.zonesDesc[$scope.game.zones[zoneBId].zoneDesc].x);
 
 			var imgDisplacement = 'static/icon_displacement.png';

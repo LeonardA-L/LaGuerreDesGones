@@ -34,7 +34,7 @@
 								<li><strong>Débutée le : </strong>{{game.startTime}}</li>
 								<li ng-if="creatorPlayerId"><strong>Créée par : </strong>{{game.players[creatorPlayerId].name}}</li>
 								<li><strong>Nombre de joueurs : </strong>{{game.players.length}}</li>
-								<li><strong>Objectif : </strong>3000 Points</li>
+								<li><strong>Objectif : </strong>1000 Points</li>
 								<li><strong>Nombre d'unités par zone : </strong>{{game.nMaxPlayerUnit}}</li>
 							</ul>
 						</accordion-group>
@@ -85,12 +85,12 @@
 									<div class="row">
 
 										<div class="col-md-12" role="group" aria-label="travelMode">
-										  <button type="button" class="sideBside btn btn-default {{disp.travelMode === 2 ? 'active' : ''}} fa fa-male" ng-click="setTravelMode(2)"></button>
-<span class="sideBside input-group-addon">00:43</span>
-										  <button type="button" class="btn btn-default {{disp.travelMode === 1 ? 'active' : ''}} fa fa-bicycle" ng-click="setTravelMode(1)"></button>
-<span class="sideBside input-group-addon">00:25</span>
-										  <button type="button" class="btn btn-default {{disp.travelMode === 3 ? 'active' : ''}} fa fa-bus" ng-click="setTravelMode(3)"></button>
-<span class="sideBside input-group-addon">00:08</span>
+										  <button type="button" class="sideBside btn btn-default {{getMoveTime(selectedZone.zoneDesc, disp.zone.zoneDesc, 2, disp.unitTypes) === undefined ? 'disabled' : ''}} {{disp.travelMode === 2 ? 'active' : ''}} fa fa-male" ng-click="setTravelMode(2)"></button>
+<span class="sideBside input-group-addon">{{timeToDisplay(getMoveTime(selectedZone.zoneDesc, disp.zone.zoneDesc, 2, disp.unitTypes))}}</span>
+										  <button type="button" class="btn btn-default {{getMoveTime(selectedZone.zoneDesc, disp.zone.zoneDesc, 1, disp.unitTypes) === undefined ? 'disabled' : ''}} {{disp.travelMode === 1 ? 'active' : ''}} fa fa-bicycle" ng-click="setTravelMode(1)"></button>
+<span class="sideBside input-group-addon">{{timeToDisplay(getMoveTime(selectedZone.zoneDesc, disp.zone.zoneDesc, 1, disp.unitTypes))}}</span>
+										  <button type="button" class="btn btn-default {{getMoveTime(selectedZone.zoneDesc, disp.zone.zoneDesc, 3, disp.unitTypes) === undefined ? 'disabled' : ''}} {{disp.travelMode === 3 ? 'active' : ''}} fa fa-bus" ng-click="setTravelMode(3)"></button>
+<span class="sideBside input-group-addon">{{timeToDisplay(getMoveTime(selectedZone.zoneDesc, disp.zone.zoneDesc, 3, disp.unitTypes))}}</span>
 
 										</div>
 									</div>

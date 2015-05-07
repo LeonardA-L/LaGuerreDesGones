@@ -32,7 +32,7 @@ var matrixes = undefined;
 var durationRatio = 1/1000;
 
 var initPlayers = 8;
-var initMoney = 1000;
+var initMoney = 50;
 var sellRatio = 0.4;
 
 var NEUTRAL = 'neutral';
@@ -52,7 +52,7 @@ var winPoints = 11;
 
 var hopPointPerAdjacence = 5;
 
-var victoryPoint = 300;
+var victoryPoint = 1000;
 
 var hopMoney = 100;
 var winMoney = 100;
@@ -218,7 +218,7 @@ var processDisplacement = function(a){
 				for(var k=0; k<velovStation.length;k++){
 					station[velovStation[k].idStation] = velovStation[k];
 				}
-				if(station[a.zoneA.zoneDesc.velov].bikesAvailable > a.units.length && station[a.zoneB.zoneDesc.velov].standsAvailable > a.units.length) {
+				if(velovStation.length === 2 && station[a.zoneA.zoneDesc.velov].bikesAvailable > a.units.length && station[a.zoneB.zoneDesc.velov].standsAvailable > a.units.length) {
 					queryTravelTime();
 				} else {
 					handleError();
@@ -231,21 +231,26 @@ var processDisplacement = function(a){
 	};
 	
 	var syncCount = 2;
- 	if(debug) console.log('Processing displacement action');
- 	Zone.findById(a.zoneA._id).populate('zoneDesc').exec(function(err,zo){
- 		a.game.zoneA = zo;
-		a.zoneA = zo;
- 		if(--syncCount === 0){
- 			syncFunction();
- 		}
- 	});
- 	Zone.findById(a.zoneB._id).populate('zoneDesc').exec(function(err,zo){
- 		a.game.zoneB = zo;
-		a.zoneB = zo;
- 		if(--syncCount === 0){
- 			syncFunction();
- 		}
- 	});
+	if(a.units.length > 0){
+	 	if(debug) console.log('Processing displacement action');
+	 	Zone.findById(a.zoneA._id).populate('zoneDesc').exec(function(err,zo){
+	 		a.game.zoneA = zo;
+			a.zoneA = zo;
+	 		if(--syncCount === 0){
+	 			syncFunction();
+	 		}
+	 	});
+	 	Zone.findById(a.zoneB._id).populate('zoneDesc').exec(function(err,zo){
+	 		a.game.zoneB = zo;
+			a.zoneB = zo;
+	 		if(--syncCount === 0){
+	 			syncFunction();
+	 		}
+	 	});
+	} else {
+		handleError();
+		return;
+	}
  	//console.log(a);
  	
 };

@@ -591,6 +591,46 @@ var unitType;
 			}
   		};
 
+		$scope.getMoveTime = function(dep, arr, mode, unit){
+			if(dep === undefined || arr === undefined || unit === undefined){
+				return undefined;
+			}
+			var time = $scope.traveltimes[dep][arr][mode];
+			if(time == undefined){
+				return undefined;
+			} else {
+				if(mode === 1){
+					if(dep.velov === -1 || arr.velov === -1){
+						return undefined;
+					}
+					var bs1 = $scope.bikestations[dep.velov];
+					var bs2 = $scope.bikestations[arr.velov];
+					var total = 0;
+					for(var type in unit){
+						total = total + unit[type];
+					}
+					if(total > bs1.bikesAvailable || total > bs2.standsAvailable){
+						return undefined;
+					}
+				}
+				return time;
+			}
+		}
+
+		$scope.timeToDisplay = function (time) {
+			if(time === undefined) {
+				return 'xx:xx';
+			} else {
+				var sec = time / 1000;
+				var min = sec / 60;
+				var h = min / 60;
+				h = Math.floor(h);
+				min = Math.floor(min - 60*h);
+				sec = Math.floor(sec - 60*60*h - 60*min);
+				return ''+h+':'+min;
+			}
+  		};
+
   		function simulateClick(x, y) {
     		var clickEvent= document.createEvent('MouseEvents');
     		clickEvent.initMouseEvent(

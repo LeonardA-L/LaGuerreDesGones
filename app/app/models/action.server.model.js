@@ -39,6 +39,11 @@ var ActionSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: 'Unit'
 	}],
+	travelMode:{
+		type: Number,
+		default: 0
+	},	
+
 	// For battle
 	zone:{
 		type: Schema.Types.ObjectId,

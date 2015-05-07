@@ -23,8 +23,13 @@ var Game = undefined;
 var ZoneDescription = undefined;
 var Player = undefined;
 var Matrix = undefined;
+var TravelTime = undefined;
+var BikeStation = undefined;
+
 
 var matrixes = undefined;
+
+var durationRatio = 1/1000;
 
 var initPlayers = 8;
 var initMoney = 1000;
@@ -110,7 +115,13 @@ var syncEndProcess = function(action, failed){
 			notifyServer(action.game._id || action.game);
 		}
 	}
-	else{
+	else
+	{
+		Game.find({'isInit':true, 'winner':null}, function(err, games){
+			for(var i = 0; i<games.length;i++){
+				notifyServer(games[i]._id);
+			}
+		});			
 		// Push to all
 	}
 };
@@ -128,11 +139,64 @@ var affectUnitToZone = function(u,z,zd){
 
 var processDisplacement = function(a){
 	
+	var handleError=function(){
+		if(debug) console.log('Non authorized displacement aborted');
+		syncEndProcess(a,true);
+	}
+
+	var queryTravelTime = function(){
+		//Check if travelTime is available
+		TravelTime.findOne({'departureZone':a.zoneA.zoneDesc._id, 'arrivalZone': a.zoneB.zoneDesc._id, 'mode': a.travelMode},function(err,travelTime){
+			console.log('err : '+err);
+			console.log('travelTime : '+travelTime);
+			if(err === travelTime){
+				handleError();
+				return;
+			}
+			var duration = travelTime.time * durationRatio;
+			if(duration <= 0){
+				handleError();
+				return;
+			}
+			
+			for (var i=0 ; i < a.units.length ; ++i) {
+		 		var u = a.units[i];
+		 		u.available=false;
+		 		u.ts=a.date.getTime();
+		 		u.te=u.ts+duration;
+		 		u.xt=a.zoneB.zoneDesc.x;
+		 		u.yt=a.zoneB.zoneDesc.y;
+		 		u.x=a.zoneA.zoneDesc.x;
+		 		u.y=a.zoneA.zoneDesc.y;
+				a.zoneA.units.splice(a.zoneA.units.indexOf(u._id), 1);
+				// TODO
+				u.save();
+				a.zoneA.save();
+		 	}
+
+		 	var b = new Action({
+				type :1,
+				date: new Date(a.date.getTime() + duration),
+				status :0,
+				units:a.units,
+				zone:a.zoneB._id,
+				game:a.game
+			});
+			//console.log(b.date);
+			if(debug) console.log('Saving end displacement action');
+			b.save(function(err){
+				if(debug && err) console.log(err);
+				syncEndProcess(a);
+				return;
+			});
+		});
+	}
+
 	var syncFunction=function(){
-		var duration = 10000;
 		var isAdjacent = false;
-		console.log(a.zoneA);
-		console.log(a.zoneB);
+
+		var canVelov = (a.zoneA.zoneDesc.velov !== -1) && (a.zoneB.zoneDesc.velov !== -1);
+
 		for(var j=0;j<a.zoneA.zoneDesc.adjacentZones.length;j++){
 			console.log(a.zoneA.zoneDesc.adjacentZones[j] +'-'+ a.zoneB.zoneDesc._id);
 			if(''+a.zoneA.zoneDesc.adjacentZones[j] === ''+a.zoneB.zoneDesc._id){
@@ -140,41 +204,30 @@ var processDisplacement = function(a){
 				break;
 			}
 		}
-		if(!isAdjacent){
-			if(debug) console.log('Non authorized displacement aborted');
-			syncEndProcess(a,true);
+
+		// Check if Adjacent or if Velov is authorized
+		if(!isAdjacent || (!canVelov && a.travelMode === 1)){
+			handleError();
 			return;
 		}
-		
-		for (var i=0 ; i < a.units.length ; ++i) {
-	 		var u = a.units[i];
-	 		u.available=false;
-	 		u.ts=a.date.getTime();
-	 		u.te=u.ts+duration;
-	 		u.xt=a.zoneB.zoneDesc.x;
-	 		u.yt=a.zoneB.zoneDesc.y;
-	 		u.x=a.zoneA.zoneDesc.x;
-	 		u.y=a.zoneA.zoneDesc.y;
-			a.zoneA.units.splice(a.zoneA.units.indexOf(u._id), 1);
-			// TODO
-			u.save();
-			a.zoneA.save();
-	 	}
+		// Velov option : check if place available
+		if(a.travelMode === 1){
 
-	 	var b = new Action({
-			type :1,
-			date: new Date(a.date.getTime() + duration),
-			status :0,
-			units:a.units,
-			zone:a.zoneB._id,
-			game:a.game
-		});
-		//console.log(b.date);
-		if(debug) console.log('Saving end displacement action');
-		b.save(function(err){
-			if(debug && err) console.log(err);
-			syncEndProcess(a);
-		});
+			BikeStation.find({'idStation':{$in:[a.zoneA.zoneDesc.velov, a.zoneB.zoneDesc.velov]}}, function(err, velovStation){
+				var station = {};
+				for(var k=0; k<velovStation.length;k++){
+					station[velovStation[k].idStation] = velovStation[k];
+				}
+				if(station[a.zoneA.zoneDesc.velov].bikesAvailable > a.units.length && station[a.zoneB.zoneDesc.velov].standsAvailable > a.units.length) {
+					queryTravelTime();
+				} else {
+					handleError();
+					return;
+				}
+			});
+		} else {
+			queryTravelTime();
+		}
 	};
 	
 	var syncCount = 2;
@@ -702,15 +755,18 @@ function calculateTravelTime(modeNum, symetric, action) {
 			// persist last travel time
 	     	for(var departure in times) {
 				for(var arrival in times[departure]) {
-					tv = new TravelTime({
-						departureZone:departure,
-						arrivalZone:arrival,
-						date:currentDate,
-						time:times[departure][arrival],
-						mode:modeNum
-					});
-					tv.save();
-					nbInsert++;
+
+					if(times[departure][arrival] !== -1){
+						tv = new TravelTime({
+							departureZone:departure,
+							arrivalZone:arrival,
+							date:currentDate,
+							time:times[departure][arrival],
+							mode:modeNum
+						});
+						tv.save();
+						nbInsert++;
+					}
 				}
 			}
 			console.log('--- TCL Update finished ---');
@@ -884,6 +940,9 @@ Game = mongoose.model('Game');
 Player = mongoose.model('Player');
 Matrix = mongoose.model('Matrix');
 ZoneDescription = mongoose.model('ZoneDescription');
+TravelTime = mongoose.model('TravelTime');
+BikeStation = mongoose.model('BikeStation');
+
 
 app.get('/', function(req, res){
 	if(!state){

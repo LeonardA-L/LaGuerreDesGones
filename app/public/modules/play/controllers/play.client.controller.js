@@ -25,6 +25,17 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		var generationInterval = 120000;
 		$scope.maxUnitPerZone = 8;
 
+		$scope.chatClass = 'chatUp';
+		console.log($scope);
+		$scope.chatClick = function(){
+			if($scope.chatClass === 'chatUp'){
+				$scope.chatClass = 'chatDown';
+			}
+			else{
+				$scope.chatClass = 'chatUp';
+			}
+		}
+
 
 		var countdownForGenerationDestroy;
 		var countdownForGeneration = function(){
@@ -575,6 +586,7 @@ var unitType;
 
 		$scope.$on('$destroy', function(){
         	$('body').css('overflow-y','auto');
+
     	});
 	}
 ]);

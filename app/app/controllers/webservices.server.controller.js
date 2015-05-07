@@ -582,7 +582,7 @@ exports.firstUseFillBDD = function(req,res){
 				defence:1,
 				point:2,
 				price:30,
-				name:'Prête'
+				name:'Prêtre'
 			},
 			{
 				type:7,
@@ -590,7 +590,7 @@ exports.firstUseFillBDD = function(req,res){
 				defence:2,
 				point:3,
 				price:45,
-				name:'Scientifique'
+				name:'Cycliste'
 			}]
 		});
 		unitData.save();

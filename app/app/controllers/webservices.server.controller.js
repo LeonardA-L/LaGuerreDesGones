@@ -22,6 +22,7 @@ exports.cleanAll = function(req, res) {
 	var Unit = mongoose.model('Unit');
 	var Action = mongoose.model('Action');
 	var TravelTime = mongoose.model('TravelTime');
+	var BikeStation = mongoose.model('BikeStation');
 
 	Game.remove({},function(){});
 	Player.remove({},function(){});
@@ -29,6 +30,7 @@ exports.cleanAll = function(req, res) {
 	Unit.remove({},function(){});
 	Action.remove({},function(){});
 	TravelTime.remove({}, function(){});
+	BikeStation.remove({}, function(){});
 
 	var ret = {
 		result:'ok'

@@ -25,8 +25,9 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		var generationInterval = 120000;
 		$scope.maxUnitPerZone = 8;
 
-		$scope.chatClass = 'chatUp';
-		console.log($scope);
+
+		$scope.openPanelZone = false;
+		$scope.chatClass = 'chatDown';
 		$scope.chatClick = function(){
 			if($scope.chatClass === 'chatUp'){
 				$scope.chatClass = 'chatDown';
@@ -362,6 +363,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		function onZoneClicked(polygon){
 			var that = polygon;
 			$scope.$apply(function(){
+				$scope.openPanelZone = true;
 				if($scope.mode === 'displacement' && $scope.disp.step>=1){
 					$scope.disp.zoneBId = that.zoneId;
 					$scope.disp.step=2;

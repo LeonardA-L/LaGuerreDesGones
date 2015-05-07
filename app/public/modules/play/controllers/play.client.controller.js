@@ -79,6 +79,25 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 				}
 			}
 
+			$scope.traveltimes = {};
+			for(i=0;i<$scope.game.traveltimes.length;i++){
+				var time = $scope.game.traveltimes[i];
+				if($scope.traveltimes[time.departureZone] === undefined){
+					$scope.traveltimes[time.departureZone] = {};
+				}
+				if($scope.traveltimes[time.departureZone][time.arrivalZone] === undefined){
+					$scope.traveltimes[time.departureZone][time.arrivalZone] = [];
+				}
+				$scope.traveltimes[time.departureZone][time.arrivalZone][time.mode] = time.time;
+			}
+			console.log($scope.traveltimes);
+
+			$scope.bikestations = {};
+			for(i=0;i<$scope.game.bikestations.length;i++){
+				$scope.bikestations[$scope.game.bikestations[i].idStation] = $scope.game.bikestations[i];
+			}
+			console.log($scope.bikestations);
+
 			for(i=0;i<$scope.game.actions.length;i++){
 				if($scope.game.actions[i].type === 5){
 					$scope.game.nextRefresh = (new Date($scope.game.actions[i].date).getTime());

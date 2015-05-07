@@ -161,13 +161,13 @@
 									<strong> {{game.players[i.player].name}} -> </strong>	
 										<span ng-if="i.type==0"> 
 											<strong style="color:purple;">Déplacement</strong> d'une unité de <strong>{{game.matrixes.UnitData.content[game.units[i.units[0]].type].name}} </strong>
-											de la zone <strong>{{game.zonesDesc[game.zones[i.zoneA].zoneDesc].name}} </strong> à la zone  <strong>{{game.zonesDesc[game.zones[i.zoneB].zoneDesc].name}} 												</strong>.<br/>
+											de la zone <strong>{{game.zonesDesc[game.zones[i.zoneA].zoneDesc].name}} </strong> à la zone <strong>{{game.zonesDesc[game.zones[i.zoneB].zoneDesc].name}} 											</strong>.<br/>
 										</span>
 										<span ng-if="i.type==1"> 
 											<strong style="color:red;">Fin du déplacement</strong><br/>
 										</span>
 										<span ng-if="i.type==3"> 
-											<strong style="color:green;">Achat</strong> d'une unité de <strong>{{game.matrixes.UnitData.content[game.units[i.units[0]].type].name}} </strong>.<br/>
+											<strong style="color:green;">Achat</strong> d'une unité de <strong>{{game.matrixes.UnitData.content[game.units[i.units[0]].type].name}}</strong>.<br/>
 										</span>
 										<!-- TODO : actions.units (i.units) doesn't match with units. Add || i.type==4 to ng-show 
 										<span ng-if="i.type==4"> 

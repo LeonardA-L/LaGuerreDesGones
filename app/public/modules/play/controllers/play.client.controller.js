@@ -603,8 +603,11 @@ var unitType;
 					if(dep.velov === -1 || arr.velov === -1){
 						return undefined;
 					}
-					var bs1 = $scope.bikestations[dep.velov];
-					var bs2 = $scope.bikestations[arr.velov];
+					console.log($scope.bikestations);
+					console.log(dep + ' to ' +arr);
+					
+					var bs1 = $scope.bikestations[$scope.game.zonesDesc[dep].velov];
+					var bs2 = $scope.bikestations[$scope.game.zonesDesc[arr].velov];
 					var total = 0;
 					for(var type in unit){
 						total = total + unit[type];

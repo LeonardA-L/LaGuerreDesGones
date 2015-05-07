@@ -91,6 +91,25 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 				}
 			}
 
+			$scope.traveltimes = {};
+			for(i=0;i<$scope.game.traveltimes.length;i++){
+				var time = $scope.game.traveltimes[i];
+				if($scope.traveltimes[time.departureZone] === undefined){
+					$scope.traveltimes[time.departureZone] = {};
+				}
+				if($scope.traveltimes[time.departureZone][time.arrivalZone] === undefined){
+					$scope.traveltimes[time.departureZone][time.arrivalZone] = [];
+				}
+				$scope.traveltimes[time.departureZone][time.arrivalZone][time.mode] = time.time;
+			}
+			console.log($scope.traveltimes);
+
+			$scope.bikestations = {};
+			for(i=0;i<$scope.game.bikestations.length;i++){
+				$scope.bikestations[$scope.game.bikestations[i].idStation] = $scope.game.bikestations[i];
+			}
+			console.log($scope.bikestations);
+
 			for(i=0;i<$scope.game.actions.length;i++){
 				if($scope.game.actions[i].type === 5){
 					$scope.game.nextRefresh = (new Date($scope.game.actions[i].date).getTime());
@@ -569,6 +588,46 @@ var unitType;
 			};
 			for (var type in $scope.game.matrixes.UnitData.content) {
 				$scope.disp.unitTypes[type]=0;
+			}
+  		};
+
+		$scope.getMoveTime = function(dep, arr, mode, unit){
+			if(dep === undefined || arr === undefined || unit === undefined){
+				return undefined;
+			}
+			var time = $scope.traveltimes[dep][arr][mode];
+			if(time == undefined){
+				return undefined;
+			} else {
+				if(mode === 1){
+					if(dep.velov === -1 || arr.velov === -1){
+						return undefined;
+					}
+					var bs1 = $scope.bikestations[dep.velov];
+					var bs2 = $scope.bikestations[arr.velov];
+					var total = 0;
+					for(var type in unit){
+						total = total + unit[type];
+					}
+					if(total > bs1.bikesAvailable || total > bs2.standsAvailable){
+						return undefined;
+					}
+				}
+				return time;
+			}
+		}
+
+		$scope.timeToDisplay = function (time) {
+			if(time === undefined) {
+				return 'xx:xx';
+			} else {
+				var sec = time / 1000;
+				var min = sec / 60;
+				var h = min / 60;
+				h = Math.floor(h);
+				min = Math.floor(min - 60*h);
+				sec = Math.floor(sec - 60*60*h - 60*min);
+				return ''+h+':'+min;
 			}
   		};
 

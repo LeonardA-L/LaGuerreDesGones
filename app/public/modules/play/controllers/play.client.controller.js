@@ -484,7 +484,7 @@ var unitType;
 			var step 	= 1000;
 			var destination=new google.maps.LatLng($scope.game.zonesDesc[$scope.game.zones[zoneBId].zoneDesc].y,$scope.game.zonesDesc[$scope.game.zones[zoneBId].zoneDesc].x);
 
-			var imgDisplacement = 'static/zones/zone_station.png';
+			var imgDisplacement = 'static/icon_displacement.png';
 			var marker = new google.maps.Marker({
 				position: new google.maps.LatLng($scope.game.zonesDesc[$scope.game.zones[zoneAId].zoneDesc].y,$scope.game.zonesDesc[$scope.game.zones[zoneAId].zoneDesc].x),
 				destination: new google.maps.LatLng($scope.game.zonesDesc[$scope.game.zones[zoneBId].zoneDesc].y,$scope.game.zonesDesc[$scope.game.zones[zoneBId].zoneDesc].x),

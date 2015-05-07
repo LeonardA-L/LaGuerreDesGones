@@ -115,7 +115,13 @@ var syncEndProcess = function(action, failed){
 			notifyServer(action.game._id || action.game);
 		}
 	}
-	else{
+	else
+	{
+		Game.find({'isInit':true, 'winner':null}, function(err, games){
+			for(var i = 0; i<games.length;i++){
+				notifyServer(games[i]._id);
+			}
+		});			
 		// Push to all
 	}
 };

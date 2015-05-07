@@ -338,7 +338,7 @@ var getPlay = function(gameId, callback, res){
 	var result = {
 		success:{}
 	};
-	var syncCallback = 8;
+	var syncCallback = 10;
 	var Game = mongoose.model('Game');
 	var Player = mongoose.model('Player');
 	var Zone = mongoose.model('Zone');
@@ -347,6 +347,8 @@ var getPlay = function(gameId, callback, res){
 	var Matrix = mongoose.model('Matrix');
 	var ZoneDesc = mongoose.model('ZoneDescription');
 	var ChatMessage = mongoose.model('ChatMessage');
+	var TravelTime = mongoose.model('TravelTime');
+	var BikeStation = mongoose.model('BikeStation');
 
 	console.log(gameId);
 	Game.findOne({'_id':gameId}, function(err,game){
@@ -424,6 +426,22 @@ var getPlay = function(gameId, callback, res){
 		if(res && err)
 			res.send(err);
 		result.success.chatMessages = chatMessages;
+		if(--syncCallback === 0){
+			callback(result);
+		}
+	});
+	TravelTime.find({}, function(err,traveltimes){
+		if(res && err)
+			res.send(err);
+		result.success.traveltimes = traveltimes;
+		if(--syncCallback === 0){
+			callback(result);
+		}
+	});
+	BikeStation.find({}, function(err,bikestations){
+		if(res && err)
+			res.send(err);
+		result.success.bikestations = bikestations;
 		if(--syncCallback === 0){
 			callback(result);
 		}

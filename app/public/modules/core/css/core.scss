@@ -42,7 +42,7 @@
 a:hover .fa
 {
   text-decoration:none;
-  color:#ecf0f1;
+  color:#ecf0f1 !important;
 }
 
 a:hover
@@ -61,7 +61,7 @@ a h3 {
 }
 
 a p {
-	color:white;
+	color:white !important;
 }
 }
 #home-main {

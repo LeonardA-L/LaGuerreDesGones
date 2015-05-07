@@ -58,8 +58,11 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			// Connection between player and hash
 			for(i=0;i<$scope.game.players.length;i++){
 				$scope.game.players[$scope.game.players[i]._id] = $scope.game.players[i];
-				if($scope.game.players[i].user === $scope.authentication.user._id){
+				if($scope.game.players[i].user._id === $scope.authentication.user._id){
 					$scope.player = $scope.game.players[i];
+				}
+				if($scope.game.players[i].user._id === $scope.game.creator){
+					$scope.creatorPlayerId = $scope.game.players[i]._id; 
 				}
 			}
 			// Connection between zone and hash
@@ -102,6 +105,10 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		    colorMap();
 		});
 
+		Socket.on(gameId+'.chat', function(chat) {
+		    $scope.game.chatMessages = chat;
+		});
+
 		$http.get('/services/play/'+gameId+'/start').
 		  //success(function(data, status, headers, config) {
 		  success(function(data) {
@@ -128,12 +135,13 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			$scope.listUnitType = true;
 		};
 
-  		$scope.move = function(zoneAId,zoneBId,listUnits){
+  		$scope.move = function(zoneAId,zoneBId,listUnits, travelMode){
   			var dto = {
   				'gameId':gameId,
   				'zoneAId':zoneAId,
   				'zoneBId':zoneBId,
-  				'unitIds':listUnits
+  				'unitIds':listUnits,
+  				'travelMode':travelMode
   			};
   			$scope.showDisplacement(zoneAId,zoneBId,'foot',$scope.player._id); // put real params !
 			$http.post('/services/action/disp',dto).
@@ -191,7 +199,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		    	console.log('error');
 			$scope.buyError=true;
 			});
-		};
+		}; 
 
 		function initMap() {
 			if (typeof map === 'undefined') {
@@ -325,6 +333,10 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 			};
 		};
 
+		$scope.setTravelMode = function(mode){
+			$scope.disp.travelMode = mode;
+		};
+
 		$scope.addUnitToDisp = function(unitId){
 			$scope.disp.unitIds.push(unitId);
 			$scope.disp.step = 1;
@@ -352,6 +364,30 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 				}
 			});
 		}
+
+		// Chat Messages
+		$scope.sendMessage = function(message){
+				console.log('Controller Sending Messages');
+				
+				var tmpDate = new Date();
+				var chatMessage = {
+	  				'game': gameId,
+	  				'player': $scope.player._id,
+	  				'message': message,
+					'date' : tmpDate
+				};
+			  	console.log('Success posting chat message');
+				$scope.messageForChat = ''; //initialize chat message
+
+				$http.post('/services/chat/send', chatMessage)
+				//success(function(data, status, headers, config) {
+				.success(function(data) {	
+			  		console.log(data);
+			 	})
+				.error(function(data) {
+			  		console.log(data);
+			 	});
+		};		
 
 		$('#game-wrap-panels').css({'height':(($(window).height())-$('header').height())+'px'});	
 		$(window).resize(function() {
@@ -492,7 +528,7 @@ var unitType;
  					listUnits.push($scope.unitsByTypeForZone[i][j]._id);
  				}
  			}
- 			$scope.move($scope.selectedZone._id,$scope.disp.zone._id,listUnits);
+ 			$scope.move($scope.selectedZone._id,$scope.disp.zone._id,listUnits, $scope.disp.travelMode);
  			$scope.cancelDisplacement();
  		};
  

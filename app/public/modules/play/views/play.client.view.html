@@ -130,7 +130,7 @@
 										</div>
 										<div id="row-unit-actions" class="col-md-3 nopadding center-content">
 											<button class="btn btn-primary btn-success" ng-if="game.zones[selectedZone._id].units.length < game.zones[selectedZone._id].nbUnitMax && game.zones[selectedZone._id].owner === player._id" ng-click="buyUnit(i.type)">+</button>
-											<button ng-if="unitsByTypeForZone[i.type].length > 0" class="btn btn-primary btn-danger" ng-click="sell(unitsByTypeForZone[i.type][0]._id, i.type)">-</button>
+											<button ng-if="unitsByTypeForZone[i.type].length > 0 && game.zones[selectedZone._id].owner === player._id" class="btn btn-primary btn-danger" ng-click="sell(unitsByTypeForZone[i.type][0]._id, i.type)">-</button>
 										</div>
 										<div class="col-md-3 nopadding full-height center-content">
 											<div class="row-unit-displacement full-height {{(disp.unitTypes[i.type] > 0) ? 'row-unit-disp-selected' : 'row-unit-disp-not-selected'}}">
@@ -179,23 +179,34 @@
 				</div>
 				<div id="game-main-panel" class="col-md-9 game-panel">
 				</div>
-				<div class="chat-box">
-	   				<input type="checkbox" />
-					<label data-expanded="Réduire le chat" data-collapsed="Ouvrir le chat" class="chatBoxTitle"></label>
-						<div id="chatBox" class="chat-box-content">
-							<div id="chat" ng-repeat="i in game.chatMessages"> 
-								{{game.players[i.player].name}}  : {{i.message}} 
-							</div>
-							<form class="chatInput" name="chatForm" ui-keypress="{13:'sendMessage(messageForChat)'}">
-								<div class="input-group input-group-sm">
-									<span class="input-group-addon" id="btn_sendChatMessage" ng-click='sendMessage(messageForChat)'>></span>
-									<input type="text" id="messageForChat" class="form-control" placeholder="..." aria-describedby="basic-addon1" ng-model="messageForChat">
-								</div>
-							</form>
-						</div>
+				
+			</div>
+		</div>
+		
+
+		<div class="chat {{chatClass}}">
+			<div class="chatHead">
+			<ul class="nav nav-tabs">
+			  <li role="presentation" class="active"><a ng-click="chatClick()">Chat</a></li>
+			</ul>
+			</div>
+			<div class="chatContent">
+				<div class="messages">
+					<div class="chatM" ng-repeat="i in game.chatMessages"> 
+						<strong>{{game.players[i.player].name}} :</strong> {{i.message}} 
+					</div>
+				</div>
+				<div class="inputbar">
+					<div class="input-group">
+					      <input type="text" class="form-control" placeholder="Message" ng-model="messageForChat">
+					      <span class="input-group-btn">
+						<button class="btn btn-default" type="button" ng-click='sendMessage(messageForChat)'>Go!</button>
+					      </span>
+					    </div>
 				</div>
 			</div>
 		</div>
+
 		<div ng-if="game.winner" class="overallWinner">
 			<div class="winnerDisplay">
 			    <h2>{{game.players[game.winner].name}} remporte la partie</h2>

@@ -1,0 +1,18 @@
+#!/bin/bash
+pkill node
+pkill node
+git clean -fd
+git checkout master
+git pull
+cd app
+npm install
+bower install
+export  NODE_ENV=development
+rm -rf public/dist/
+grunt build
+export NODE_ENV=production
+nohup node server.js &
+cd ../utils
+./firstLaunch.sh
+cd ../app
+./beowulf 4

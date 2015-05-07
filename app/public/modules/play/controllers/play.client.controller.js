@@ -246,15 +246,16 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 					var marker = new google.maps.Marker({
 					      position: new google.maps.LatLng(zd.y,zd.x),
 					      map: map,
-					      icon: 'static/zones/zone_'+zd.type+'.png'
+					      icon: 'static/zones/zone_'+zd.type+'.png',
+						clickable:false
 					  });
 					marker.zoneId = game.zones[i]._id;
 					marker.zoneDescId = game.zones[i].zoneDesc;
-
+					/*
 					google.maps.event.addListener(marker, 'click', function() {
 						//console.log(this);
 					    onZoneClicked(this);
-					});
+					});*/
 				}
 				// Add zones Polygons to Game variable
 				$scope.zonesPolygons = allPolygons;

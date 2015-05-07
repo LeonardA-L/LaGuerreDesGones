@@ -120,7 +120,8 @@
 								<div id="list-unit" ng-repeat="i in game.matrixes.UnitData.content">
 									<div class="col-md-12 row-unit {{(disp.unitTypes[i.type] > 0) ? 'select-to-displace' : ''}}">
 										<div class="col-md-3 nopadding center-content">
-											<img class="unit-icon" data-drag="true" data-unit-type="{{i.type}}" data-jqyoui-options="{revert: 'invalid', revertDuration: 100,appendTo: 'body', containment: 'window', scroll: false, helper: 'clone'}" jqyoui-draggable="{animate:true,onStart:'onUnitIconDrag', onStop:'onUnitIconDrop'}" src="http://liris.cnrs.fr/vasile-marian.scuturici/files/marian.jpg" height=74 width=74/>
+										<i class="unit-icon {{iconByUnitType[i.type]}}" data-drag="true" data-unit-type="{{i.type}}" data-jqyoui-options="{revert: 'invalid', revertDuration: 100,appendTo: 'body', containment: 'window', scroll: false, helper: 'clone'}" jqyoui-draggable="{animate:true,onStart:'onUnitIconDrag', onStop:'onUnitIconDrop'}" style="height:74px; width:74px;"/>
+
 										</div>
 										<div id="row-unit-name" class="col-md-3 nopadding center-content">
 											<span>{{i.name}}</span>

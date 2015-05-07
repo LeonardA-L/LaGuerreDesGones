@@ -13,3 +13,79 @@
 .ng-valid.ng-dirty {
 	border-color: #78FA89;
 }
+
+.flat-block {
+	background-color: #34495e;//$flat-light-blue;
+	//opacity:0.9;
+	background-color: rgba(52, 73, 94,0.8);
+	padding: 15px;
+}
+
+.custom-hr {
+	width: 10%;
+}
+
+.not-active {
+   pointer-events: none;
+   cursor: default;
+}
+
+.fill-div {
+    display: block;
+    height: 100%;
+    width: 100%;
+    text-decoration: none;
+}
+
+a:hover .fa
+{
+  text-decoration:none;
+  color:#ecf0f1;
+}
+
+a:hover
+{
+  text-decoration:none;
+  color:white;
+}
+
+a {
+	//color: #2c3e50;
+	color:rgba(41, 128, 185,1.0);
+}
+
+a h3 {
+	color:white;
+}
+
+a p {
+	color:white;
+}
+
+#home-main {
+	background-image:    linear-gradient(
+      rgba(0, 0, 0, 0.3), 
+      rgba(0, 0, 0, 0.3)
+    ),
+     url("../static/home-background.jpg");
+	background-position: center; 
+	background-size: cover;
+	height:100%;
+}
+
+.jumbotron {
+	//background-color:rgba(236, 240, 241,0.5);
+	background:none;
+}
+
+.jumbotron .container {
+	padding-left:40px;
+	padding-right:40px;
+}
+
+#home-content {
+	position: absolute;
+	bottom: 10%;
+	left: 0;
+	width:100%;
+}

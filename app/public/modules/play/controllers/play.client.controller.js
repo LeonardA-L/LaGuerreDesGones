@@ -25,8 +25,9 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		var generationInterval = 120000;
 		$scope.maxUnitPerZone = 8;
 
-		$scope.chatClass = 'chatUp';
-		console.log($scope);
+
+		$scope.openPanelZone = false;
+		$scope.chatClass = 'chatDown';
 		$scope.chatClick = function(){
 			if($scope.chatClass === 'chatUp'){
 				$scope.chatClass = 'chatDown';
@@ -89,6 +90,25 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
     				$scope.game.zones[i].units[j] = $scope.game.units[$scope.game.zones[i].units[j]];
 				}
 			}
+
+			$scope.traveltimes = {};
+			for(i=0;i<$scope.game.traveltimes.length;i++){
+				var time = $scope.game.traveltimes[i];
+				if($scope.traveltimes[time.departureZone] === undefined){
+					$scope.traveltimes[time.departureZone] = {};
+				}
+				if($scope.traveltimes[time.departureZone][time.arrivalZone] === undefined){
+					$scope.traveltimes[time.departureZone][time.arrivalZone] = [];
+				}
+				$scope.traveltimes[time.departureZone][time.arrivalZone][time.mode] = time.time;
+			}
+			console.log($scope.traveltimes);
+
+			$scope.bikestations = {};
+			for(i=0;i<$scope.game.bikestations.length;i++){
+				$scope.bikestations[$scope.game.bikestations[i].idStation] = $scope.game.bikestations[i];
+			}
+			console.log($scope.bikestations);
 
 			for(i=0;i<$scope.game.actions.length;i++){
 				if($scope.game.actions[i].type === 5){
@@ -367,6 +387,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		function onZoneClicked(polygon){
 			var that = polygon;
 			$scope.$apply(function(){
+				$scope.openPanelZone = true;
 				if($scope.mode === 'displacement' && $scope.disp.step>=1){
 					$scope.disp.zoneBId = that.zoneId;
 					$scope.disp.step=2;
@@ -501,7 +522,7 @@ var unitType;
 			var step 	= 1000;
 			var destination=new google.maps.LatLng($scope.game.zonesDesc[$scope.game.zones[zoneBId].zoneDesc].y,$scope.game.zonesDesc[$scope.game.zones[zoneBId].zoneDesc].x);
 
-			var imgDisplacement = 'static/zones/zone_station.png';
+			var imgDisplacement = 'static/icon_displacement.png';
 			var marker = new google.maps.Marker({
 				position: new google.maps.LatLng($scope.game.zonesDesc[$scope.game.zones[zoneAId].zoneDesc].y,$scope.game.zonesDesc[$scope.game.zones[zoneAId].zoneDesc].x),
 				destination: new google.maps.LatLng($scope.game.zonesDesc[$scope.game.zones[zoneBId].zoneDesc].y,$scope.game.zonesDesc[$scope.game.zones[zoneBId].zoneDesc].x),
@@ -572,6 +593,49 @@ var unitType;
 			};
 			for (var type in $scope.game.matrixes.UnitData.content) {
 				$scope.disp.unitTypes[type]=0;
+			}
+  		};
+
+		$scope.getMoveTime = function(dep, arr, mode, unit){
+			if(dep === undefined || arr === undefined || unit === undefined){
+				return undefined;
+			}
+			var time = $scope.traveltimes[dep][arr][mode];
+			if(time == undefined){
+				return undefined;
+			} else {
+				if(mode === 1){
+					if(dep.velov === -1 || arr.velov === -1){
+						return undefined;
+					}
+					console.log($scope.bikestations);
+					console.log(dep + ' to ' +arr);
+					
+					var bs1 = $scope.bikestations[$scope.game.zonesDesc[dep].velov];
+					var bs2 = $scope.bikestations[$scope.game.zonesDesc[arr].velov];
+					var total = 0;
+					for(var type in unit){
+						total = total + unit[type];
+					}
+					if(total > bs1.bikesAvailable || total > bs2.standsAvailable){
+						return undefined;
+					}
+				}
+				return time;
+			}
+		}
+
+		$scope.timeToDisplay = function (time) {
+			if(time === undefined) {
+				return 'xx:xx';
+			} else {
+				var sec = time / 1000;
+				var min = sec / 60;
+				var h = min / 60;
+				h = Math.floor(h);
+				min = Math.floor(min - 60*h);
+				sec = Math.floor(sec - 60*60*h - 60*min);
+				return ''+h+':'+min;
 			}
   		};
 

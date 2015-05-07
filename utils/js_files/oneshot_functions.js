@@ -1,3 +1,8 @@
+'use strict';
+
+var mongoose = require('mongoose'),
+	XmlHttpRequest = require('xmlhttprequest').XMLHttpRequest;
+
 function travelTime(latitudeDep, longitudeDep, latitudeArr, longitudeArr, mode)
 {
 	var xmlHttp = new XmlHttpRequest();	
@@ -13,7 +18,7 @@ function calculAllTravelTimes(mode)
 	 var ZoneDescription = mongoose.model('ZoneDescription');
 	 var TravelTime = mongoose.model('TravelTime');
 	 var mapKey = {};
-	
+			console.log('START '+mode);	
 	  ZoneDescription.find({}).populate('adjacentZones').exec(function (err, zonesDesc) {
      	for(var i=0; i<zonesDesc.length;i++)
 		{
@@ -46,6 +51,10 @@ function calculAllTravelTimes(mode)
 			
 		}
 			
-		}	
+		}
+		console.log('FINISH '+mode);	
      });
 }
+
+calculAllTravelTimes('walking');
+calculAllTravelTimes('bicycling');

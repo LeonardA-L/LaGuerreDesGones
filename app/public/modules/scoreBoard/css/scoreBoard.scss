@@ -1,11 +1,8 @@
 .scoreBoardSection{
-	background: #666;
-	color: white;
+	background: black;
+	color: black;
 	th, td, h2{
 		text-align:center;
-	}
-	.title_score{
-		text-decoration:underline;
 	}
 	li.ng-isolate-scope:not(.active):hover{
 		cursor:pointer;
@@ -16,5 +13,8 @@
 	li.ng-isolate-scope.active>a, li.ng-isolate-scope:hover>a{
 		font-weight: bold;
 		color:black;
+	}
+	#score-board-main {
+		background-color:white;
 	}
 }

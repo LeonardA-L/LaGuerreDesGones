@@ -1,32 +1,58 @@
 <section data-ng-controller="HomeController">
-<div class="container-fluid">
-	<h1>PLD App</h1>
-	<div class="panel panel-default">
-		<div class="panel-heading">
-			<h2 class="panel-title">Accès rapide</h2>
-		</div>
-		<div class="panel-body list-group">
-			<a class="list-group-item" href="/#!/host">Créer une partie</a>
-			<a class="list-group-item" href="/#!/join">Rejoindre une partie</a>
-			<a class="list-group-item" href="/#!/perso">Tes parties</a>
-		</div>
+
+<div id="home-main">
+<div class="jumbotron">
+	<div class="container" style="color:white;">
+		<h1>La Guerre des Gones</h1>
+		<p>Conquérez votre ville quartier par quartier et imposez vous comme le roi de la Croix-Rousse !</p>
+		<p><a class="btn btn-primary btn-lg" href="/#!/rules" role="button">Découvrez les règles</a></p>
 	</div>
-	<div class="panel panel-default">
-		<div class="panel-heading">
-			<h2 class="panel-title">APIs temporaires</h2>
-		</div>	
-		<div class="panel-body list-group">
-			<a class="list-group-item" href="/services/api/games">View all Games</a>
-			<a class="list-group-item" href="/services/api/units">View all Units</a>
-			<a class="list-group-item" href="/services/api/zones">View all Zones</a>
-			<a class="list-group-item" href="/services/api/actions">View all Actions</a>
-			<a class="list-group-item" href="/services/api/travelTime">View all Travel Times</a>
-			<a class="list-group-item" href="/services/api/zoneDescs">View all ZoneDescription</a>
-			<a class="list-group-item" href="/services/api/players">View all Players</a>
-			<a class="list-group-item" href="/services/api/cleanAll">Clean the entire database (Attention)</a>
-			<a class="list-group-item" href="/services/api/cleanZoneDesc">Clean all ZoneDesc (Attention)</a>
+</div>-
+	<div id="home-content" class="container-fluid">
+		<div cstyle="width:100%; text-align:center;">
+			<div class="container">
+				<div class="row">
+					<a href="/#!/host">
+						<div class="col-md-4">
+							<div class="flat-block">
+								<div class="text-center">
+									<i class="fa fa-plus fa-5x"></i>
+								</div>
+								<hr class="custom-hr">
+								<h3>Créer une partie</h3>
+								<P>Cliquez ici pour créer une nouvelle partie que vos amis pourront rejoindre !</p>
+							</div>
+						</div>
+					</a>
+					<a  href="/#!/join">
+						<div class="col-md-4">
+							<div class="flat-block">
+								<div class="text-center">
+									<i class="fa fa-users fa-5x"></i>
+								</div>
+								<hr class="custom-hr">
+								<h3>Rejoindre une partie</h3>
+								<P>Rejoignez une partie déjà existante pour jouer avec vos amis ou des inconnus !</p>
+							</div>
+						</div>
+					</a>
+					<a  href="/#!/perso">
+						<div class="col-md-4">
+							<div class="flat-block">
+								<div class="text-center">
+									<i class="fa fa-gamepad fa-5x"></i>
+								</div>
+								<hr class="custom-hr">
+								<h3>Mes parties</h3>
+								<P>Consulter l'historique des parties auxquelles vous avez participé ou auxquelles vous êtes inscirt !</p>
+							</div>
+						</div>
+					</a>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>
+
 
 </section>

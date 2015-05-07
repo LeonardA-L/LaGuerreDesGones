@@ -89,7 +89,7 @@ module.exports = function(grunt) {
 		cssmin: {
 			combine: {
 				files: {
-					'public/dist/application.min.css': '<%= applicationCSSFiles %>'
+					'public/dist/application.min.css': 'public/css/style.css'
 				}
 			}
 		},

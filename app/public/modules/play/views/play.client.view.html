@@ -122,7 +122,7 @@
 										<span>Déplacement</span>
 									</div>
 								</div>
-								<div id="list-unit" ng-repeat="i in game.matrixes.UnitData.content">
+								<div id="list-unit" ng-repeat="i in game.matrixes.UnitData.content" ng-if="i.type !== 4">
 									<div class="col-md-12 row-unit {{(disp.unitTypes[i.type] > 0) ? 'select-to-displace' : ''}}  unitEntry">
 										<div class="col-md-3 nopadding center-content">
 										<i class="unit-icon {{iconByUnitType[i.type]}}" data-drag="true" data-unit-type="{{i.type}}" data-jqyoui-options="{revert: 'invalid', revertDuration: 100,appendTo: 'body', containment: 'window', scroll: false, helper: 'clone'}" jqyoui-draggable="{animate:true,onStart:'onUnitIconDrag', onStop:'onUnitIconDrop'}" style="height:74px; width:74px;"/>

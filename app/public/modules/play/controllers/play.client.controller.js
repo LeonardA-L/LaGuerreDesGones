@@ -206,7 +206,13 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 				console.log('Init Map');
 				var mapOptions = {
 					zoom: 12,
-					center: new google.maps.LatLng(45.751330, 4.935312)
+					center: new google.maps.LatLng(45.751330, 4.935312),
+					streetViewControl : false,
+					panControl : false,
+					scrollwheel : false,
+					rotateControl : false,
+					zoomControl : false,
+					mapTypeControl : false
 				};
 				map = new google.maps.Map(document.getElementById('game-main-panel'), mapOptions);
 			}

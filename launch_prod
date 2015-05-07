@@ -7,7 +7,7 @@ cd app
 npm install
 bower install
 export  NODE_ENV=production
-rm -rf app/public/dist/
+rm -rf public/dist/
 grunt build
 nohup node server.js &
 cd ../utils

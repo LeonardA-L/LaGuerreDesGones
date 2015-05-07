@@ -158,7 +158,7 @@
 						<accordion-group heading="Historique d'actions" class="accordion-item" initially-open="true">
 							<h3 ng-if="game.actions.length<4">Aucune action. Qu'est ce que tu attends pour jouer ;)</h3>
 								<span ng-show="i.type==0 || i.type==1 || i.type==3" id="actions" ng-repeat="i in game.actions "> <!--ng-show="game.players[i.player].name.length"-->
-									<strong> {{game.players[i.player].name}}</strong>	
+									<strong> {{game.players[i.player].name}} -> </strong>	
 										<span ng-if="i.type==0"> 
 											<strong style="color:purple;">Déplacement</strong> d'une unité de <strong>{{game.matrixes.UnitData.content[game.units[i.units[0]].type].name}} </strong>
 											de la zone <strong>{{game.zonesDesc[game.zones[i.zoneA].zoneDesc].name}} </strong> à la zone  <strong>{{game.zonesDesc[game.zones[i.zoneB].zoneDesc].name}} 												</strong>.<br/>

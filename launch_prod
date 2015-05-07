@@ -3,13 +3,12 @@ pkill node
 git clean -fd
 git checkout master
 git pull
-cp app
+cd app
 npm install
 bower install
 export  NODE_ENV=production
 rm -rf app/public/dist/
 grunt build
-cd app
 nohup node server.js &
 cd ../utils
 ./firstLaunch.sh

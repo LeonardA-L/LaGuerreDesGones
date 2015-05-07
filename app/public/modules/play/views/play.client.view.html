@@ -2,16 +2,16 @@
 	<div class="playSection">
 		<div class="container-fluid">
 			<div id="game-wrap-panels" class="row">
-				<div ng-if="startError" class="alert alert-danger" style="margin-bottom:1px">
+				<div ng-if="startError" class="alert alert-danger topAlert" style="margin-bottom:1px">
 					Erreur : impossible de lancer la partie
 				</div>
-				<div ng-if="moveError" class="alert alert-danger" style="margin-bottom:1px">
+				<div ng-if="moveError" class="alert alert-danger topAlert" style="margin-bottom:1px">
 					Erreur : impossible d'effectuer le déplacement
 				</div>
-				<div ng-if="sellError" class="alert alert-danger" style="margin-bottom:1px">
+				<div ng-if="sellError" class="alert alert-danger topAlert" style="margin-bottom:1px">
 					Erreur : impossible d'effectuer la vente
 				</div>
-				<div ng-if="buyError" class="alert alert-danger" style="margin-bottom:1px">
+				<div ng-if="buyError" class="alert alert-danger topAlert" style="margin-bottom:1px">
 					Erreur : impossible d'effectuer l'achat
 				</div>
 				
@@ -174,7 +174,7 @@
 		<div ng-if="game.winner" class="overallWinner">
 			<div class="winnerDisplay">
 			    <h2>{{game.players[game.winner].name}} remporte la partie</h2>
-			    <p>{{game.players[game.winner].name}} remporte cette partie. Vous pouvez <a href="/#!/">revenir à l'accueil</a>, <a href="/#!/host">créer une autre partie</a> ou encore <a href="/#!/">accéder au leaderboard de la partie</a></p>
+			    <p>{{game.players[game.winner].name}} remporte cette partie. Vous pouvez <a href="/#!/">revenir à l'accueil</a>, <a href="/#!/host">créer une autre partie</a> ou encore <a href="/#!/scoreBoard/{{game._id}}">accéder au leaderboard de la partie</a></p>
 			</div>
 		</div>
 	</div>

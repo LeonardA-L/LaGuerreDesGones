@@ -166,7 +166,6 @@ exports.createGame = function(req, res) {
 	var Game = mongoose.model('Game');
 	var Player = mongoose.model('Player');
 	var Action = mongoose.model('Action');
-	var ScoreBoard = mongoose.model('ScoreBoard');
 	console.log(req.body);
 	var g = new Game({
 		'title':req.body.title,
@@ -183,10 +182,6 @@ exports.createGame = function(req, res) {
 			user: req.user._id,
 			game: g._id 
 	});
-	var scoreBoard = new ScoreBoard({
-			game: g._id,
-			player: player._id
-	});
 	g.players = [player._id];
 	g.creator = req.user._id;
 	player.save(function(err){
@@ -196,11 +191,6 @@ exports.createGame = function(req, res) {
 	});
 	g.save(function(err,data){
 		/*if (err) {
-            res.send(err);
-        }*/
-	});
-	scoreBoard.save(function(err){
-		/*if (err){
             res.send(err);
         }*/
 	});
@@ -295,15 +285,7 @@ exports.joinGame = function(req, res) {
        	console.log(err);
       }
     });
-    var ScoreBoard = mongoose.model('ScoreBoard');
-    var scoreBoardPl = new ScoreBoard({
-    	game: gameId,
-    	player: playerID
-    });
-    scoreBoardPl.save(function(err){
-		if (err)
-            res.send(err);
-	});
+
 	console.log('Player '+player.name+' wants to join game n°'+req.params.gameId);
 console.log('Id user joined = '+player.user);
 	res.json(result);
@@ -317,7 +299,6 @@ exports.unjoinGame = function(req, res) {
 	console.log('Unsubscribe');
 	var Game = mongoose.model('Game');
 	var Player = mongoose.model('Player');
-	var ScoreBoard = mongoose.model('ScoreBoard');
 	// TODO possibly optimizable
 	var sent = false;
 	Game.findOne({'_id':req.params.gameId}).populate('players').exec(function(err,game){
@@ -340,7 +321,6 @@ exports.unjoinGame = function(req, res) {
 			if(''+p.user === ''+req.user._id){
 				game.players.splice(i, 1);
 				Player.findByIdAndRemove(p._id,destroyCallback);
-				ScoreBoard.findOneAndRemove({'player':p._id},destroyCallback);
 				if(game.players.length > 0){
 					game.save(destroyCallback);
 				}
@@ -726,41 +706,20 @@ exports.sendMessage = function(req,res){
 //Display game scoreboard 
 exports.displayScoreBoard = function(req, res) {
 	// TODO rules
-	var ScoreBoard = mongoose.model('ScoreBoard');
 	var Player = mongoose.model('Player');
-	var Matrix = mongoose.model('Matrix'),
-	unitDataMatrix = Matrix.findOne({'name':'UnitData'});
+	var Game = mongoose.model('Game');
 	var gameId = req.params.gameId;
-	var nbUnitTypes = 8;
-	var scoreBoard = [];
-	ScoreBoard.find({game : gameId}).populate('player zones objectives').exec(function(err, docs){
-		// if (err)
-		// 	res.send(err);
-		docs.sort(function(pl1,pl2){
-			return pl2.money - pl1.money;
+
+	Game.findById(gameId,function(err,game){
+		Player.find({'game':gameId}).sort('-point').exec(function(err,players){
+			var ret = {
+				success:{
+					game:game
+				}
+			};
+			ret.success.players = players;
+			res.json(ret);
 		});
-		docs.sort(function(pl1,pl2){
-			return pl2.point - pl1.point;
-		});
-		for (var i=0; i<docs.length; i++){
-			var player = {};
-			player.username = docs[i].player.name;
-			player.point = docs[i].player.point;
-			player.money = docs[i].player.money;
-			// player.zones = docs[i].zones;
-			// player.objectives = docs[i].objectives;
-			// var unitTypes = [];
-			// for (var j=0; j< nbUnitTypes; j++){
-			// 	var units = {};
-			// 	units.nbKills = docs[i].getKillsByUnitType(j);
-			// 	units.nbSurvivors = docs[i].getSurvivorsByUnitType(j);
-			// 	units.name = unitDataMatrix.content[j].name;
-			// 	unitTypes.push(units);
-			// }
-			// player.unitTypes=unitTypes;
-			scoreBoard.push(player);
-		}
-		res.json({'success':scoreBoard});
 	});
 };
 

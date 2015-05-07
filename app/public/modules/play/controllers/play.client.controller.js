@@ -51,6 +51,7 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 		var processGameState = function(game){
 			var selectedZone = $scope.selectedZone;
 			$scope.game = game;
+			$scope.game._id = gameId;
 			$scope.selectedZone = selectedZone;
 			var i=0;
 			var j=0;

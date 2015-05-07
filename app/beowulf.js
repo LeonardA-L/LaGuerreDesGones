@@ -504,6 +504,7 @@ var processBuy = function(a){
 			u.player = a.player._id;
 			affectUnitToZone(u,a.zone,zd);
 			a.player.units.push(u._id);
+			a.units.push(u._id);
 			u.save();
 			a.zone.save();
 			a.player.save();
@@ -524,6 +525,7 @@ var processSell = function(a){
 
 		if(data !== null){
 			//console.log(data);
+			a.newUnitType = a.units[0].type;
 			Unit.remove({'_id':a.units[0]}, function(err){
 				if(err)
 					if(debug) console.log(err);

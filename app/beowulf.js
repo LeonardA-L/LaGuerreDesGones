@@ -23,6 +23,7 @@ var Game = undefined;
 var ZoneDescription = undefined;
 var Player = undefined;
 var Matrix = undefined;
+var TravelTime = undefined;
 
 var matrixes = undefined;
 
@@ -129,10 +130,9 @@ var affectUnitToZone = function(u,z,zd){
 var processDisplacement = function(a){
 	
 	var syncFunction=function(){
-		var duration = 10000;
 		var isAdjacent = false;
-		console.log(a.zoneA);
-		console.log(a.zoneB);
+		var canVelov = (a.zoneA.velov !== -1) && (a.zoneB.velov !== -1);
+
 		for(var j=0;j<a.zoneA.zoneDesc.adjacentZones.length;j++){
 			console.log(a.zoneA.zoneDesc.adjacentZones[j] +'-'+ a.zoneB.zoneDesc._id);
 			if(''+a.zoneA.zoneDesc.adjacentZones[j] === ''+a.zoneB.zoneDesc._id){
@@ -140,40 +140,56 @@ var processDisplacement = function(a){
 				break;
 			}
 		}
-		if(!isAdjacent){
+		console.log('canVelov : '+ canVelov);
+		console.log('travelMode : '+ a.travelMode);
+		console.log('isAdjacent : '+ isAdjacent);
+		console.log('zoneDescA : '+ a.zoneA.zoneDesc._id);
+		console.log('zoneDescB : '+ a.zoneB.zoneDesc._id);
+
+		// Check if Adjacent or if Velov is authorized
+		if(!isAdjacent || (!canVelov && a.travelMode === 1)){
 			if(debug) console.log('Non authorized displacement aborted');
 			syncEndProcess(a,true);
 			return;
 		}
-		
-		for (var i=0 ; i < a.units.length ; ++i) {
-	 		var u = a.units[i];
-	 		u.available=false;
-	 		u.ts=a.date.getTime();
-	 		u.te=u.ts+duration;
-	 		u.xt=a.zoneB.zoneDesc.x;
-	 		u.yt=a.zoneB.zoneDesc.y;
-	 		u.x=a.zoneA.zoneDesc.x;
-	 		u.y=a.zoneA.zoneDesc.y;
-			a.zoneA.units.splice(a.zoneA.units.indexOf(u._id), 1);
-			// TODO
-			u.save();
-			a.zoneA.save();
-	 	}
+		//Check if travelTime is available
+		TravelTime.findOne({'departureZone':a.zoneA.zoneDesc._id, 'arrivalZone': a.zoneB.zoneDesc._id, 'mode': a.travelMode},function(err,travelTime){
+			console.log('err : '+err);
+			console.log('travelTime : '+travelTime);
+			if(err === null){
+				if(debug) console.log('Non authorized displacement aborted');
+				syncEndProcess(a,true);
+			}
+			var duration = travelTime.time;
+			for (var i=0 ; i < a.units.length ; ++i) {
+		 		var u = a.units[i];
+		 		u.available=false;
+		 		u.ts=a.date.getTime();
+		 		u.te=u.ts+duration;
+		 		u.xt=a.zoneB.zoneDesc.x;
+		 		u.yt=a.zoneB.zoneDesc.y;
+		 		u.x=a.zoneA.zoneDesc.x;
+		 		u.y=a.zoneA.zoneDesc.y;
+				a.zoneA.units.splice(a.zoneA.units.indexOf(u._id), 1);
+				// TODO
+				u.save();
+				a.zoneA.save();
+		 	}
 
-	 	var b = new Action({
-			type :1,
-			date: new Date(a.date.getTime() + duration),
-			status :0,
-			units:a.units,
-			zone:a.zoneB._id,
-			game:a.game
-		});
-		//console.log(b.date);
-		if(debug) console.log('Saving end displacement action');
-		b.save(function(err){
-			if(debug && err) console.log(err);
-			syncEndProcess(a);
+		 	var b = new Action({
+				type :1,
+				date: new Date(a.date.getTime() + duration),
+				status :0,
+				units:a.units,
+				zone:a.zoneB._id,
+				game:a.game
+			});
+			//console.log(b.date);
+			if(debug) console.log('Saving end displacement action');
+			b.save(function(err){
+				if(debug && err) console.log(err);
+				syncEndProcess(a);
+			});
 		});
 	};
 	
@@ -884,6 +900,7 @@ Game = mongoose.model('Game');
 Player = mongoose.model('Player');
 Matrix = mongoose.model('Matrix');
 ZoneDescription = mongoose.model('ZoneDescription');
+TravelTime = mongoose.model('TravelTime');
 
 app.get('/', function(req, res){
 	if(!state){

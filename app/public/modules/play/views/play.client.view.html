@@ -84,9 +84,10 @@
 									<h3 class="row">Déplacement en préparation vers : <br/>{{game.zonesDesc[disp.zone.zoneDesc].name}}</h3>
 									<div class="row">
 										<div class="col-md-6 btn-group center-content" role="group" aria-label="travelMode">
-										  <button type="button" class="btn btn-default {{disp.travelMode === 0 ? 'active' : ''}} fa fa-male" ng-click="setTravelMode(0)"></button>
+
 										  <button type="button" class="btn btn-default {{disp.travelMode === 1 ? 'active' : ''}} fa fa-bicycle" ng-click="setTravelMode(1)"></button>
-										  <button type="button" class="btn btn-default {{disp.travelMode === 2 ? 'active' : ''}} fa fa-bus" ng-click="setTravelMode(2)"></button>
+										  <button type="button" class="btn btn-default {{disp.travelMode === 2 ? 'active' : ''}} fa fa-male" ng-click="setTravelMode(2)"></button>
+										  <button type="button" class="btn btn-default {{disp.travelMode === 3 ? 'active' : ''}} fa fa-bus" ng-click="setTravelMode(3)"></button>
 										</div>
 									</div>
 									<br/>

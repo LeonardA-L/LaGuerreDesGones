@@ -419,9 +419,6 @@ var getPlay = function(gameId, callback, res){
 	});
 	
 	ChatMessage.find({'game':gameId}, function(err,chatMessages){
-		console.log('################## Chat Message #################');
-		console.log(chatMessages);
-		console.log('################## Fin Chat Message #################');
 		if(res && err)
 			res.send(err);
 		result.success.chatMessages = chatMessages;
@@ -457,7 +454,8 @@ exports.displacementAction = function(req, res) {
 		game: req.body.gameId,
 		zoneA:req.body.zoneAId,
 		zoneB:req.body.zoneBId,
-		units:req.body.unitIds
+		units:req.body.unitIds,
+		travelMode:req.body.travelMode
 	});
 	console.log('registering disp');
 	console.log(a);

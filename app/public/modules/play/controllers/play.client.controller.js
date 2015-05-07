@@ -209,7 +209,6 @@ angular.module('play').controller('PlayController', ['$scope', 'Authentication',
 					center: new google.maps.LatLng(45.751330, 4.935312),
 					streetViewControl : false,
 					panControl : false,
-					scrollwheel : false,
 					rotateControl : false,
 					zoomControl : false,
 					mapTypeControl : false

@@ -596,7 +596,7 @@ var unitType;
 				return undefined;
 			}
 			var time = $scope.traveltimes[dep][arr][mode];
-			if(time == undefined){
+			if(time === undefined){
 				return undefined;
 			} else {
 				if(mode === 1){
@@ -618,7 +618,7 @@ var unitType;
 				}
 				return time;
 			}
-		}
+		};
 
 		$scope.timeToDisplay = function (time) {
 			if(time === undefined) {

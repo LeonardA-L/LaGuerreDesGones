@@ -2,7 +2,7 @@
 
 A super cool real-time strategy conquest game set in Lyon, France
 
-![](https://raw.githubusercontent.com/LeonardA-L/LaGuerreDesGones/master/utils/laGuerreDesGones.png)
+[![](https://raw.githubusercontent.com/LeonardA-L/LaGuerreDesGones/master/utils/laGuerreDesGones.png)](https://www.youtube.com/watch?v=nT915SZAxDo)
 
 ## How it works
 

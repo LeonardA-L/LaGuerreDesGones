@@ -2,6 +2,8 @@
 
 A super cool real-time strategy conquest game set in Lyon, France
 
+![](https://raw.githubusercontent.com/LeonardA-L/LaGuerreDesGones/master/utils/laGuerreDesGones.png)
+
 ## How it works
 
 The map of Lyon (using google maps api) is separated into 51 zones you can conquer. There are several types of zones, for example banks, parks, universities... Each player starts on a neutral zone with 8 neutral units. There are also several types of units including students, tourists, bikers...
@@ -11,7 +13,9 @@ Each clock tick, zones generate a unit for their player. Needless to say each zo
 Using your units' special characteristics you have to conquer the city by moving your units from zones to zones, battling your way on zones that are occupied by your opponents. Now here comes the real-time part : every displacement (by foot, bike or metro) are equal to the time it would take to actually travel in the real city. To do so, the server frequently queries [the city's open data website](http://data.grandlyon.com/) to update. Therefore, no public transportation at night, no bike allowed if the city bikes are unavailable, etc.
 
 Here a simple screencast demonstrating the gameplay:
+
 (To be added)
+
 (The real-time part for transportation has been accelerated to 1/1000 in this video)
 
 This project was conducted by 7 french computer sciences engineering students as final school project of the year. The constraint was to use [the city's open data services](http://data.grandlyon.com/) as part of the project. Among the 16 projects, *La Guerre des Gones* was ranked 3rd by the jury.

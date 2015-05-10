@@ -1,18 +1,31 @@
 #!/bin/bash
+
+# Kill previous instances
 pkill node
 pkill node
+
 git clean -fd
 git checkout master
 git pull
+
+# Update
 cd app
 npm install
 bower install
+
+# Build and minify
 export  NODE_ENV=development
 rm -rf public/dist/
 grunt build
+
+# Launch server
 export NODE_ENV=production
 nohup node server.js &
+
+# Fill the database with Lyon content
 cd ../utils
 ./firstLaunch.sh
+
+# Launch 4 workers in the thread-pool
 cd ../app
 ./beowulf 4

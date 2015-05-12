@@ -1,6 +1,6 @@
 # La Guerre des Gones
 
-A super cool real-time strategy conquest game set in Lyon, France
+A super cool online multiplayer real-time strategy conquest game set in Lyon, France
 
 [![](https://raw.githubusercontent.com/LeonardA-L/LaGuerreDesGones/master/utils/laGuerreDesGones.png)](https://www.youtube.com/watch?v=nT915SZAxDo)
 
